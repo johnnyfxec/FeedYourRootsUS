@@ -138,12 +138,13 @@
     .vision-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
     .vision-card { position: relative; border-radius: 20px; overflow: hidden; cursor: pointer; aspect-ratio: 16/9; box-shadow: 0 20px 60px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease; }
     .vision-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 32px 80px rgba(0,0,0,0.55); }
+    .vision-card:hover .vision-card-num, .vision-card:hover .vision-card-text { opacity: 0; }
     .vision-card img.vision-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); }
     .vision-card:hover img.vision-card-img { transform: scale(1.06); }
     .vision-card-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%, transparent 55%, rgba(0,0,0,0.78) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 20px 24px; }
-    .vision-card-num { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; color: #E8B84B; text-transform: uppercase; letter-spacing: 2.5px; }
+    .vision-card-num { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; color: #E8B84B; text-transform: uppercase; letter-spacing: 2.5px; background: rgba(0,0,0,0.55); padding: 4px 10px; border-radius: 20px; display: inline-block; backdrop-filter: blur(4px); transition: opacity 0.3s; }
     .vision-card-bottom { display: flex; flex-direction: column; }
-    .vision-card-text { font-family: 'Lora', serif; font-style: italic; font-size: clamp(12px, 1.3vw, 15px); color: #F5ECD7; line-height: 1.6; margin-bottom: 8px; }
+    .vision-card-text { font-family: 'Lora', serif; font-style: italic; font-size: clamp(12px, 1.3vw, 15px); color: #F5ECD7; line-height: 1.6; margin-bottom: 8px; background: rgba(0,0,0,0.45); padding: 6px 10px; border-radius: 8px; backdrop-filter: blur(4px); display: inline-block; transition: opacity 0.3s; }
     .vision-card-hint { font-family: 'DM Sans', sans-serif; font-size: 9px; color: rgba(245,236,215,0.4); letter-spacing: 1px; }
     /* LIGHTBOX */
     .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 0; }
