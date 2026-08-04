@@ -27,9 +27,6 @@
     .float-el { position: absolute; will-change: transform; user-select: none; }
 
     /* ── VINE DIVIDER ── */
-    .vine-sep { position: relative; z-index: 10; line-height: 0; height: 90px; overflow: hidden; }
-    .vine-sep img { width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0.7; }
-    .vine-sep.flip { transform: scaleX(-1); }
 
     /* ── BOTANICAL BREAK (mobile between sections) ── */
     .bot-break { display: none; text-align: center; padding: 24px 0 8px; line-height: 0; }
@@ -76,8 +73,11 @@
        PROBLEM — gradient dark
     ══════════════════════════ */
     #problem {
-      background: linear-gradient(to bottom, transparent 0%, #28170A 9%, #28170A 91%, transparent 100%);
-      padding: 110px 24px;
+      background: #28170A;
+      padding: 100px 40px;
+      border-radius: 32px;
+      margin: 0 16px;
+      box-shadow: 0 32px 80px rgba(20,8,2,0.28);
       overflow: hidden;
     }
     .problem-inner { max-width: 820px; margin: 0 auto; position: relative; z-index: 3; text-align: center; }
@@ -110,8 +110,11 @@
        VISION — gradient green
     ══════════════════════════ */
     #vision {
-      background: linear-gradient(to bottom, transparent 0%, #385F42 8%, #385F42 92%, transparent 100%);
-      padding: 110px 24px;
+      background: #385F42;
+      padding: 100px 40px;
+      border-radius: 32px;
+      margin: 0 16px;
+      box-shadow: 0 32px 80px rgba(30,60,35,0.28);
       overflow: hidden;
     }
     #vision::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.22) 100%); pointer-events: none; z-index: 1; }
@@ -148,8 +151,11 @@
        BUNDLES — gradient dark
     ══════════════════════════ */
     #bundles {
-      background: linear-gradient(to bottom, transparent 0%, #180A02 8%, #180A02 92%, transparent 100%);
-      padding: 110px 24px;
+      background: #180A02;
+      padding: 100px 40px;
+      border-radius: 32px;
+      margin: 0 16px;
+      box-shadow: 0 32px 80px rgba(10,4,0,0.32);
       overflow: hidden;
     }
     .bundles-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 3; }
@@ -228,7 +234,6 @@
       .vision-grid, .chapters-grid, .bundles-grid { grid-template-columns: 1fr; }
       .chapter-card { flex-direction: column; }
       .float-el { display: none; }
-      .vine-sep { height: 64px; }
       .bot-break { display: block; }
     }
   </style>
@@ -272,7 +277,6 @@
 <div class="bot-break reveal"><img src="E07.png" alt=""></div>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep"><img src="V03.png" alt=""></div>
 
 <!-- ════════════ PROBLEM ════════════ -->
 <section id="problem">
@@ -290,7 +294,6 @@
 </section>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep flip"><img src="V03.png" alt=""></div>
 
 <!-- Mobile botanical break -->
 <div class="bot-break reveal"><img src="E03.png" alt=""></div>
@@ -327,7 +330,6 @@
 <div class="bot-break reveal"><img src="E13.png" alt=""></div>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep"><img src="V03.png" alt=""></div>
 
 <!-- ════════════ VISION ════════════ -->
 <section id="vision">
@@ -353,7 +355,6 @@
 </section>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep flip"><img src="V03.png" alt=""></div>
 
 <!-- Mobile botanical break -->
 <div class="bot-break reveal"><img src="E10.png" alt=""></div>
@@ -391,7 +392,6 @@
 <div class="bot-break reveal"><img src="E29.png" alt=""></div>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep"><img src="V03.png" alt=""></div>
 
 <!-- ════════════ BUNDLES ════════════ -->
 <section id="bundles">
@@ -442,7 +442,6 @@
 </section>
 
 <!-- ════════════ VINE ════════════ -->
-<div class="vine-sep flip"><img src="V03.png" alt=""></div>
 
 <!-- ════════════ CLOSE ════════════ -->
 <section id="close">
