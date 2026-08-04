@@ -123,11 +123,23 @@
     .vision-eyebrow { font-family: 'Satisfy', cursive; font-size: 21px; color: rgba(245,236,215,0.58); margin-bottom: 14px; }
     .vision-h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(32px, 4.5vw, 54px); color: #F5ECD7; line-height: 1.12; }
     .vision-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-    .vision-card { background: rgba(245,236,215,0.1); border: 1px solid rgba(245,236,215,0.15); border-radius: 20px; padding: 36px 30px; backdrop-filter: blur(8px); transition: all 0.4s cubic-bezier(0.22,1,0.36,1); }
-    .vision-card:hover { background: rgba(245,236,215,0.17); transform: translateY(-7px) scale(1.01); }
-    .vision-card-img { width: 92px; height: 92px; object-fit: contain; margin-bottom: 20px; opacity: 0.92; }
-    .vision-card-num { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; color: #E8B84B; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; }
-    .vision-card-text { font-family: 'Lora', serif; font-style: italic; font-size: clamp(14px, 1.5vw, 17px); color: #F5ECD7; line-height: 1.78; }
+    .vision-card { position: relative; border-radius: 20px; overflow: hidden; cursor: pointer; aspect-ratio: 16/9; box-shadow: 0 20px 60px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease; }
+    .vision-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 32px 80px rgba(0,0,0,0.55); }
+    .vision-card img.vision-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+    .vision-card:hover img.vision-card-img { transform: scale(1.06); }
+    .vision-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.2) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 28px; }
+    .vision-card-num { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; color: #E8B84B; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    .vision-card-text { font-family: 'Lora', serif; font-style: italic; font-size: clamp(13px, 1.4vw, 16px); color: #F5ECD7; line-height: 1.65; }
+    .vision-card-hint { font-family: 'DM Sans', sans-serif; font-size: 10px; color: rgba(245,236,215,0.45); margin-top: 10px; letter-spacing: 1px; }
+    /* LIGHTBOX */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+    .lightbox-close { position: fixed; top: 24px; right: 28px; color: #fff; font-size: 32px; cursor: pointer; font-family: 'DM Sans', sans-serif; opacity: 0.7; transition: opacity 0.2s; line-height: 1; }
+    .lightbox-close:hover { opacity: 1; }
+    .lightbox-caption { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); text-align: center; }
+    .lightbox-caption-label { font-family: 'DM Sans', sans-serif; font-size: 10px; color: #E8B84B; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+    .lightbox-caption-text { font-family: 'Lora', serif; font-style: italic; font-size: 16px; color: rgba(245,236,215,0.85); }
 
     /* ══════════════════════════
        CHAPTERS
@@ -344,12 +356,12 @@
       <h2 class="vision-h2 reveal d1">Your Life, One Year From Now</h2>
     </div>
     <div class="vision-grid">
-      <div class="vision-card reveal"><img src="E04.png" class="vision-card-img" alt=""><div class="vision-card-num">January</div><p class="vision-card-text">A January salad, cut fresh while snow sits on the fence.</p></div>
-      <div class="vision-card reveal d1"><img src="E08.png" class="vision-card-img" alt=""><div class="vision-card-num">Legacy</div><p class="vision-card-text">Twelve fruit trees in the space of two parked cars — feeding your kids, then theirs.</p></div>
-      <div class="vision-card reveal d2"><img src="E13.png" class="vision-card-img" alt=""><div class="vision-card-num">Abundance</div><p class="vision-card-text">A pantry wall of jars that glow like stained glass, every one a day you remember.</p></div>
-      <div class="vision-card reveal d1"><img src="E17.png" class="vision-card-img" alt=""><div class="vision-card-num">Freedom</div><p class="vision-card-text">Honey with no expiration date, made forty steps from your door.</p></div>
-      <div class="vision-card reveal d2"><img src="E21.png" class="vision-card-img" alt=""><div class="vision-card-num">Roots</div><p class="vision-card-text">A child who knows what a ripe tomato smells like — because she grew it.</p></div>
-      <div class="vision-card reveal d3"><img src="E26.png" class="vision-card-img" alt=""><div class="vision-card-num">Month by Month</div><p class="vision-card-text">Grocery runs that shrink, month after month, while your soil gets richer.</p></div>
+      <div class="vision-card reveal" onclick="openLightbox('vision-january.png','January','Snow on the fence. Salad on the table. Cut from your own garden this morning.')"><img src="vision-january.png" class="vision-card-img" alt="January"><div class="vision-card-overlay"><div class="vision-card-num">January</div><p class="vision-card-text">Snow on the fence. Salad on the table. Cut from your own garden this morning.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
+      <div class="vision-card reveal d1" onclick="openLightbox('vision-legacy.png','Legacy','These trees will outlive you. Your grandchildren will eat from them.')"><img src="vision-legacy.png" class="vision-card-img" alt="Legacy"><div class="vision-card-overlay"><div class="vision-card-num">Legacy</div><p class="vision-card-text">These trees will outlive you. Your grandchildren will eat from them.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
+      <div class="vision-card reveal d2" onclick="openLightbox('vision-abundance.png','Abundance','A pantry you filled yourself. Every jar a season you won\'t forget.')"><img src="vision-abundance.png" class="vision-card-img" alt="Abundance"><div class="vision-card-overlay"><div class="vision-card-num">Abundance</div><p class="vision-card-text">A pantry you filled yourself. Every jar a season you won't forget.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
+      <div class="vision-card reveal d1" onclick="openLightbox('vision-greenhouse.png','The Greenhouse','February outside. Spring inside. Your seedlings don\'t know it\'s winter.')"><img src="vision-greenhouse.png" class="vision-card-img" alt="The Greenhouse"><div class="vision-card-overlay"><div class="vision-card-num">The Greenhouse</div><p class="vision-card-text">February outside. Spring inside. Your seedlings don't know it's winter.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
+      <div class="vision-card reveal d2" onclick="openLightbox('vision-roots.png','Roots','She knows what dirt smells like after rain. She knows because she planted it.')"><img src="vision-roots.png" class="vision-card-img" alt="Roots"><div class="vision-card-overlay"><div class="vision-card-num">Roots</div><p class="vision-card-text">She knows what dirt smells like after rain. She knows because she planted it.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
+      <div class="vision-card reveal d3" onclick="openLightbox('vision-flock.png','The Flock','Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.')"><img src="vision-flock.png" class="vision-card-img" alt="The Flock"><div class="vision-card-overlay"><div class="vision-card-num">The Flock</div><p class="vision-card-text">Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.</p><p class="vision-card-hint">↗ tap to expand</p></div></div>
     </div>
   </div>
 </section>
@@ -522,7 +534,32 @@
       if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // LIGHTBOX
+  function openLightbox(src, label, text) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-label').textContent = label;
+    document.getElementById('lightbox-text').textContent = text;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
+
 </script>
 
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption">
+    <div class="lightbox-caption-label" id="lightbox-label"></div>
+    <div class="lightbox-caption-text" id="lightbox-text"></div>
+  </div>
+</div>
 </body>
 </html>
