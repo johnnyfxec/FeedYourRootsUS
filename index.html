@@ -29,7 +29,7 @@
     /* ── VINE DIVIDER ── */
 
     /* ── BOTANICAL BREAK (mobile between sections) ── */
-    .bot-break { display: none; text-align: center; padding: 12px 0; margin: 0; line-height: 0; position: relative; z-index: 5; }
+    .bot-break { display: none; text-align: center; padding: 4px 0; margin: 0; line-height: 0; position: relative; z-index: 5; }
     .bot-break img { width: 42%; max-width: 180px; opacity: 0; display: inline-block; animation: botFloat 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
     @keyframes botFloat {
       0% { opacity: 0; transform: scale(0.6) translateY(20px); }
@@ -132,7 +132,7 @@
     }
     #vision::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.22) 100%); pointer-events: none; z-index: 1; }
     .vision-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 3; }
-    .vision-header { text-align: center; margin-bottom: 80px; }
+    .vision-header { text-align: center; margin-bottom: 40px; }
     .vision-eyebrow { font-family: 'Satisfy', cursive; font-size: 21px; color: rgba(245,236,215,0.58); margin-bottom: 14px; }
     .vision-h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(32px, 4.5vw, 54px); color: #F5ECD7; line-height: 1.12; }
     .vision-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
@@ -267,9 +267,9 @@
       .bundle-card.popular { transform: none; }
     }
     @media (max-width: 600px) {
-      #hero { padding: 60px 20px 50px; }
-      #solution,#chapters,#close { padding: 60px 20px; }
-      #problem,#vision,#bundles { padding: 70px 20px; }
+      #hero { padding: 50px 20px 40px; }
+      #solution,#chapters,#close { padding: 50px 20px; }
+      #problem,#vision,#bundles { padding: 55px 20px; }
       .vision-grid, .chapters-grid, .bundles-grid { grid-template-columns: 1fr; }
       .chapter-card { flex-direction: column; }
       .float-el { display: none; }
@@ -380,12 +380,12 @@
       <h2 class="vision-h2 reveal d1">Your Life, One Year From Now</h2>
     </div>
     <div class="vision-grid">
-      <div class="vision-card reveal" onclick="openLightbox('vision-january.png','January','Snow on the fence. Salad on the table. Cut from your own garden this morning.')"><img src="vision-january.png" class="vision-card-img" alt="January"><div class="vision-card-overlay"><div class="vision-card-num">January</div><div class="vision-card-bottom"><p class="vision-card-text">Snow on the fence. Salad on the table. Cut from your own garden this morning.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
-      <div class="vision-card reveal d1" onclick="openLightbox('vision-legacy.png','Legacy','These trees will outlive you. Your grandchildren will eat from them.')"><img src="vision-legacy.png" class="vision-card-img" alt="Legacy"><div class="vision-card-overlay"><div class="vision-card-num">Legacy</div><div class="vision-card-bottom"><p class="vision-card-text">These trees will outlive you. Your grandchildren will eat from them.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
-      <div class="vision-card reveal d2" onclick="openLightbox('vision-abundance.png','Abundance','A pantry you filled yourself. Every jar a season you won\'t forget.')"><img src="vision-abundance.png" class="vision-card-img" alt="Abundance"><div class="vision-card-overlay"><div class="vision-card-num">Abundance</div><div class="vision-card-bottom"><p class="vision-card-text">A pantry you filled yourself. Every jar a season you won't forget.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
-      <div class="vision-card reveal d1" onclick="openLightbox('vision-greenhouse.png','The Greenhouse','February outside. Spring inside. Your seedlings don\'t know it\'s winter.')"><img src="vision-greenhouse.png" class="vision-card-img" alt="The Greenhouse"><div class="vision-card-overlay"><div class="vision-card-num">The Greenhouse</div><div class="vision-card-bottom"><p class="vision-card-text">February outside. Spring inside. Your seedlings don't know it's winter.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
-      <div class="vision-card reveal d2" onclick="openLightbox('vision-roots.png','Roots','She knows what dirt smells like after rain. She knows because she planted it.')"><img src="vision-roots.png" class="vision-card-img" alt="Roots"><div class="vision-card-overlay"><div class="vision-card-num">Roots</div><div class="vision-card-bottom"><p class="vision-card-text">She knows what dirt smells like after rain. She knows because she planted it.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
-      <div class="vision-card reveal d3" onclick="openLightbox('vision-flock.png','The Flock','Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.')"><img src="vision-flock.png" class="vision-card-img" alt="The Flock"><div class="vision-card-overlay"><div class="vision-card-num">The Flock</div><div class="vision-card-bottom"><p class="vision-card-text">Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.</p><p class="vision-card-hint">↗ tap to expand</p></div></div></div>
+      <div class="vision-card reveal" onclick="openLightbox('vision-january.png','January','Snow on the fence. Salad on the table. Cut from your own garden this morning.')"><img src="vision-january.png" class="vision-card-img" alt="January"><div class="vision-card-overlay"><div class="vision-card-num">January</div><div class="vision-card-bottom"><span class="vision-card-text">Snow on the fence. Salad on the table. Cut from your own garden this morning.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
+      <div class="vision-card reveal d1" onclick="openLightbox('vision-legacy.png','Legacy','These trees will outlive you. Your grandchildren will eat from them.')"><img src="vision-legacy.png" class="vision-card-img" alt="Legacy"><div class="vision-card-overlay"><div class="vision-card-num">Legacy</div><div class="vision-card-bottom"><span class="vision-card-text">These trees will outlive you. Your grandchildren will eat from them.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
+      <div class="vision-card reveal d2" onclick="openLightbox('vision-abundance.png','Abundance','A pantry you filled yourself. Every jar a season you won\'t forget.')"><img src="vision-abundance.png" class="vision-card-img" alt="Abundance"><div class="vision-card-overlay"><div class="vision-card-num">Abundance</div><div class="vision-card-bottom"><span class="vision-card-text">A pantry you filled yourself. Every jar a season you won't forget.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
+      <div class="vision-card reveal d1" onclick="openLightbox('vision-greenhouse.png','The Greenhouse','February outside. Spring inside. Your seedlings don\'t know it\'s winter.')"><img src="vision-greenhouse.png" class="vision-card-img" alt="The Greenhouse"><div class="vision-card-overlay"><div class="vision-card-num">The Greenhouse</div><div class="vision-card-bottom"><span class="vision-card-text">February outside. Spring inside. Your seedlings don't know it's winter.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
+      <div class="vision-card reveal d2" onclick="openLightbox('vision-roots.png','Roots','She knows what dirt smells like after rain. She knows because she planted it.')"><img src="vision-roots.png" class="vision-card-img" alt="Roots"><div class="vision-card-overlay"><div class="vision-card-num">Roots</div><div class="vision-card-bottom"><span class="vision-card-text">She knows what dirt smells like after rain. She knows because she planted it.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
+      <div class="vision-card reveal d3" onclick="openLightbox('vision-flock.png','The Flock','Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.')"><img src="vision-flock.png" class="vision-card-img" alt="The Flock"><div class="vision-card-overlay"><div class="vision-card-num">The Flock</div><div class="vision-card-bottom"><span class="vision-card-text">Six chickens. Eggs every morning. A sound that makes the whole yard feel alive.</span><span class="vision-card-hint" style="display:block;margin-top:8px;">↗ tap to expand</span></div></div></div>
     </div>
   </div>
 </section>
