@@ -29,8 +29,21 @@
     /* ── VINE DIVIDER ── */
 
     /* ── BOTANICAL BREAK (mobile between sections) ── */
-    .bot-break { display: none; text-align: center; padding: 24px 0 8px; line-height: 0; }
-    .bot-break img { width: 58%; max-width: 260px; opacity: 0.78; display: inline-block; }
+    .bot-break { display: none; text-align: center; padding: 0; margin: -20px 0; line-height: 0; position: relative; z-index: 5; }
+    .bot-break img { width: 42%; max-width: 180px; opacity: 0; display: inline-block; animation: botFloat 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
+    @keyframes botFloat {
+      0% { opacity: 0; transform: scale(0.6) translateY(20px); }
+      60% { opacity: 1; transform: scale(1.08) translateY(-4px); }
+      100% { opacity: 0.85; transform: scale(1) translateY(0); }
+    }
+    .bot-break img.floating {
+      animation: botFloat 0.8s cubic-bezier(0.22,1,0.36,1) forwards, gentleFloat 4s ease-in-out 0.8s infinite;
+    }
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-8px) rotate(1.5deg); }
+      66% { transform: translateY(-4px) rotate(-1deg); }
+    }
 
     /* ── BUTTONS ── */
     .btn-primary { display: inline-block; background: #D4732A; color: #fff; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; padding: 20px 50px; border-radius: 60px; box-shadow: 0 8px 36px rgba(212,115,42,0.45); transition: all 0.35s cubic-bezier(0.22,1,0.36,1); letter-spacing: 0.3px; }
@@ -243,8 +256,9 @@
       .bundle-card.popular { transform: none; }
     }
     @media (max-width: 600px) {
-      #hero,#solution,#chapters,#close { padding: 80px 20px; }
-      #problem,#vision,#bundles { padding: 90px 20px; }
+      #hero { padding: 60px 20px 50px; }
+      #solution,#chapters,#close { padding: 60px 20px; }
+      #problem,#vision,#bundles { padding: 70px 20px; }
       .vision-grid, .chapters-grid, .bundles-grid { grid-template-columns: 1fr; }
       .chapter-card { flex-direction: column; }
       .float-el { display: none; }
@@ -510,6 +524,38 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.06 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ALEATORIZAR BOTÁNICAS MOBILE
+  const botanicals = ['E01','E02','E03','E04','E05','E06','E07','E08','E09','E10',
+    'E11','E12','E13','E14','E15','E16','E17','E18','E19','E20',
+    'E21','E22','E23','E24','E25','E26','E27','E28','E29','E30'];
+  const used = [];
+  function pickRandom() {
+    const available = botanicals.filter(b => !used.includes(b));
+    if (available.length === 0) used.length = 0;
+    const pick = available[Math.floor(Math.random() * available.length)];
+    used.push(pick);
+    return pick;
+  }
+  document.querySelectorAll('.bot-break img').forEach(img => {
+    img.src = pickRandom() + '.png';
+  });
+
+  // FLOAT ANIMATION ON SCROLL INTO VIEW
+  const botObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const img = e.target.querySelector('img');
+        if (img) {
+          img.style.animation = 'none';
+          void img.offsetWidth;
+          img.classList.add('floating');
+          img.style.animation = '';
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.bot-break').forEach(el => botObserver.observe(el));
 
   // PARALLAX — capture base transform once, then offset
   const floatEls = document.querySelectorAll('.float-el[data-speed]');
