@@ -1,0 +1,20 @@
+{
+  "affiliates": [
+    {
+      "_note": "TEMPLATE — copy this block to add a new affiliate. Remove this entry.",
+      "code": "example",
+      "name": "First Last",
+      "instagram": "@handle",
+      "tiktok": "@handle",
+      "youtube": "youtube.com/@handle",
+      "added": "2026-08-08",
+      "links": {
+        "core":      "https://go.hotmart.com/REPLACE",
+        "starter":   "https://go.hotmart.com/REPLACE",
+        "family":    "https://go.hotmart.com/REPLACE",
+        "homestead": "https://go.hotmart.com/REPLACE",
+        "complete":  "https://go.hotmart.com/REPLACE"
+      }
+    }
+  ]
+}
