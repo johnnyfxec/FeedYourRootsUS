@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="description" content="The complete half-acre homesteading system for suburban families. Planting calendars, seed libraries, preservation logs and site plans for USDA Zones 5–9.">
+  <meta property="og:title" content="Feed Your Roots — Half-Acre Blueprint for Suburban Homesteaders">
+  <meta property="og:description" content="From seed to pantry on 0.25–0.5 acres. 13 documents, 160+ pages, 5 bundles from $37.">
+  <meta property="og:url" content="https://feedyourroots.us">
+  <meta property="og:type" content="website">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feed Your Roots — The Half-Acre Blueprint</title>
@@ -512,7 +517,7 @@
     <p style="text-align:center;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(245,236,215,0.28);margin-top:24px;letter-spacing:0.4px;">All digital. Instant delivery. Print what you need, keep it forever.</p>
   </div>
   <script>
-  var FYR_CO={core:'https://pay.hotmart.com/S107078295H',starter:'https://pay.hotmart.com/K107078722B',family:'https://pay.hotmart.com/C107078806J',homestead:'https://pay.hotmart.com/V107078877Y',complete:null};
+  var FYR_CO={core:'https://pay.hotmart.com/S107078295H',starter:'https://pay.hotmart.com/K107078722B',family:'https://pay.hotmart.com/C107078806J',homestead:'https://pay.hotmart.com/V107078877Y',complete:'https://pay.hotmart.com/G107154913B'};
   (function(){var aff=new URLSearchParams(window.location.search).get('aff');if(!aff)return;fetch('/affiliates.json').then(function(r){return r.json();}).then(function(d){var a=(d.affiliates||[]).find(function(x){return x.code===aff;});if(a&&a.links){Object.assign(FYR_CO,a.links);}if(typeof renderFyrPanel==='function')renderFyrPanel();}).catch(function(){});})();
   var TI={core:['The Half-Acre Blueprint (48 illustrated pages)','12 chapters: fruit trees, seed saving, composting, rainwater, chickens, bees','USDA Zones 5–9 · All seasons','Instant PDF download · Print forever'],starter:['Half-Acre Quick Calendar — 36 plants, Zones 5–9','Seed Library Kit — 101 botanical illustrations + envelopes','Seed Library Tracker — Google Sheets'],family:['Family Homestead Skill Map — 24 tasks × 5 age groups',"Kids' Roots Activity Pack — 5 printable activities, ages 5–12"],homestead:['Half-Acre Planting Calendar — 101 plants, 19 pages','Homestead Preservation Log — canning, fermentation, dehydrating, freezing']};
   var TO=['core','starter','family','homestead'];
@@ -521,7 +526,7 @@
     {id:'starter',name:'STARTER',emoji:'🌿',price:47,cta:'Get the Starter',tag:'Blueprint + First Year Tools.',dsc:'The guide plus the tools that map day one and keep your seeds organized for every season that follows.',items:[{t:'Everything in Core',n:false,inh:'core'},{t:'Half-Acre Quick Calendar — 36 plants, Zones 5–9',n:true},{t:'Seed Library Kit — 101 botanical illustrations + envelopes',n:true},{t:'Seed Library Tracker — Google Sheets',n:true}],key:'starter',ok:true},
     {id:'family',name:'FAMILY',emoji:'🏡',price:67,cta:'Get the Family Bundle',tag:'Everything, for every pair of hands.',dsc:'A half acre runs best as a crew. Adds the tools to involve every family member — from toddler to teen.',items:[{t:'Everything in Starter',n:false,inh:'starter'},{t:'Family Homestead Skill Map — 24 tasks × 5 age groups',n:true},{t:"Kids' Roots Activity Pack — 5 printable activities, ages 5–12",n:true}],key:'family',ok:true},
     {id:'homestead',name:'HOMESTEAD',emoji:'🌾',price:97,cta:'Get the Homestead Bundle',tag:'The full system, deeper.',dsc:'Everything above plus the tools that turn a seasonal garden into a year-round food operation.',items:[{t:'Everything in Family',n:false,inh:'family'},{t:'Half-Acre Planting Calendar — 101 plants, per-zone timing, 19 pages',n:true},{t:'Homestead Preservation Log — canning, fermentation, dehydrating, freezing',n:true}],popular:true,key:'homestead',ok:true},
-    {id:'complete',name:'COMPLETE',emoji:'🏆',price:150,cta:'Join the Waitlist',tag:'The full library.',dsc:'The complete Feed Your Roots system — every document, every plan, every reference guide. Nothing left to add.',items:[{t:'Everything in Homestead',n:false,inh:'homestead'},{t:'Half-Acre Master Layout — 6 detailed site plans',n:true},{t:'First Year 52-Week Action Plan',n:true},{t:'Shopping & Sourcing Guide',n:true},{t:'Troubleshooting Field Guide',n:true},{t:'USDA Canning Guide',n:true}],soon:true,key:'complete',ok:false}
+    {id:'complete',name:'COMPLETE',emoji:'🏆',price:150,cta:'Get the Complete Bundle',tag:'The full library.',dsc:'The complete Feed Your Roots system — every document, every plan, every reference guide. Nothing left to add.',items:[{t:'Everything in Homestead',n:false,inh:'homestead'},{t:'Half-Acre Master Layout — 6 detailed site plans',n:true},{t:'First Year 52-Week Action Plan',n:true},{t:'Shopping & Sourcing Guide',n:true},{t:'Troubleshooting Field Guide',n:true},{t:'USDA Canning Guide',n:true}],soon:false,key:'complete',ok:true}
   ];
   var ACT='homestead',FADING=false;
   function gTT(id){var idx=TO.indexOf(id);if(idx<0)return '';var tiers=TO.slice(0,idx+1);return '<div class="fsel-tt" id="tt-'+id+'">'+tiers.map(function(t){return '<div class="fsel-tt-tier"><div class="fsel-tt-name">'+t.toUpperCase()+'</div>'+TI[t].map(function(i){return '<div class="fsel-tt-item"><span class="fsel-tt-ck">&#10003;</span><span>'+i+'</span></div>';}).join('')+'</div>';}).join('')+'</div>';}
