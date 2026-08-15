@@ -1,0 +1,312 @@
+<template>
+<style>
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Bold.ttf") format("truetype");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("assets/fonts/LiberationMono-Regular.ttf") format("truetype");
+    font-weight: 500;
+  }
+
+  #root {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    container-type: inline-size;
+    container-name: root;
+  }
+
+  #root::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .clip {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Background */
+  #fs-bg {
+    background-color: #0A0A0A;
+    z-index: 0;
+  }
+
+  /* Topbar label */
+  #fs-topbar {
+    position: absolute;
+    top: 54px;
+    left: 54px;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 1.35cqw;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5ECD7;
+    line-height: 1;
+    z-index: 10;
+    opacity: 0;
+  }
+
+  /* Hairline SVG */
+  #fs-hairline-svg {
+    position: absolute;
+    top: 110px;
+    left: 0;
+    width: 1080px;
+    height: 4px;
+    z-index: 10;
+    overflow: visible;
+  }
+
+  #fs-hairline {
+    stroke: #F5ECD7;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  /* Tiles container */
+  #fs-tiles {
+    position: absolute;
+    top: 140px;
+    left: 54px;
+    right: 54px;
+    z-index: 20;
+  }
+
+  /* Individual tiles */
+  .fs-tile {
+    width: 100%;
+    height: 350px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 36px 48px;
+    box-sizing: border-box;
+    opacity: 0;
+  }
+
+  #fs-tile1 {
+    background-color: #674B0D;
+    margin-bottom: 30px;
+  }
+
+  #fs-tile2 {
+    background-color: #E8B84B;
+    margin-bottom: 30px;
+  }
+
+  #fs-tile3 {
+    background-color: #D4732A;
+  }
+
+  /* Tile inner rule */
+  .fs-tile-rule {
+    width: 100%;
+    height: 2px;
+    margin-bottom: 24px;
+    flex-shrink: 0;
+  }
+
+  #fs-rule1 {
+    background-color: #E8B84B;
+  }
+
+  #fs-rule2 {
+    background-color: #513B0A;
+  }
+
+  #fs-rule3 {
+    background-color: #F5ECD7;
+  }
+
+  /* Stat figures */
+  .fs-stat {
+    font-family: "Playfair Display", serif;
+    font-weight: 500;
+    font-size: 11.5cqw;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    flex-shrink: 0;
+  }
+
+  #fs-stat1 {
+    color: #E8B84B;
+  }
+
+  #fs-stat2 {
+    color: #513B0A;
+  }
+
+  #fs-stat3 {
+    color: #F5ECD7;
+  }
+
+  /* Caption labels */
+  .fs-caption {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 1.25cqw;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 16px;
+    flex-shrink: 0;
+  }
+
+  #fs-caption1 {
+    color: #F5ECD7;
+  }
+
+  #fs-caption2 {
+    color: #513B0A;
+  }
+
+  #fs-caption3 {
+    color: #F5ECD7;
+  }
+
+  /* Tile 3 label above stat */
+  #fs-label3 {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 1.25cqw;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #F5ECD7;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+</style>
+
+<div id="root" data-composition-id="03-feature-showcase" data-width="1080" data-height="1920">
+
+<!-- Background clip -->
+<div class="clip" id="fs-bg" data-start="0" data-duration="9" data-track-index="0"></div>
+
+<!-- Content clip -->
+<div class="clip" id="fs-content" data-start="0" data-duration="9" data-track-index="1" style="background:transparent;">
+
+  <!-- Topbar label -->
+  <div id="fs-topbar">What's Inside</div>
+
+  <!-- Hairline SVG -->
+  <svg id="fs-hairline-svg" viewBox="0 0 1080 4" preserveAspectRatio="none">
+    <line id="fs-hairline" x1="54" y1="2" x2="1026" y2="2" />
+  </svg>
+
+  <!-- Tiles -->
+  <div id="fs-tiles">
+
+    <!-- Tile 1: green, "13 DOCUMENTS" -->
+    <div id="fs-tile1" style="width:100%;height:350px;border-radius:6px;display:flex;flex-direction:column;justify-content:center;padding:36px 48px;box-sizing:border-box;opacity:0;background-color:#674B0D;margin-bottom:30px;">
+      <div id="fs-rule1" style="width:100%;height:2px;background-color:#E8B84B;margin-bottom:24px;flex-shrink:0;"></div>
+      <div id="fs-stat1" style="font-family:'Playfair Display',serif;font-weight:500;font-size:11.5cqw;line-height:0.92;letter-spacing:-0.03em;color:#E8B84B;flex-shrink:0;">13</div>
+      <div id="fs-caption1" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:1.25cqw;letter-spacing:0.14em;text-transform:uppercase;color:#F5ECD7;margin-top:16px;flex-shrink:0;">Documents</div>
+    </div>
+
+    <!-- Tile 2: pink, "160+ PAGES" -->
+    <div id="fs-tile2" style="width:100%;height:350px;border-radius:6px;display:flex;flex-direction:column;justify-content:center;padding:36px 48px;box-sizing:border-box;opacity:0;background-color:#E8B84B;margin-bottom:30px;">
+      <div id="fs-rule2" style="width:100%;height:2px;background-color:#513B0A;margin-bottom:24px;flex-shrink:0;"></div>
+      <div id="fs-stat2" style="font-family:'Playfair Display',serif;font-weight:500;font-size:11.5cqw;line-height:0.92;letter-spacing:-0.03em;color:#513B0A;flex-shrink:0;">160+</div>
+      <div id="fs-caption2" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:1.25cqw;letter-spacing:0.14em;text-transform:uppercase;color:#513B0A;margin-top:16px;flex-shrink:0;">Pages</div>
+    </div>
+
+    <!-- Tile 3: pink-deep, "USDA ZONES 5–9" -->
+    <div id="fs-tile3" style="width:100%;height:350px;border-radius:6px;display:flex;flex-direction:column;justify-content:center;padding:36px 48px;box-sizing:border-box;opacity:0;background-color:#D4732A;">
+      <div id="fs-rule3" style="width:100%;height:2px;background-color:#F5ECD7;margin-bottom:24px;flex-shrink:0;"></div>
+      <div id="fs-label3" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:1.25cqw;letter-spacing:0.14em;text-transform:uppercase;color:#F5ECD7;margin-bottom:8px;flex-shrink:0;">USDA Zones</div>
+      <div id="fs-stat3" style="font-family:'Playfair Display',serif;font-weight:500;font-size:11.5cqw;line-height:0.92;letter-spacing:-0.03em;color:#F5ECD7;flex-shrink:0;">5–9</div>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+(function () {
+  if (!window.__timelines) window.__timelines = {};
+
+  const tl = gsap.timeline({ paused: true });
+  window.__timelines["03-feature-showcase"] = tl;
+
+  // --- Hairline path draw setup ---
+  const hairline = document.getElementById('fs-hairline');
+  const hairlineLen = hairline.getTotalLength();
+  hairline.style.strokeDasharray = hairlineLen;
+  hairline.style.strokeDashoffset = hairlineLen;
+
+  // Scene 1 (0.0–1.8s): topbar appears, hairline draws
+  tl.fromTo('#fs-topbar',
+    { opacity: 0, y: -10 },
+    { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+    0.0
+  );
+
+  tl.to(hairline, {
+    strokeDashoffset: 0,
+    duration: 0.8,
+    ease: "power2.out"
+  }, 0.2);
+
+  // Scene 2 (1.8–4.2s): Tile 1 springs in
+  tl.fromTo('#fs-tile1',
+    { scale: 0, opacity: 0, y: 40 },
+    { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+    1.8
+  );
+
+  // Scene 3 (4.2–6.6s): Tile 2 springs in
+  tl.fromTo('#fs-tile2',
+    { scale: 0, opacity: 0, y: 40 },
+    { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+    4.2
+  );
+
+  // Scene 4 (6.6–8.5s): Tile 3 springs in
+  tl.fromTo('#fs-tile3',
+    { scale: 0, opacity: 0, y: 40 },
+    { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+    6.6
+  );
+
+  // Scene 5 (8.5–9.0s): subtle jitter on all three tiles
+  const tileSelectors = ['#fs-tile1', '#fs-tile2', '#fs-tile3'];
+  const IDLE_START = 8.5;
+  const IDLE_DUR = 0.5;
+
+  tileSelectors.forEach(function (sel, i) {
+    const phase = { p: 0 };
+    tl.to(phase, {
+      p: Math.PI * 2 * 0.2,
+      duration: IDLE_DUR,
+      ease: "none",
+      onUpdate: function () {
+        const el = document.querySelector(sel);
+        if (el) el.style.transform = 'translateY(' + (Math.sin(phase.p + i * Math.PI / 2) * 1.5) + 'px)';
+      }
+    }, IDLE_START + i * 0.15);
+  });
+
+})();
+</script>
+
+</div>
+</template>

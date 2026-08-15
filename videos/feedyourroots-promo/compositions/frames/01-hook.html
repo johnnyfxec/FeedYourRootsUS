@@ -1,0 +1,327 @@
+<template>
+<style>
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Bold.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("assets/fonts/LiberationMono-Regular.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  #root {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  #root::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Background clip */
+  .clip.bg {
+    position: absolute;
+    inset: 0;
+    background-color: #0A0A0A;
+    z-index: 0;
+  }
+
+  /* Topbar label */
+  #hook-topbar {
+    position: absolute;
+    top: 5cqw;
+    left: 5cqw;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1.35cqw;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5ECD7;
+    z-index: 10;
+    opacity: 0;
+    white-space: nowrap;
+  }
+
+  /* SVG hairlines */
+  #hook-hairline-upper-svg {
+    position: absolute;
+    top: 768px;
+    left: 0;
+    width: 1080px;
+    height: 4px;
+    z-index: 5;
+    overflow: visible;
+  }
+
+  #hook-hairline-lower-svg {
+    position: absolute;
+    top: 850px;
+    left: 0;
+    width: 1080px;
+    height: 4px;
+    z-index: 5;
+    overflow: visible;
+  }
+
+  /* Hero text container — centered above upper hairline */
+  #hook-hero-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1080px;
+    /* sits above hairline at 768px — center the block around ~640px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* position it so text sits in the 400–760px vertical band */
+    top: 400px;
+    height: 340px;
+    z-index: 10;
+  }
+
+  /* "HALF AN ACRE." words container */
+  #hook-line-a {
+    font-family: "Playfair Display", serif;
+    font-size: 11.5cqw;
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: #F5ECD7;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.25em;
+    opacity: 1;
+  }
+
+  .hook-word {
+    display: inline-block;
+    opacity: 0;
+  }
+
+  #hook-period-a {
+    display: inline-block;
+    font-family: "Playfair Display", serif;
+    font-size: 11.5cqw;
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: #F5ECD7;
+    opacity: 0;
+  }
+
+  /* "A WHOLE LIFE." line — same position, hidden initially */
+  #hook-line-b {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1080px;
+    height: 340px;
+    font-family: "Playfair Display", serif;
+    font-size: 11.5cqw;
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: #F5ECD7;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 11;
+  }
+</style>
+
+<div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920">
+
+<!-- Background -->
+<div class="clip bg"
+     data-start="0"
+     data-duration="8"
+     data-track-index="0">
+</div>
+
+<!-- Topbar label -->
+<div class="clip"
+     id="hook-topbar"
+     data-start="0"
+     data-duration="8"
+     data-track-index="1">
+  FEED YOUR ROOTS
+</div>
+
+<!-- Upper hairline SVG -->
+<svg class="clip"
+     id="hook-hairline-upper-svg"
+     data-start="0"
+     data-duration="8"
+     data-track-index="2"
+     viewBox="0 0 1080 4"
+     preserveAspectRatio="none"
+     xmlns="http://www.w3.org/2000/svg">
+  <line id="hook-hairline-upper"
+        x1="0" y1="2" x2="1080" y2="2"
+        stroke="#F5ECD7"
+        stroke-width="2"
+        fill="none" />
+</svg>
+
+<!-- Lower hairline SVG -->
+<svg class="clip"
+     id="hook-hairline-lower-svg"
+     data-start="0"
+     data-duration="8"
+     data-track-index="3"
+     viewBox="0 0 1080 4"
+     preserveAspectRatio="none"
+     xmlns="http://www.w3.org/2000/svg">
+  <line id="hook-hairline-lower"
+        x1="0" y1="2" x2="1080" y2="2"
+        stroke="#D4732A"
+        stroke-width="2"
+        fill="none" />
+</svg>
+
+<!-- Hero block: HALF AN ACRE. -->
+<div id="hook-hero-block"
+     class="clip"
+     data-start="0"
+     data-duration="8"
+     data-track-index="4">
+
+  <div id="hook-line-a">
+    <span class="hook-word" id="hook-word-half">HALF</span>
+    <span class="hook-word" id="hook-word-an">AN</span>
+    <span class="hook-word" id="hook-word-acre">ACRE</span><span id="hook-period-a">.</span>
+  </div>
+
+  <!-- A WHOLE LIFE. — overlaid in same container -->
+  <div id="hook-line-b">A WHOLE LIFE.</div>
+
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+(function () {
+  // SVG stroke-dasharray setup for hairlines
+  const upperLine = document.getElementById('hook-hairline-upper');
+  const lowerLine = document.getElementById('hook-hairline-lower');
+
+  const upperLen = 1080;
+  const lowerLen = 1080;
+
+  upperLine.style.strokeDasharray = upperLen;
+  upperLine.style.strokeDashoffset = upperLen;
+
+  lowerLine.style.strokeDasharray = lowerLen;
+  lowerLine.style.strokeDashoffset = lowerLen;
+
+  const tl = gsap.timeline({ paused: true });
+
+  // ─── Scene 1 (0.0–1.5s) ───────────────────────────────────────────────
+  // Upper hairline draws left → right
+  tl.to(upperLine, {
+    strokeDashoffset: 0,
+    duration: 1.5,
+    ease: "power2.out"
+  }, 0);
+
+  // Topbar fades in at 0.8s
+  tl.fromTo('#hook-topbar',
+    { opacity: 0 },
+    { opacity: 1, duration: 0.5, ease: "power3.out" },
+    0.8
+  );
+
+  // ─── Scene 2 (1.5–4.2s) ──────────────────────────────────────────────
+  // Per-word stagger reveal: HALF, AN, ACRE
+  const words = [
+    document.getElementById('hook-word-half'),
+    document.getElementById('hook-word-an'),
+    document.getElementById('hook-word-acre')
+  ];
+
+  words.forEach(function (w, i) {
+    tl.fromTo(w,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+      1.5 + i * 0.15
+    );
+  });
+
+  // Period arrives 0.3s after "ACRE" (0.3s after word[2] lands = 1.5 + 2*0.15 + 0.3 = 2.1)
+  tl.fromTo('#hook-period-a',
+    { opacity: 0, y: 20 },
+    { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+    2.1
+  );
+
+  // ─── Scene 3 (4.2s) — discrete swap ──────────────────────────────────
+  // Exit line-a (instant opacity 0)
+  tl.to('#hook-line-a', { opacity: 0, duration: 0 }, 4.2);
+
+  // Enter line-b (instant opacity 1)
+  tl.fromTo('#hook-line-b',
+    { opacity: 0 },
+    { opacity: 1, duration: 0 },
+    4.2
+  );
+
+  // ─── Scene 4 (6.5–8.0s) — lower hairline + jitter ───────────────────
+  // Lower pink-deep hairline draws in
+  tl.to(lowerLine, {
+    strokeDashoffset: 0,
+    duration: 0.6,
+    ease: "power2.out"
+  }, 6.5);
+
+  // Subtle jitter on hero block via phase-driven onUpdate
+  // Use a proxy object for phase; onUpdate drives inline style transform
+  // NOTE: hero-block is NOT GSAP-animated for x/y/scale elsewhere, so
+  // inline style transform here is safe (no GSAP transform conflict).
+  const heroBlock = document.getElementById('hook-hero-block');
+  const phase = { p: 0 };
+  const IDLE_START = 6.5;
+  const IDLE_DUR = 8.0 - IDLE_START; // 1.5s
+  const CYCLES = IDLE_DUR / 2.5;
+
+  tl.to(phase, {
+    p: Math.PI * 2 * CYCLES,
+    duration: IDLE_DUR,
+    ease: "none",
+    onUpdate: function () {
+      var s = Math.sin(phase.p);
+      heroBlock.style.transform = 'translateY(' + (s * 1.5) + 'px) scale(' + (1 + s * 0.008) + ')';
+    }
+  }, IDLE_START);
+
+  // Register timeline
+  window.__timelines = window.__timelines || {};
+  window.__timelines["01-hook"] = tl;
+})();
+</script>
+
+</div>
+</template>

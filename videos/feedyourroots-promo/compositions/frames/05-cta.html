@@ -1,0 +1,288 @@
+<template>
+<style>
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Bold.ttf") format("truetype");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("assets/fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("assets/fonts/LiberationMono-Regular.ttf") format("truetype");
+    font-weight: 500;
+  }
+
+  #root {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    container-type: inline-size;
+    background: transparent;
+  }
+
+  #root::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .clip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #cta-bg {
+    background: #0A0A0A;
+    z-index: 0;
+  }
+
+  #cta-topbar {
+    position: absolute;
+    top: 54px;
+    left: 54px;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 14.58cqw;
+    font-size: clamp(10px, 1.35cqw, 20px);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5ECD7;
+    opacity: 0;
+    z-index: 10;
+  }
+
+  .cta-label {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 1.35cqw;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5ECD7;
+  }
+
+  .cta-upper-hairline {
+    position: absolute;
+    top: 420px;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .cta-upper-hairline svg {
+    width: 100%;
+    display: block;
+  }
+
+  .cta-wordmark-wrap {
+    position: absolute;
+    top: 760px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    z-index: 10;
+  }
+
+  .cta-wordmark-row {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: baseline;
+    font-family: "Playfair Display", serif;
+    font-weight: 500;
+    font-size: 5cqw;
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    color: #F5ECD7;
+    white-space: nowrap;
+  }
+
+  #cta-tld {
+    color: #D4732A;
+    transform-origin: left center;
+  }
+
+  .cta-lower-hairline {
+    position: absolute;
+    top: 870px;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .cta-lower-hairline svg {
+    width: 100%;
+    display: block;
+  }
+
+  #cta-subtitle {
+    position: absolute;
+    top: 920px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: "Playfair Display", serif;
+    font-weight: 400;
+    font-size: 1.56cqw;
+    line-height: 1.38;
+    color: #F5ECD7;
+    opacity: 0;
+    z-index: 10;
+  }
+</style>
+
+<div id="root" data-composition-id="05-cta" data-width="1080" data-height="1920">
+
+<!-- Background -->
+<div class="clip" id="cta-bg" data-start="0" data-duration="7" data-track-index="0"></div>
+
+<!-- Topbar label -->
+<div class="clip" id="cta-topbar-clip" data-start="0" data-duration="7" data-track-index="1" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+  <div id="cta-topbar" class="cta-label">Start Here</div>
+</div>
+
+<!-- Upper hairline -->
+<div class="clip cta-upper-hairline" data-start="0" data-duration="7" data-track-index="2" style="top:420px;left:0;width:100%;height:4px;pointer-events:none;">
+  <svg id="cta-upper-svg" viewBox="0 0 1080 2" preserveAspectRatio="none" height="2" style="width:100%;display:block;">
+    <line id="cta-upper-line" x1="54" y1="1" x2="1026" y2="1" stroke="#F5ECD7" stroke-width="2" fill="none"/>
+  </svg>
+</div>
+
+<!-- Wordmark -->
+<div class="clip" data-start="0" data-duration="7" data-track-index="3" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+  <div class="cta-wordmark-wrap">
+    <div class="cta-wordmark-row">
+      <span id="cta-feed" style="opacity:0">feed</span>
+      <span id="cta-your" style="opacity:0">your</span>
+      <span id="cta-roots" style="opacity:0">roots</span>
+      <span id="cta-tld" style="opacity:0; color:#D4732A; transform-origin:left center">.us</span>
+    </div>
+  </div>
+</div>
+
+<!-- Lower hairline -->
+<div class="clip cta-lower-hairline" data-start="0" data-duration="7" data-track-index="4" style="top:870px;left:0;width:100%;height:4px;pointer-events:none;">
+  <svg id="cta-lower-svg" viewBox="0 0 1080 2" preserveAspectRatio="none" height="2" style="width:100%;display:block;">
+    <line id="cta-lower-line" x1="54" y1="1" x2="1026" y2="1" stroke="#F5ECD7" stroke-width="2" fill="none"/>
+  </svg>
+</div>
+
+<!-- Subtitle -->
+<div class="clip" data-start="0" data-duration="7" data-track-index="5" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+  <div id="cta-subtitle">The Half-Acre Blueprint</div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+(function () {
+  if (!window.__timelines) window.__timelines = {};
+
+  function init() {
+    var tl = gsap.timeline({ paused: true });
+    window.__timelines["05-cta"] = tl;
+
+    // --- Upper hairline setup ---
+    var upperLine = document.getElementById("cta-upper-line");
+    var lowerLine = document.getElementById("cta-lower-line");
+
+    function setupPath(el) {
+      var len = el.getTotalLength ? el.getTotalLength() : 972;
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+    }
+    setupPath(upperLine);
+    setupPath(lowerLine);
+
+    // Scene 1 (0.0–1.2s): Topbar label fade in, upper hairline draw
+    tl.fromTo(
+      "#cta-topbar",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, ease: "power3.out" },
+      0.0
+    );
+
+    tl.to(
+      upperLine,
+      { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" },
+      0.1
+    );
+
+    // Scene 2 (1.2–3.0s): "feed" "your" "roots" cascade
+    tl.fromTo(
+      "#cta-feed",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+      1.2
+    );
+    tl.fromTo(
+      "#cta-your",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+      1.38
+    );
+    tl.fromTo(
+      "#cta-roots",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+      1.56
+    );
+
+    // Scene 3 (3.0–4.5s): ".us" spring-blooms in, lower hairline draws
+    tl.fromTo(
+      "#cta-tld",
+      { opacity: 0, scale: 0 },
+      { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" },
+      3.0
+    );
+
+    tl.to(
+      lowerLine,
+      { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" },
+      3.5
+    );
+
+    // Scene 4 (4.5–6.0s): subtitle appears
+    tl.fromTo(
+      "#cta-subtitle",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: "power3.out" },
+      4.5
+    );
+
+    // Scene 5 (6.0–7.0s): subtle jitter on wordmark row
+    var phaseW = { p: 0 };
+    var IDLE_DUR = 7.0 - 6.0;
+    tl.to(phaseW, {
+      p: Math.PI * 2 * 0.4,
+      duration: IDLE_DUR,
+      ease: "none",
+      onUpdate: function () {
+        var el = document.querySelector(".cta-wordmark-row");
+        if (el) el.style.transform = "translateY(" + (Math.sin(phaseW.p) * 1) + "px)";
+      }
+    }, 6.0);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</div>
+</template>
