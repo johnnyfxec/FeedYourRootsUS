@@ -288,7 +288,8 @@
       #tools-preview { padding: 32px 0; min-height: 100dvh; display: flex; align-items: center; }
       .vision-grid, .bundles-grid { grid-template-columns: 1fr; }
       .bot-break { display: block; }
-      .bundles-header { margin-bottom: 24px; }
+      .bundles-header { margin-bottom: 16px; }
+      #bundles { padding: 24px 16px !important; }
     }
 
     /* ══════════════════════════
@@ -608,9 +609,9 @@
   #fyr-sel{max-width:760px;margin:0 auto}
   .fsel-tabs{display:flex;justify-content:center;margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .fsel-tabs::-webkit-scrollbar{display:none}
-  .fsel-tabs{padding-top:16px}
-  .fsel-tabs-track{display:flex;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px;flex-shrink:0}
-  .fsel-tab{position:relative;border:none;border-right:1px solid rgba(245,236,215,0.12);padding:12px 18px;cursor:pointer;background:transparent;transition:background .2s;min-width:84px;text-align:center;flex-shrink:0}
+  .fsel-tabs{padding-top:16px;margin-bottom:20px}
+  .fsel-tabs-track{display:flex;width:max-content;max-width:100%;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px;flex-shrink:0}
+  .fsel-tab{position:relative;border:none;border-right:1px solid rgba(245,236,215,0.12);padding:0.75rem 1rem;cursor:pointer;background:transparent;transition:background .2s;width:5.25rem;flex-shrink:0}
   .fsel-tab:first-child{border-radius:14px 0 0 14px}
   .fsel-tab:last-child{border-radius:0 14px 14px 0}
   .fsel-tab:last-child{border-right:none}
@@ -692,7 +693,7 @@
       <div class="fsel-tabs" id="fyr-tabs"></div>
       <div class="fsel-panel" id="fyr-panel"></div>
     </div>
-    <p style="text-align:center;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(245,236,215,0.28);margin-top:24px;letter-spacing:0.4px;">All digital. Instant delivery. Print what you need, keep it forever.</p>
+    <p style="text-align:center;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(245,236,215,0.55);margin-top:16px;letter-spacing:0.4px;">All digital. Instant delivery. Print what you need, keep it forever.</p>
   </div>
   <script>
   var FYR_CO={core:'https://pay.hotmart.com/S107078295H',starter:'https://pay.hotmart.com/K107078722B',family:'https://pay.hotmart.com/C107078806J',homestead:'https://pay.hotmart.com/V107078877Y',complete:'https://pay.hotmart.com/G107154913B'};
@@ -709,7 +710,7 @@
   var ACT='homestead',FADING=false;
   function gTT(id){var idx=TO.indexOf(id);if(idx<0)return '';var tiers=TO.slice(0,idx+1);return '<div class="fsel-tt" id="tt-'+id+'">'+tiers.map(function(t){return '<div class="fsel-tt-tier"><div class="fsel-tt-name">'+t.toUpperCase()+'</div>'+TI[t].map(function(i){return '<div class="fsel-tt-item"><span class="fsel-tt-ck">&#10003;</span><span>'+i+'</span></div>';}).join('')+'</div>';}).join('')+'</div>';}
   function renderFyrTabs(){document.getElementById('fyr-tabs').innerHTML='<div class="fsel-tabs-track">'+BUN.map(function(b){return '<button class="fsel-tab'+(ACT===b.id?' active':'')+'" onclick="fyrSwitch(\''+b.id+'\')">'+(b.popular?'<span class="fsel-tb fsel-tb-pop">MOST POPULAR</span>':'')+(b.soon?'<span class="fsel-tb fsel-tb-sn">COMING SOON</span>':'')+'<span class="fsel-tn">'+b.emoji+' '+b.name+'</span><span class="fsel-tp">$'+b.price+'</span></button>';}).join('')+'</div>';}
-  function renderFyrPanel(){var b=BUN.find(function(x){return x.id===ACT;});var corner=b.popular?'<div class="fsel-corner" style="background:#E8B84B;color:#5C3A1E;">MOST POPULAR</div>':b.soon?'<div class="fsel-corner" style="background:rgba(74,124,89,0.25);color:rgba(245,236,215,0.85);">COMING SOON</div>':'';var items=b.items.map(function(it){if(it.inh){return '<li><span class="fsel-ck-m">&middot;</span><span class="fsel-inh"><span class="fsel-it-i">'+it.t+'</span><em class="fsel-inh-ico" onclick="fyrTT(\''+it.inh+'\',event)">i</em>'+gTT(it.inh)+'</span></li>';}return '<li><span class="fsel-ck-g">&#10003;</span><span class="fsel-it-n">'+it.t+'</span></li>';}).join('');var url=FYR_CO[b.key];var btn=b.ok&&url?'<a href="'+url+'" class="fsel-btn" target="_blank">'+b.cta+'</a>':'<span class="fsel-btn-soon">'+b.cta+'</span>';var toggle='<button type="button" class="fsel-toggle" id="fsel-toggle-btn" onclick="fyrToggleList()"><span id="fsel-toggle-txt">See what\'s included</span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#3A2010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';document.getElementById('fyr-panel').innerHTML=corner+'<div class="fsel-inner"><div class="fsel-left"><div class="fsel-lbl">'+b.name+'</div><div class="fsel-tag">'+b.tag+'</div><div class="fsel-dsc">'+b.dsc+'</div><ul class="fsel-list" id="fsel-list">'+items+'</ul></div><div class="fsel-right"><div class="fsel-price"><sup>$</sup>'+b.price+'</div><div class="fsel-once">one-time &middot; instant access</div>'+btn+(b.ok?'<p class="fsel-note">All digital. Print what you need.</p>':'')+toggle+'</div></div>';document.querySelectorAll('.fsel-inh').forEach(function(w){var ico=w.querySelector('.fsel-inh-ico');var tt=w.querySelector('.fsel-tt');if(!ico||!tt)return;w.addEventListener('mouseenter',function(){tt.classList.add('show');});w.addEventListener('mouseleave',function(){tt.classList.remove('show');});});}
+  function renderFyrPanel(){var b=BUN.find(function(x){return x.id===ACT;});var corner=b.popular?'<div class="fsel-corner" style="background:#E8B84B;color:#5C3A1E;">MOST POPULAR</div>':b.soon?'<div class="fsel-corner" style="background:rgba(74,124,89,0.25);color:rgba(245,236,215,0.85);">COMING SOON</div>':'';var items=b.items.map(function(it){if(it.inh){return '<li><span class="fsel-ck-m">&middot;</span><span class="fsel-inh"><span class="fsel-it-i">'+it.t+'</span><em class="fsel-inh-ico" onclick="fyrTT(\''+it.inh+'\',event)">i</em>'+gTT(it.inh)+'</span></li>';}return '<li><span class="fsel-ck-g">&#10003;</span><span class="fsel-it-n">'+it.t+'</span></li>';}).join('');var url=FYR_CO[b.key];var btn=b.ok&&url?'<a href="'+url+'" class="fsel-btn" target="_blank">'+b.cta+'</a>':'<span class="fsel-btn-soon">'+b.cta+'</span>';var toggle='<button type="button" class="fsel-toggle" id="fsel-toggle-btn" onclick="fyrToggleList()"><span id="fsel-toggle-txt">See what\'s included</span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#3A2010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';document.getElementById('fyr-panel').innerHTML=corner+'<div class="fsel-inner"><div class="fsel-left"><div class="fsel-lbl">'+b.name+'</div><div class="fsel-tag">'+b.tag+'</div><div class="fsel-dsc">'+b.dsc+'</div><ul class="fsel-list" id="fsel-list">'+items+'</ul></div><div class="fsel-right"><div class="fsel-price"><sup>$</sup>'+b.price+'</div><div class="fsel-once">one-time &middot; instant access</div>'+btn+toggle+'</div></div>';document.querySelectorAll('.fsel-inh').forEach(function(w){var ico=w.querySelector('.fsel-inh-ico');var tt=w.querySelector('.fsel-tt');if(!ico||!tt)return;w.addEventListener('mouseenter',function(){tt.classList.add('show');});w.addEventListener('mouseleave',function(){tt.classList.remove('show');});});}
   function fyrToggleList(){var l=document.getElementById('fsel-list');var btn=document.getElementById('fsel-toggle-btn');var txt=document.getElementById('fsel-toggle-txt');if(!l||!btn)return;var open=l.classList.toggle('open');btn.classList.toggle('open',open);txt.textContent=open?'Hide details':'See what\'s included';}
   function fyrTT(id,e){e.stopPropagation();var tt=document.getElementById('tt-'+id);if(!tt)return;var s=tt.classList.contains('show');document.querySelectorAll('.fsel-tt.show').forEach(function(t){t.classList.remove('show');});if(!s)tt.classList.add('show');}
   function fyrSwitch(id){if(id===ACT||FADING)return;FADING=true;var p=document.getElementById('fyr-panel');p.classList.add('fading');setTimeout(function(){ACT=id;renderFyrTabs();renderFyrPanel();p.classList.remove('fading');FADING=false;},180);}
