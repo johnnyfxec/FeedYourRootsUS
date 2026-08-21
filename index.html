@@ -271,6 +271,7 @@
       .chapters-grid { grid-template-columns: 1fr 1fr; }
       .bundles-grid { grid-template-columns: 1fr 1fr; }
       .bundle-card.popular { transform: none; }
+      .float-el { display: none; }
     }
     @media (max-width: 600px) {
       #hero { padding: 50px 20px 30px; }
@@ -278,7 +279,6 @@
       #problem,#vision,#bundles { padding: 44px 20px; }
       .vision-grid, .chapters-grid, .bundles-grid { grid-template-columns: 1fr; }
       .chapter-card { flex-direction: column; }
-      .float-el { display: none; }
       .bot-break { display: block; }
     }
   </style>
@@ -609,6 +609,10 @@
     return pick;
   }
   document.querySelectorAll('.bot-break img').forEach(img => {
+    img.src = pickRandom() + '.png';
+  });
+  // ALEATORIZAR FLOAT DECORATIONS DESKTOP (excluye cover/backcover, que no son .float-el)
+  document.querySelectorAll('.float-el').forEach(img => {
     img.src = pickRandom() + '.png';
   });
 
