@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="description" content="Feed Your Roots Terms of Service — the agreement covering purchases, licensing, and use of our digital resources.">
+  <meta property="og:title" content="Terms of Service — Feed Your Roots">
+  <meta property="og:url" content="https://feedyourroots.us/terms.html">
+  <meta property="og:type" content="website">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service — Feed Your Roots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&family=Satisfy&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Lora', Georgia, serif; background: #F5ECD7; color: #5C3A1E; overflow-x: hidden; padding-top: 70px; }
+    a { color: inherit; text-decoration: none; }
+    section { position: relative; }
+
+    /* ── NAV (shared) ── */
+    #site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: rgba(245,236,215,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(92,58,30,0.08); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand img { height: 34px; width: auto; display: block; }
+    .nav-brand-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: #5C3A1E; letter-spacing: -0.2px; }
+    .nav-links { display: flex; align-items: center; gap: 36px; }
+    .nav-links a { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: #5C3A1E; letter-spacing: 0.3px; transition: color 0.2s; }
+    .nav-links a:hover { color: #D4732A; }
+    .nav-cta { display: inline-block; background: #D4732A; color: #fff !important; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 15px; padding: 11px 24px; border-radius: 50px; letter-spacing: 0.3px; transition: all 0.3s ease; }
+    .nav-cta:hover { background: #B85E1E; }
+    .nav-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-burger span { width: 24px; height: 2px; background: #5C3A1E; display: block; transition: all 0.3s ease; }
+    .nav-overlay { display: none; position: fixed; inset: 0; background: #180A02; z-index: 999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.35s ease; }
+    .nav-overlay.active { display: flex; opacity: 1; }
+    .nav-overlay-close { position: absolute; top: 24px; right: 28px; color: #F5ECD7; font-size: 28px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; line-height: 1; background: none; border: none; }
+    .nav-overlay-close:hover { opacity: 1; }
+    .nav-overlay-links { display: flex; flex-direction: column; align-items: center; gap: 34px; }
+    .nav-overlay-links a { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(28px, 6vw, 42px); color: #F5ECD7; transition: color 0.25s; }
+    .nav-overlay-links a:hover { color: #E8B84B; }
+    .nav-overlay-links .nav-cta { margin-top: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 16px 36px; }
+    .nav-overlay-soon { font-family: 'DM Sans', sans-serif; font-size: 13px; color: rgba(245,236,215,0.4); letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 6px; }
+
+    @media (max-width: 960px) {
+      #site-nav { padding: 16px 20px; }
+      body { padding-top: 66px; }
+      .nav-links { display: none; }
+      .nav-burger { display: flex; }
+      .nav-brand-text { font-size: 16px; }
+    }
+
+    /* ── FLOAT (shared) ── */
+    .float-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: visible; }
+    .float-el { position: absolute; will-change: transform; user-select: none; }
+    @media (max-width: 960px) { .float-el { display: none; } }
+
+    /* ── PAGE BANNER ── */
+    .page-banner { width: 100%; display: flex; justify-content: center; padding: 32px 24px 0; }
+    .page-banner-inner { width: 100%; max-width: 1020px; aspect-ratio: 21/9; overflow: hidden; border-radius: 18px; box-shadow: 0 20px 60px rgba(60,30,10,0.22); }
+    .page-banner-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (max-width: 720px) {
+      .page-banner { padding: 20px 16px 0; }
+      .page-banner-inner { border-radius: 12px; }
+    }
+
+    /* ── DOC LAYOUT ── */
+    #doc { padding: 36px 24px 100px; overflow: hidden; }
+    @media (max-width: 720px) {
+      #doc { padding: 20px 24px 72px; }
+    }
+    .doc-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 3; }
+    .doc-eyebrow { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.5px; color: #D4732A; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; }
+    .doc-eyebrow::after { content: ''; width: 44px; height: 1px; background: #D4732A; opacity: 0.4; display: block; }
+    .doc-h1 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(30px, 4.2vw, 46px); color: #4A7C59; line-height: 1.18; margin-bottom: 10px; }
+    .doc-date { font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(92,58,30,0.5); margin-bottom: 36px; }
+    .doc-p { font-family: 'Lora', serif; font-size: 16px; line-height: 1.9; color: rgba(92,58,30,0.82); margin-bottom: 18px; }
+    .doc-h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: #4A7C59; margin: 40px 0 14px; }
+    .doc-p a { color: #D4732A; text-decoration: underline; text-decoration-color: rgba(212,115,42,0.35); transition: text-decoration-color 0.2s; }
+    .doc-p a:hover { text-decoration-color: #D4732A; }
+
+    /* ── FOOTER (shared) ── */
+    footer { background: #160A02; padding: 60px 24px 44px; }
+    .footer-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+    .footer-logo { font-family: 'Satisfy', cursive; font-size: 28px; color: #D4732A; margin-bottom: 8px; }
+    .footer-tagline { font-family: 'Lora', serif; font-style: italic; font-size: 20px; color: rgba(245,236,215,0.48); margin-bottom: 34px; }
+    .footer-links { display: flex; justify-content: center; gap: 34px; flex-wrap: wrap; margin-bottom: 28px; }
+    .footer-links a { font-family: 'DM Sans', sans-serif; font-size: 16px; color: rgba(245,236,215,0.44); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-links a:hover { color: #F5ECD7; }
+    .footer-divider { height: 1px; background: rgba(245,236,215,0.07); margin-bottom: 22px; }
+    .footer-nav-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 14px; }
+    .footer-nav-row a { font-family: 'DM Sans', sans-serif; font-size: 14px; color: rgba(245,236,215,0.5); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-nav-row a:hover { color: #F5ECD7; }
+    .footer-legal-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 22px; }
+    .footer-legal-row a { font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: rgba(245,236,215,0.32); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-legal-row a:hover { color: rgba(245,236,215,0.7); }
+    .footer-domain { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #4A7C59; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .footer-copy { font-family: 'DM Sans', sans-serif; font-size: 13px; color: rgba(245,236,215,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════ NAV ════════════ -->
+<nav id="site-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="FYR-logo-forest-500px.png" alt="Feed Your Roots logo">
+    <span class="nav-brand-text">Feed Your Roots</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#tools-preview">Bundles</a>
+    <a href="/journal" onclick="return false;">The Journal</a>
+    <a href="about.html">About</a>
+    <a href="index.html#bundles" class="nav-cta">Get the Blueprint</a>
+  </div>
+  <button class="nav-burger" onclick="openNavOverlay()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-overlay" id="nav-overlay">
+  <button class="nav-overlay-close" onclick="closeNavOverlay()">✕</button>
+  <div class="nav-overlay-links">
+    <a href="index.html#tools-preview" onclick="closeNavOverlay()">Bundles</a>
+    <a href="/journal" onclick="closeNavOverlay(); return false;">The Journal<span class="nav-overlay-soon">Coming Soon</span></a>
+    <a href="about.html" onclick="closeNavOverlay()">About</a>
+    <a href="index.html#bundles" class="nav-cta" onclick="closeNavOverlay()">Get the Blueprint</a>
+  </div>
+</div>
+
+<!-- ════════════ BANNER ════════════ -->
+<div class="page-banner">
+  <div class="page-banner-inner">
+    <img src="legal-banner.png" alt="An illustration of a closed antique book tied with string">
+  </div>
+</div>
+
+<!-- ════════════ DOC ════════════ -->
+<section id="doc">
+  <div class="float-layer">
+    <img class="float-el" src="E08.png" style="width:160px;top:8%;left:-14px;opacity:0.55;" data-speed="0.22">
+    <img class="float-el" src="E21.png" style="width:150px;bottom:10%;right:-10px;opacity:0.55;" data-speed="0.3">
+  </div>
+  <div class="doc-inner">
+    <div class="doc-eyebrow">Legal</div>
+    <h1 class="doc-h1">Terms of Service</h1>
+    <div class="doc-date">Effective Date: August 21, 2026</div>
+
+    <h2 class="doc-h2">1. Agreement to Terms</h2>
+    <p class="doc-p">By purchasing or accessing any resource from Feed Your Roots ("we," "us," "our"), operated under the laws of the State of Delaware, you agree to these Terms of Service. If you don't agree, please don't complete a purchase.</p>
+
+    <h2 class="doc-h2">2. What We Sell</h2>
+    <p class="doc-p">Feed Your Roots sells digital educational resources — illustrated guides, planning calendars, trackers, and related materials — about small-space food production for suburban and residential properties. All products are delivered digitally (PDF and, where noted, spreadsheet format) through our payment processor, Hotmart.</p>
+
+    <h2 class="doc-h2">3. Educational Purpose Only</h2>
+    <p class="doc-p">Our resources are educational and informational. They are not a substitute for professional agricultural, veterinary, structural, electrical, or legal advice. Results depend on your specific climate, soil, local regulations, and effort — we make no guarantee of any particular yield, outcome, or income.</p>
+
+    <h2 class="doc-h2">4. License to Use</h2>
+    <p class="doc-p">When you purchase a resource, we grant you a personal, non-transferable, non-exclusive license to download, print, and use it for your own household. You may not resell, redistribute, publicly share, or republish our resources, in whole or in part, without written permission. Files are watermarked with the purchaser's name and email as part of this license.</p>
+
+    <h2 class="doc-h2">5. Payment &amp; Delivery</h2>
+    <p class="doc-p">All payments are processed by Hotmart. Prices are listed in USD. Access is delivered instantly upon successful payment via the email associated with your purchase.</p>
+
+    <h2 class="doc-h2">6. Refunds</h2>
+    <p class="doc-p">Refund requests are handled under Hotmart's purchase terms, shown at checkout. See our <a href="refunds.html">Refund Policy</a> for details on how we recommend approaching a purchase, given that these are instantly-delivered digital files.</p>
+
+    <h2 class="doc-h2">7. Local Regulations Are Your Responsibility</h2>
+    <p class="doc-p">Backyard food production — including keeping chickens or bees, water collection, or structures like greenhouses — may be regulated by your city, county, HOA, or state. It is your responsibility to check and comply with local rules before acting on anything in our resources.</p>
+
+    <h2 class="doc-h2">8. Intellectual Property</h2>
+    <p class="doc-p">All text, illustrations, layouts, and branding in our resources and on feedyourroots.us are owned by Feed Your Roots and protected by copyright. Purchasing a resource does not transfer ownership of that content to you — only the license described in Section 4.</p>
+
+    <h2 class="doc-h2">9. Limitation of Liability</h2>
+    <p class="doc-p">To the fullest extent permitted by law, Feed Your Roots is not liable for any indirect, incidental, or consequential damages arising from the use of our resources, including but not limited to crop loss, animal loss, property damage, or personal injury resulting from activities undertaken based on our content.</p>
+
+    <h2 class="doc-h2">10. Changes to These Terms</h2>
+    <p class="doc-p">We may update these Terms from time to time. Continued use of our resources after changes are posted constitutes acceptance of the updated Terms.</p>
+
+    <h2 class="doc-h2">11. Governing Law</h2>
+    <p class="doc-p">These Terms are governed by the laws of the State of Delaware, without regard to conflict-of-law principles.</p>
+
+    <h2 class="doc-h2">12. Contact</h2>
+    <p class="doc-p">Questions about these Terms: hello@feedyourroots.us</p>
+  </div>
+</section>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Feed Your Roots</div>
+    <div class="footer-tagline">Half an acre. A whole life.</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/feedyourrootsus" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@feedyourrootsus" target="_blank">TikTok</a>
+      <a href="https://www.pinterest.com/feedyourrootsus" target="_blank">Pinterest</a>
+      <a href="https://www.youtube.com/@feedyourrootsus" target="_blank">YouTube</a>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-nav-row">
+      <a href="about.html">About</a>
+      <a href="/journal" onclick="return false;">The Journal</a>
+      <a href="index.html#bundles">Bundles</a>
+    </div>
+    <div class="footer-legal-row">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="refunds.html">Refund Policy</a>
+    </div>
+    <div class="footer-domain">feedyourroots.us</div>
+    <div class="footer-copy">© 2026 Feed Your Roots US. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function openNavOverlay() {
+    document.getElementById('nav-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNavOverlay() {
+    document.getElementById('nav-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeNavOverlay(); });
+
+  const floatEls = document.querySelectorAll('.float-el[data-speed]');
+  floatEls.forEach(el => { el._base = el.style.transform || ''; });
+  function parallax() {
+    const scrollY = window.pageYOffset;
+    floatEls.forEach(el => {
+      const section = el.closest('section');
+      if (!section) return;
+      const sTop = section.getBoundingClientRect().top + scrollY;
+      const offset = (scrollY - sTop) * parseFloat(el.dataset.speed) * -1;
+      el.style.transform = el._base + ` translateY(${offset}px)`;
+    });
+  }
+  window.addEventListener('scroll', parallax, { passive: true });
+  parallax();
+</script>
+
+</body>
+</html>
