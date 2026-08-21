@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="description" content="Why Feed Your Roots exists: practical food security for suburban families, one half acre at a time.">
+  <meta property="og:title" content="About — Feed Your Roots">
+  <meta property="og:description" content="Food security starts with the yard you already have.">
+  <meta property="og:url" content="https://feedyourroots.us/about.html">
+  <meta property="og:type" content="website">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Feed Your Roots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&family=Satisfy&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Lora', Georgia, serif; background: #F5ECD7; color: #5C3A1E; overflow-x: hidden; padding-top: 70px; }
+    a { color: inherit; text-decoration: none; }
+    section { position: relative; }
+
+    /* ── NAV (shared) ── */
+    #site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: rgba(245,236,215,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(92,58,30,0.08); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand img { height: 34px; width: auto; display: block; }
+    .nav-brand-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: #5C3A1E; letter-spacing: -0.2px; }
+    .nav-links { display: flex; align-items: center; gap: 36px; }
+    .nav-links a { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: #5C3A1E; letter-spacing: 0.3px; transition: color 0.2s; }
+    .nav-links a:hover { color: #D4732A; }
+    .nav-links a.nav-active { color: #D4732A; }
+    .nav-cta { display: inline-block; background: #D4732A; color: #fff !important; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 15px; padding: 11px 24px; border-radius: 50px; letter-spacing: 0.3px; transition: all 0.3s ease; }
+    .nav-cta:hover { background: #B85E1E; }
+    .nav-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-burger span { width: 24px; height: 2px; background: #5C3A1E; display: block; transition: all 0.3s ease; }
+    .nav-overlay { display: none; position: fixed; inset: 0; background: #180A02; z-index: 999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.35s ease; }
+    .nav-overlay.active { display: flex; opacity: 1; }
+    .nav-overlay-close { position: absolute; top: 24px; right: 28px; color: #F5ECD7; font-size: 28px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; line-height: 1; background: none; border: none; }
+    .nav-overlay-close:hover { opacity: 1; }
+    .nav-overlay-links { display: flex; flex-direction: column; align-items: center; gap: 34px; }
+    .nav-overlay-links a { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(28px, 6vw, 42px); color: #F5ECD7; transition: color 0.25s; }
+    .nav-overlay-links a:hover { color: #E8B84B; }
+    .nav-overlay-links .nav-cta { margin-top: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 16px 36px; }
+    .nav-overlay-soon { font-family: 'DM Sans', sans-serif; font-size: 13px; color: rgba(245,236,215,0.4); letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 6px; }
+
+    @media (max-width: 960px) {
+      #site-nav { padding: 16px 20px; }
+      body { padding-top: 66px; }
+      .nav-links { display: none; }
+      .nav-burger { display: flex; }
+      .nav-brand-text { font-size: 16px; }
+    }
+
+    /* ── FLOAT (shared) ── */
+    .float-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: visible; }
+    .float-el { position: absolute; will-change: transform; user-select: none; }
+    @media (max-width: 960px) { .float-el { display: none; } }
+
+    /* ── PAGE BANNER ── */
+    .page-banner { width: 100%; aspect-ratio: 21/9; overflow: hidden; margin-top: -1px; }
+    .page-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ── DOC LAYOUT ── */
+    #doc { padding: 72px 24px 100px; overflow: hidden; }
+    .doc-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 3; }
+    .doc-eyebrow { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.5px; color: #D4732A; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; }
+    .doc-eyebrow::after { content: ''; width: 44px; height: 1px; background: #D4732A; opacity: 0.4; display: block; }
+    .doc-h1 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(30px, 4.2vw, 46px); color: #4A7C59; line-height: 1.18; margin-bottom: 36px; }
+    .doc-p { font-family: 'Lora', serif; font-size: 16px; line-height: 1.9; color: rgba(92,58,30,0.82); margin-bottom: 22px; }
+    .doc-h2 { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.5px; color: #4A7C59; margin: 48px 0 22px; }
+    .doc-principle { display: flex; gap: 16px; margin-bottom: 22px; align-items: baseline; }
+    .doc-principle-mark { color: #D4732A; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+    .doc-principle-body strong { font-family: 'DM Sans', sans-serif; font-weight: 500; color: #3A2010; display: block; margin-bottom: 4px; font-size: 16px; }
+    .doc-principle-body span { font-family: 'Lora', serif; font-size: 15px; color: rgba(92,58,30,0.7); line-height: 1.75; }
+    .doc-closing { margin-top: 48px; padding: 26px 30px; border-left: 3px solid #E8B84B; background: rgba(232,184,75,0.09); border-radius: 0 12px 12px 0; font-family: 'Lora', serif; font-style: italic; font-size: 16px; color: #5C3A1E; line-height: 1.85; }
+    .doc-cta-wrap { text-align: center; margin-top: 56px; }
+    .btn-primary { display: inline-block; background: #D4732A; color: #fff; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; padding: 20px 50px; border-radius: 60px; box-shadow: 0 8px 36px rgba(212,115,42,0.45); transition: all 0.35s cubic-bezier(0.22,1,0.36,1); letter-spacing: 0.3px; }
+    .btn-primary:hover { background: #B85E1E; transform: translateY(-4px) scale(1.02); box-shadow: 0 18px 52px rgba(212,115,42,0.55); }
+
+    /* ── FOOTER (shared) ── */
+    footer { background: #160A02; padding: 60px 24px 44px; }
+    .footer-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+    .footer-logo { font-family: 'Satisfy', cursive; font-size: 28px; color: #D4732A; margin-bottom: 8px; }
+    .footer-tagline { font-family: 'Lora', serif; font-style: italic; font-size: 20px; color: rgba(245,236,215,0.48); margin-bottom: 34px; }
+    .footer-links { display: flex; justify-content: center; gap: 34px; flex-wrap: wrap; margin-bottom: 28px; }
+    .footer-links a { font-family: 'DM Sans', sans-serif; font-size: 16px; color: rgba(245,236,215,0.44); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-links a:hover { color: #F5ECD7; }
+    .footer-divider { height: 1px; background: rgba(245,236,215,0.07); margin-bottom: 22px; }
+    .footer-nav-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 14px; }
+    .footer-nav-row a { font-family: 'DM Sans', sans-serif; font-size: 14px; color: rgba(245,236,215,0.5); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-nav-row a:hover { color: #F5ECD7; }
+    .footer-legal-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 22px; }
+    .footer-legal-row a { font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: rgba(245,236,215,0.32); letter-spacing: 0.3px; transition: color 0.2s; }
+    .footer-legal-row a:hover { color: rgba(245,236,215,0.7); }
+    .footer-domain { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #4A7C59; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .footer-copy { font-family: 'DM Sans', sans-serif; font-size: 13px; color: rgba(245,236,215,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════ NAV ════════════ -->
+<nav id="site-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="FYR-logo-forest-500px.png" alt="Feed Your Roots logo">
+    <span class="nav-brand-text">Feed Your Roots</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#tools-preview">Bundles</a>
+    <a href="/journal" onclick="return false;">The Journal</a>
+    <a href="about.html" class="nav-active">About</a>
+    <a href="index.html#bundles" class="nav-cta">Get the Blueprint</a>
+  </div>
+  <button class="nav-burger" onclick="openNavOverlay()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-overlay" id="nav-overlay">
+  <button class="nav-overlay-close" onclick="closeNavOverlay()">✕</button>
+  <div class="nav-overlay-links">
+    <a href="index.html#tools-preview" onclick="closeNavOverlay()">Bundles</a>
+    <a href="/journal" onclick="closeNavOverlay(); return false;">The Journal<span class="nav-overlay-soon">Coming Soon</span></a>
+    <a href="about.html" onclick="closeNavOverlay()">About</a>
+    <a href="index.html#bundles" class="nav-cta" onclick="closeNavOverlay()">Get the Blueprint</a>
+  </div>
+</div>
+
+<!-- ════════════ BANNER ════════════ -->
+<div class="page-banner">
+  <img src="about-banner.png" alt="An aerial illustration of a suburban street where one backyard has been transformed into a small homestead">
+</div>
+
+<!-- ════════════ DOC ════════════ -->
+<section id="doc">
+  <div class="float-layer">
+    <img class="float-el" src="E05.png" style="width:180px;top:6%;left:-14px;opacity:0.6;" data-speed="0.24">
+    <img class="float-el" src="E13.png" style="width:160px;bottom:8%;right:-10px;opacity:0.6;" data-speed="0.32">
+  </div>
+  <div class="doc-inner">
+    <div class="doc-eyebrow">Our Mission</div>
+    <h1 class="doc-h1">Food Security Starts With the Yard You Already Have</h1>
+
+    <p class="doc-p">Feed Your Roots exists because food security in the United States has quietly become something most families no longer control. The average grocery trip depends on a supply chain most of us can't see, can't verify, and can't influence — and the land sitting right outside the back door is treated as decoration instead of what it actually is: capacity.</p>
+
+    <p class="doc-p">We believe that changes one half acre at a time. Not through survivalism, not through giving up modern life, but through a practical, teachable system that turns an ordinary suburban yard into a real source of food — fruit, vegetables, eggs, honey, a full pantry — season after season, without needing a farm, a rural zip code, or a six-figure homestead budget.</p>
+
+    <div class="doc-h2">What We Believe</div>
+
+    <div class="doc-principle">
+      <span class="doc-principle-mark">—</span>
+      <div class="doc-principle-body">
+        <strong>Land you already own is enough.</strong>
+        <span>A quarter to a half acre, used well, produces more than most people think possible.</span>
+      </div>
+    </div>
+    <div class="doc-principle">
+      <span class="doc-principle-mark">—</span>
+      <div class="doc-principle-body">
+        <strong>Self-sufficiency is a skill, not a personality.</strong>
+        <span>Anyone can learn it — no experience, background, or "homesteader identity" required.</span>
+      </div>
+    </div>
+    <div class="doc-principle">
+      <span class="doc-principle-mark">—</span>
+      <div class="doc-principle-body">
+        <strong>Illustrated and clear beats dense and technical.</strong>
+        <span>Every resource we make is built to be followed the same weekend you open it, not filed away to read "someday."</span>
+      </div>
+    </div>
+
+    <div class="doc-closing">
+      We're building Feed Your Roots as a resource for the growing number of American families who want more say over where their food comes from — one backyard, one season, one plan at a time.
+    </div>
+
+    <div class="doc-cta-wrap">
+      <a href="index.html#bundles" class="btn-primary">Get the Blueprint</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Feed Your Roots</div>
+    <div class="footer-tagline">Half an acre. A whole life.</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/feedyourrootsus" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@feedyourrootsus" target="_blank">TikTok</a>
+      <a href="https://www.pinterest.com/feedyourrootsus" target="_blank">Pinterest</a>
+      <a href="https://www.youtube.com/@feedyourrootsus" target="_blank">YouTube</a>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-nav-row">
+      <a href="about.html">About</a>
+      <a href="/journal" onclick="return false;">The Journal</a>
+      <a href="index.html#bundles">Bundles</a>
+    </div>
+    <div class="footer-legal-row">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="refunds.html">Refund Policy</a>
+    </div>
+    <div class="footer-domain">feedyourroots.us</div>
+    <div class="footer-copy">© 2026 Feed Your Roots US. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function openNavOverlay() {
+    document.getElementById('nav-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNavOverlay() {
+    document.getElementById('nav-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeNavOverlay(); });
+
+  // PARALLAX
+  const floatEls = document.querySelectorAll('.float-el[data-speed]');
+  floatEls.forEach(el => { el._base = el.style.transform || ''; });
+  function parallax() {
+    const scrollY = window.pageYOffset;
+    floatEls.forEach(el => {
+      const section = el.closest('section');
+      if (!section) return;
+      const sTop = section.getBoundingClientRect().top + scrollY;
+      const offset = (scrollY - sTop) * parseFloat(el.dataset.speed) * -1;
+      el.style.transform = el._base + ` translateY(${offset}px)`;
+    });
+  }
+  window.addEventListener('scroll', parallax, { passive: true });
+  parallax();
+</script>
+
+</body>
+</html>
