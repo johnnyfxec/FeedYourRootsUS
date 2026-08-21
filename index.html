@@ -608,8 +608,11 @@
   #fyr-sel{max-width:760px;margin:0 auto}
   .fsel-tabs{display:flex;justify-content:center;margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .fsel-tabs::-webkit-scrollbar{display:none}
-  .fsel-tabs-track{display:flex;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px;overflow:hidden;flex-shrink:0}
+  .fsel-tabs{padding-top:16px}
+  .fsel-tabs-track{display:flex;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px;flex-shrink:0}
   .fsel-tab{position:relative;border:none;border-right:1px solid rgba(245,236,215,0.12);padding:12px 18px;cursor:pointer;background:transparent;transition:background .2s;min-width:84px;text-align:center;flex-shrink:0}
+  .fsel-tab:first-child{border-radius:14px 0 0 14px}
+  .fsel-tab:last-child{border-radius:0 14px 14px 0}
   .fsel-tab:last-child{border-right:none}
   .fsel-tab:hover{background:rgba(245,236,215,0.06)}
   .fsel-tab.active{background:#D4732A}
