@@ -62,7 +62,7 @@
     #hero {
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 100px 24px 40px;
+      padding: 24px 24px 40px;
       overflow: hidden;
       background: radial-gradient(ellipse at 20% 15%, rgba(255,248,235,0.85) 0%, transparent 48%),
                   radial-gradient(ellipse at 80% 85%, rgba(220,195,145,0.4) 0%, transparent 48%);
@@ -278,11 +278,11 @@
       .bundles-grid { grid-template-columns: 1fr 1fr; }
       .bundle-card.popular { transform: none; }
       .float-el { display: none; }
-      #hero { padding-top: 64px; padding-bottom: 64px; }
+      #hero { padding-top: 16px; padding-bottom: 40px; }
       #problem, #solution, #vision, #chapters, #tools-preview, #bundles, #close { padding-top: 64px; padding-bottom: 64px; }
     }
     @media (max-width: 600px) {
-      #hero { padding: 32px 20px; }
+      #hero { padding: 16px 20px 24px; }
       #solution,#chapters,#close { padding: 32px 20px; }
       #problem,#vision,#bundles { padding: 32px 20px; }
       #tools-preview { padding: 32px 0; min-height: 100dvh; display: flex; align-items: center; }
