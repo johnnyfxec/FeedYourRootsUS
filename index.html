@@ -329,12 +329,12 @@
     .tp-stage { position: relative; height: clamp(380px, 52vh, 520px); display: flex; align-items: center; justify-content: center; margin: 20px 0; }
     .tp-card { position: absolute; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px rgba(60,30,10,0.35); transition: all 0.5s cubic-bezier(0.22,1,0.36,1); background: #FDFAF2; display: flex; align-items: center; justify-content: center; }
     .tp-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .tp-card.tp-current { width: min(70vw, 420px); height: clamp(340px, 46vh, 460px); z-index: 3; opacity: 1; transform: scale(1) translateX(0); cursor: pointer; }
-    .tp-card.tp-current.tp-land { width: min(85vw, 620px); height: clamp(280px, 36vh, 360px); }
-    .tp-card.tp-prev { width: min(50vw, 340px); height: clamp(300px, 40vh, 400px); z-index: 2; opacity: 0.32; transform: scale(0.88) translateX(calc(-1 * min(38vw, 240px))); pointer-events: none; }
-    .tp-card.tp-prev.tp-land { width: min(60vw, 460px); height: clamp(240px, 30vh, 300px); transform: scale(0.88) translateX(calc(-1 * min(42vw, 280px))); }
-    .tp-card.tp-next { width: min(50vw, 340px); height: clamp(300px, 40vh, 400px); z-index: 2; opacity: 0.32; transform: scale(0.88) translateX(calc(min(38vw, 240px))); pointer-events: none; }
-    .tp-card.tp-next.tp-land { width: min(60vw, 460px); height: clamp(240px, 30vh, 300px); transform: scale(0.88) translateX(calc(min(42vw, 280px))); }
+    .tp-card.tp-current { height: clamp(340px, 46vh, 460px); width: auto; aspect-ratio: 0.707; z-index: 3; opacity: 1; transform: scale(1) translateX(0); cursor: pointer; }
+    .tp-card.tp-current.tp-land { height: clamp(240px, 32vh, 320px); width: auto; aspect-ratio: 1.414; }
+    .tp-card.tp-prev { height: clamp(300px, 40vh, 400px); width: auto; aspect-ratio: 0.707; z-index: 2; opacity: 0.32; transform: scale(0.88) translateX(calc(-1 * min(38vw, 240px))); pointer-events: none; }
+    .tp-card.tp-prev.tp-land { height: clamp(220px, 29vh, 290px); width: auto; aspect-ratio: 1.414; transform: scale(0.88) translateX(calc(-1 * min(42vw, 280px))); }
+    .tp-card.tp-next { height: clamp(300px, 40vh, 400px); width: auto; aspect-ratio: 0.707; z-index: 2; opacity: 0.32; transform: scale(0.88) translateX(calc(min(38vw, 240px))); pointer-events: none; }
+    .tp-card.tp-next.tp-land { height: clamp(220px, 29vh, 290px); width: auto; aspect-ratio: 1.414; transform: scale(0.88) translateX(calc(min(42vw, 280px))); }
     .tp-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 4; width: 52px; height: 52px; border-radius: 50%; background: rgba(253,250,242,0.85); backdrop-filter: blur(6px); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 24px rgba(60,30,10,0.2); transition: all 0.25s ease; }
     .tp-arrow:hover { background: #FDFAF2; transform: translateY(-50%) scale(1.08); }
     .tp-arrow svg { width: 20px; height: 20px; }
@@ -352,12 +352,12 @@
       #tools-preview { padding: 60px 0; min-height: 100dvh; display: flex; align-items: center; }
       .tp-inner { width: 100%; }
       .tp-stage { height: 40vh; margin: 16px 0; }
-      .tp-card.tp-current { width: 72vw; height: 40vh; }
-      .tp-card.tp-current.tp-land { width: 88vw; height: 30vh; }
-      .tp-card.tp-prev { width: 40vw; height: 32vh; transform: scale(0.85) translateX(-46vw); }
-      .tp-card.tp-prev.tp-land { width: 50vw; height: 24vh; transform: scale(0.85) translateX(-50vw); }
-      .tp-card.tp-next { width: 40vw; height: 32vh; transform: scale(0.85) translateX(46vw); }
-      .tp-card.tp-next.tp-land { width: 50vw; height: 24vh; transform: scale(0.85) translateX(50vw); }
+      .tp-card.tp-current { height: 40vh; width: auto; aspect-ratio: 0.707; }
+      .tp-card.tp-current.tp-land { height: 26vh; width: auto; aspect-ratio: 1.414; }
+      .tp-card.tp-prev { height: 32vh; width: auto; aspect-ratio: 0.707; transform: scale(0.85) translateX(-46vw); }
+      .tp-card.tp-prev.tp-land { height: 21vh; width: auto; aspect-ratio: 1.414; transform: scale(0.85) translateX(-50vw); }
+      .tp-card.tp-next { height: 32vh; width: auto; aspect-ratio: 0.707; transform: scale(0.85) translateX(46vw); }
+      .tp-card.tp-next.tp-land { height: 21vh; width: auto; aspect-ratio: 1.414; transform: scale(0.85) translateX(50vw); }
       .tp-arrow { width: 42px; height: 42px; }
       .tp-arrow-prev { left: 4vw; }
       .tp-arrow-next { right: 4vw; }
