@@ -1,0 +1,26 @@
+<!-- ════════════ NAV ════════════ -->
+<nav id="site-nav">
+  <a href="{{HOME_URL}}" class="nav-brand">
+    <img src="assets/brand/FYR-logo-forest-500px.png" alt="Feed Your Roots logo">
+    <span class="nav-brand-text">Feed Your Roots</span>
+  </a>
+  <div class="nav-links">
+    <a href="{{BUNDLES_URL}}"{{ACTIVE_BUNDLES}}>Bundles</a>
+    <a href="/journal" onclick="return false;"{{ACTIVE_JOURNAL}}>The Journal</a>
+    <a href="{{ABOUT_URL}}"{{ACTIVE_ABOUT}}>About</a>
+    <a href="{{CTA_URL}}" class="nav-cta">Get the Blueprint</a>
+  </div>
+  <button class="nav-burger" onclick="openNavOverlay()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-overlay" id="nav-overlay">
+  <button class="nav-overlay-close" onclick="closeNavOverlay()">✕</button>
+  <div class="nav-overlay-links">
+    <a href="{{BUNDLES_URL}}" onclick="closeNavOverlay()">Bundles</a>
+    <a href="/journal" onclick="closeNavOverlay(); return false;">The Journal<span class="nav-overlay-soon">Coming Soon</span></a>
+    <a href="{{ABOUT_URL}}" onclick="closeNavOverlay()">About</a>
+    <a href="{{CTA_URL}}" class="nav-cta" onclick="closeNavOverlay()">Get the Blueprint</a>
+  </div>
+</div>

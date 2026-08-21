@@ -16,33 +16,7 @@
 </head>
 <body>
 
-<!-- ════════════ NAV ════════════ -->
-<nav id="site-nav">
-  <a href="index.html" class="nav-brand">
-    <img src="assets/brand/FYR-logo-forest-500px.png" alt="Feed Your Roots logo">
-    <span class="nav-brand-text">Feed Your Roots</span>
-  </a>
-  <div class="nav-links">
-    <a href="index.html#tools-preview">Bundles</a>
-    <a href="/journal" onclick="return false;">The Journal</a>
-    <a href="about.html" class="nav-active">About</a>
-    <a href="index.html#bundles" class="nav-cta">Get the Blueprint</a>
-  </div>
-  <button class="nav-burger" onclick="openNavOverlay()" aria-label="Open menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<div class="nav-overlay" id="nav-overlay">
-  <button class="nav-overlay-close" onclick="closeNavOverlay()">✕</button>
-  <div class="nav-overlay-links">
-    <a href="index.html#tools-preview" onclick="closeNavOverlay()">Bundles</a>
-    <a href="/journal" onclick="closeNavOverlay(); return false;">The Journal<span class="nav-overlay-soon">Coming Soon</span></a>
-    <a href="about.html" onclick="closeNavOverlay()">About</a>
-    <a href="index.html#bundles" class="nav-cta" onclick="closeNavOverlay()">Get the Blueprint</a>
-  </div>
-</div>
-
+{{NAV}}
 
 <!-- ════════════ BANNER ════════════ -->
 <div class="page-banner">
@@ -99,33 +73,7 @@
   </div>
 </section>
 
-<!-- ════════════ FOOTER ════════════ -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">Feed Your Roots</div>
-    <div class="footer-tagline">Half an acre. A whole life.</div>
-    <div class="footer-links">
-      <a href="https://www.instagram.com/feedyourrootsus" target="_blank">Instagram</a>
-      <a href="https://www.tiktok.com/@feedyourrootsus" target="_blank">TikTok</a>
-      <a href="https://www.pinterest.com/feedyourrootsus" target="_blank">Pinterest</a>
-      <a href="https://www.youtube.com/@feedyourrootsus" target="_blank">YouTube</a>
-    </div>
-    <div class="footer-divider"></div>
-    <div class="footer-nav-row">
-      <a href="about.html">About</a>
-      <a href="/journal" onclick="return false;">The Journal</a>
-      <a href="index.html#tools-preview">Bundles</a>
-    </div>
-    <div class="footer-legal-row">
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Service</a>
-      <a href="refunds.html">Refund Policy</a>
-    </div>
-    <div class="footer-domain">feedyourroots.us</div>
-    <div class="footer-copy">© 2026 Feed Your Roots US. All rights reserved.</div>
-  </div>
-</footer>
-
+{{FOOTER}}
 
 <script>
   function openNavOverlay() {
