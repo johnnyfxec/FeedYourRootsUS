@@ -607,11 +607,9 @@
   </div>
   <style>
   #fyr-sel{max-width:760px;margin:0 auto}
-  .fsel-tabs{display:flex;justify-content:center;margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .fsel-tabs::-webkit-scrollbar{display:none}
-  .fsel-tabs{padding-top:16px;margin-bottom:20px}
-  .fsel-tabs-track{display:flex;width:max-content;max-width:100%;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px;flex-shrink:0}
-  .fsel-tab{position:relative;border:none;border-right:1px solid rgba(245,236,215,0.12);padding:0.75rem 1rem;cursor:pointer;background:transparent;transition:background .2s;width:5.25rem;flex-shrink:0}
+  .fsel-tabs{display:flex;justify-content:center;padding-top:16px;margin-bottom:20px}
+  .fsel-tabs-track{display:flex;width:100%;border:1.5px solid rgba(245,236,215,0.18);border-radius:16px}
+  .fsel-tab{position:relative;border:none;border-right:1px solid rgba(245,236,215,0.12);padding:0.75rem 0.5rem;cursor:pointer;background:transparent;transition:background .2s;flex:1;min-width:0}
   .fsel-tab:first-child{border-radius:14px 0 0 14px}
   .fsel-tab:last-child{border-radius:0 14px 14px 0}
   .fsel-tab:last-child{border-right:none}
@@ -674,8 +672,8 @@
     .fsel-inh .fsel-tt{display:none}
   }
   @media(max-width:480px){
-    .fsel-tabs{justify-content:flex-start;margin-bottom:16px}
-    .fsel-tab{min-width:64px;padding:8px 10px}
+    .fsel-tabs{margin-bottom:16px}
+    .fsel-tab{padding:0.6rem 0.3rem}
     .fsel-tn{font-size:7.5px}
     .fsel-tp{font-size:15px}
     .fsel-tb{font-size:8px;padding:2px 6px}
