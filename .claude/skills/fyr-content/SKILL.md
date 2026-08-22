@@ -39,7 +39,7 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 ### Tabla `Content_Pieces` — `tblevmNSbGTzdjuDF`
 | Campo | fieldId | Tipo |
 |---|---|---|
-| ID Pieza (primary) | `fld1g5OjdT2BlFdmr` | texto (formato `PZA-###`) |
+| ID Pieza (primary) | `fld1g5OjdT2BlFdmr` | texto (formato `PZA_[tema]`, ej. `PZA_3.1` — mismo identificador que la carpeta de Drive) |
 | Tipo de Pieza | `fld7zgQouWTYgQdJ3` | singleSelect (Carrusel/Video/Imagen única) |
 | Fecha de Generación | `fldqWpBbCOSaD2gE7` | date |
 | Número de Slides | `fldu0xeW00aYT29So` | number |
@@ -70,7 +70,7 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | `knowledge/Sistema_Maestro_CRS_v2.md` | Fases de embudo, arquitectura de loops, Question Test, framework 6 pasos |
 | `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso |
 | `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad |
-| `FYR_Asset_Governance_Policy.md` | Nomenclatura y ubicación de archivos |
+| `FYR_Asset_Governance_Policy.md` (v2.0+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, y principio de duplicados semánticos en Themes |
 
 **Adaptación obligatoria del CRS:** el sistema fue escrito para el avatar de trading/libertad financiera. Al aplicarlo, traducir SIEMPRE al avatar Morgan (28-42, patio suburbano, busca soberanía alimentaria): el dolor no es "depender de un sueldo", es "depender del supermercado / no saber qué come su familia / sentir que la autosuficiencia es para gente con 5 acres". La ciencia (loops, fases, hooks) se conserva; el contenido se traduce.
 
@@ -94,8 +94,9 @@ La migración corre UNA vez. En runs posteriores, Airtable es la única fuente d
 ## 4. Flujo de producción por pieza
 
 ### Paso 0 — Selección de tema
-- Usuario pide tema específico (`X.Y`) → usarlo.
+- Usuario pide tema específico (`X.Y`) que ya existe en `Themes` → usarlo directo, sin búsqueda.
 - Usuario pide "el siguiente" → **cola de arranque** (primeras 8 piezas): selección deliberadamente diversa, un pilar distinto cada vez y cubriendo las 4 fases, para tener señal real de qué convierte antes de escalar. Después de 8 piezas: priorizar `Prioridad = Alta` + `Estado = Pendiente`, manteniendo la mezcla de fases del mes cerca de 40/27/20/13.
+- Usuario describe un ángulo/tema libremente, SIN número de tema exacto → **búsqueda semántica obligatoria, siempre, sin excepción**: leer `Dolor/Deseo` + `Título Portada` de todo `Themes` y evaluar conceptualmente (no por texto exacto) si algún tema existente ya cubre ese mismo dolor del avatar en palabras distintas. Si hay coincidencia real → usar el tema existente, avisar al usuario cuál es y por qué. Si no hay coincidencia → crear el tema nuevo con el mismo criterio de Fase Embudo + Hook Asignado del proceso de migración (Sección 3), y recién ahí continuar el flujo.
 - Nunca seleccionar un tema `Usado` sin confirmación explícita.
 
 ### Paso 1 — Question Test (bloqueante)
@@ -114,16 +115,20 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 ### Paso 4 — Selección de assets
 Buscar en `Assets` por Tags relacionados al pilar/tema. Referenciar por nombre de archivo exacto + Link Drive. Si ningún asset calza para un slide clave, incluir en el brief un prompt de generación nuevo (bloque de estilo del Brand Bible + regla de diversidad) marcado como `[GENERAR EN GEMINI]` — no bloquear la pieza por eso.
 
-### Paso 5 — Outputs (los tres, siempre, en este orden)
-1. **Brief** → `production/briefs/FYR_Brief_[Número]_[slug].md`: tema, fase, hook (nombre + Question Test), tabla slide-por-slide (texto exacto | asset o fondo | nota de intención), CTA, prompts pendientes de generar.
-2. **Fila CSV** → append a `production/canva_bulk_queue.csv`. Crear con header si no existe. Schema fijo (la plantilla de Canva se construirá para mapear estas columnas):
+### Paso 5 — Outputs y flujo temporal (5 sub-pasos, en este orden — NUNCA saltarse ni fusionar)
+
+1. **Brief** → `production/briefs/FYR_Brief_[Número]_[slug].md`: tema, fase, hook (nombre + Question Test), tabla slide-por-slide (texto exacto | asset o fondo | nota de intención), CTA. El brief YA indica, por slide, si el asset existe en el banco o necesita generarse (`[GENERAR EN GEMINI]`) — esa evaluación se hace aquí, no después.
+2. **Fila CSV** → append a `production/canva_bulk_queue.csv`. Crear con header si no existe. Schema fijo:
    ```
    pieza_id,tema,hook_titulo,hook_sub,s2_txt,s3_txt,s4_txt,s5_txt,s6_txt,cta_txt,img1,img2,img3,img4,img5,img6,img7
    ```
-   Columnas de slides no usados = cadena vacía. `img*` = nombre de archivo exacto del asset (el usuario los tiene subidos en Canva/Drive). Escapar comas con comillas dobles estándar CSV.
-3. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA-###` consecutivo — consultar el último antes de asignar), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = Brief Generado`, `Hook Usado`, `Audiencia`. Luego actualizar el tema: `Estado = Usado`, `Fecha de uso = ahora`.
+   Columnas de slides no usados = cadena vacía. `img*` = nombre de archivo exacto del asset. Escapar comas con comillas dobles estándar CSV.
+3. **PAUSA — Aprobación del usuario.** El brief puede cambiar aquí (el usuario edita texto, pide otro hook, etc.) — si cambia, se hace patch quirúrgico del `.md`, nunca regenerar desde cero. Solo se avanza al paso 4 cuando el usuario confirma explícitamente que el brief está listo para producirse.
+4. **Creación de carpeta (Drive MCP, automática al aprobar).** Verificar primero si `FYR/05_Marketing_Assets/Social_Media/Content_Pieces/PZA_[tema]/` ya existe (ese tema pudo producirse antes en otra fecha). Si no existe, crear ambos niveles; si existe, crear solo la subcarpeta `[fecha-YYYY-MM-DD]/` de hoy dentro. Esto ocurre sin importar si la pieza necesita generar imágenes nuevas o reutiliza 100% assets existentes — el criterio es "la pieza está lista para ensamblarse", no "ya terminé de generar en Gemini".
+5. **Generación manual + espera.** Si el brief marcó slides pendientes, el usuario genera en Gemini usando los prompts del brief (bloque de estilo del Brand Bible + regla de diversidad) y sube los archivos a la carpeta de fecha ya creada, nombrados según convención: `FYR_PZA_[tema]_S[n]_[slug]_[aspecto]_v[version].png`. La skill NO continúa hasta que el usuario confirma que ya subió.
+6. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA_[tema]`, ej. `PZA_3.1` — mismo nombre que la carpeta de Drive, nunca un consecutivo genérico), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = Publicado en Drive`, `Hook Usado`, `Audiencia`. Luego actualizar el tema: `Estado = Usado`, `Fecha de uso = ahora`.
 
-**Verificación final de cada pieza:** brief existe en disco + fila CSV parseable + registro Airtable con links poblados. Reportar los tres checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
+**Verificación final de cada pieza:** brief existe en disco + fila CSV parseable + carpeta de Drive con archivos + registro Airtable con links poblados. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
 
 ---
 
