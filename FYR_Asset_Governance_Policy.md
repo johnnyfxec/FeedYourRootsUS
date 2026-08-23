@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 2.0 — 22 de agosto 2026**
+**Versión 2.1 — 22 de agosto 2026**
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
@@ -95,7 +95,7 @@ FYR/
 
 **Bloque de estilo base — usar siempre como punto de partida:**
 ```
-Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized with the flat, confident color sensibility of contemporary Oatly packaging. Fine ink linework: delicate, slightly imperfect 1–2pt lines with visible hand tremor, precise on subjects, looser at edges. Color applied as soft watercolor washes that bleed gently past the linework, layered over a warm parchment background (#F5ECD7) — never pure white. Palette limited to forest green (#4A7C59), terracotta orange (#D4732A), warm brown (#8B5E3C), harvest gold (#F0C040). Light paper grain, dry-brush edges, occasional pencil under-sketch showing through. Compositions breathe: at least 30% negative parchment space. NEVER include: photorealism, 3D rendering, neon or saturated primary colors, digital gradients, text or lettering, human faces, sci-fi or fantasy elements, plastic objects, hard black outlines, pure white backgrounds.
+Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized with the flat, confident color sensibility of contemporary Oatly packaging. Fine ink linework: delicate, slightly imperfect 1–2pt lines with visible hand tremor, precise on subjects, looser at edges. Color applied as soft watercolor washes that bleed gently past the linework, layered over a warm parchment background (#F5ECD7) — never pure white. Palette limited to forest green (#4A7C59), terracotta orange (#D4732A), warm brown (#8B5E3C), harvest gold (#F0C040). Light paper grain, dry-brush edges, occasional pencil under-sketch showing through. Compositions breathe: at least 30% negative parchment space. NEVER include: photorealism, 3D rendering, neon or saturated primary colors, digital gradients, text or lettering, sci-fi or fantasy elements, plastic objects, hard black outlines, pure white backgrounds.
 ```
 
 **Excepciones aprendidas (cuándo desviarse conscientemente del bloque base):**
@@ -103,7 +103,9 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 - **Stickers decorativos con color botánico real (ej. semilla partida, corona de trigo):** cuando el propósito es destacar y ser memorable, el color botánico honesto (verde-musgo, ámbar de abeja) puede superar a la paleta estricta de 2 colores. Se decide caso por caso, nunca por defecto.
 - **Recibos, carteles, objetos cuya identidad depende de tener texto:** la regla "no text" no aplica cuando el texto es parte de la narrativa del objeto (ej. un recibo de supermercado). Si el texto es decorativo/rotulado, sí se prohíbe.
 
-**Regla de diversidad étnica (no negociable):** toda figura humana (manos, personas parciales) debe representar diversidad de tonos de piel a través del conjunto de contenido — nunca default a piel clara como estándar.
+**Regla de diversidad étnica (no negociable):** toda figura humana (manos, personas parciales, rostros) debe representar diversidad de tonos de piel a través del conjunto de contenido — nunca default a piel clara como estándar.
+
+**Regla de rostros (v2.0):** Brand Assets, íconos y elementos decorativos NUNCA muestran rostro humano — manos cortadas en la muñeca siguen siendo el estándar ahí. Pero escenas narrativas POV/emocionales (piezas de `Content_Pieces`, Sección 6) SÍ pueden mostrar rostro completo con expresión cuando la emoción es el punto de la toma — aplicando siempre la regla de diversidad de arriba.
 
 ---
 

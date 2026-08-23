@@ -107,8 +107,21 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Fórmula de contexto: [contexto que ubica a Morgan] + [elemento que desafía/sorprende dentro de ese contexto].
 - Alineación visual-verbal: el asset/imagen del slide 1 NUNCA debe resolver el loop que abre el texto.
 
-### Paso 3 — Cuerpo (4-7 slides, cadena de loops)
-- Slide 1: hook (loop 1 abierto). Slides intermedios: agitación y valor en pedazos, abrir loop nuevo antes de cerrar el anterior. Último slide: cierre de todos los loops + CTA único basado en la transformación del Bundle Relacionado.
+**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico:
+- 03 Numerico, 13 Lista -> Solo texto + acento (el numero/conteo ES el gancho visual)
+- 07 Contraste/Versus -> Marco grande, dos veces (antes/despues necesita comparacion directa)
+- 04 Storytelling, 10 Dolor/Frustracion -> Full-bleed con overlay (inmersion emocional)
+- 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral (imagen de apoyo parcial, no revela todo)
+- 11 Mito, 05 Error Comun -> Solo texto + acento (la creencia a romper es verbal, no visual)
+- 17 Resultados/Transformacion, 19 Demostracion -> Marco grande (necesita evidencia visual clara)
+- 01 Negativo, 14 Advertencia, 09 Prediccion -> Full-bleed con overlay (la tension se siente mejor a sangre completa)
+- 02 Pregunta, 08 Autoridad, 15 Oportunidad, 16 Desafio, 18 Sorpresa -> libre segun el tema especifico, sin afinidad estructural fuerte
+
+### Paso 3 — Cuerpo (numero de slides segun Fase Embudo, cadena de loops)
+- **Numero de slides por Fase** (reemplaza el rango generico anterior): F1 Baja conciencia = 4-5 slides (incomodar es rapido, alargar diluye el golpe); F2 Media conciencia = 5-6 (necesita espacio para mostrar la alternativa sin apurar); F3 Alta conciencia = 6-7 (destruir objecion requiere mas desarrollo argumental, es la fase mas larga); F4 Autoridad = 4-5 (el resultado habla solo, exceso de slides diluye el impacto).
+- Slide 1: hook (loop 1 abierto). Slides intermedios: agitación y valor en pedazos, abrir loop nuevo antes de cerrar el anterior.
+- **Ultimo slide (cierre, sin plantilla fija):** cierre de todos los loops + CTA unico, graduado segun Fase (F1 implicito/sin mencionar Bundle, F2 suave nombrando el recurso gratuito, F3 directo nombrando el Bundle que resuelve la objecion, F4 de autoridad invitando a replicar el resultado). El layout del cierre se elige libremente entre los 4 layouts activos segun que sirva mejor a esa resolucion especifica — nunca un layout de marca fijo tipo catalogo.
+- **Regla de loop visual (obligatoria en el cierre):** el prompt de imagen del slide de cierre debe citar textualmente un elemento especifico del prompt de portada (objeto, color dominante, o composicion) e instruir que se repita transformado — mismo objeto, estado distinto. Esto invita a redeslizar desde el inicio, aumentando el watch-time/replay. Ejemplo: portada = "caja de zapatos desordenada"; cierre = "la misma caja, ahora organizada y cerrada con lazo".
 - Decidir por slide si lleva asset de fondo o solo texto sobre fondo de marca (Parchment #F5ECD7): el criterio es si la imagen añade tensión/credibilidad al loop. Nunca imagen decorativa por rellenar.
 - Voz del Brand Bible: cálida, directa, sin banned words. Todo el copy final en **inglés** (mercado US), títulos de portada en el formato ya definido en la Malla.
 
@@ -117,7 +130,7 @@ Buscar en `Assets` por Tags relacionados al pilar/tema. Referenciar por nombre d
 
 ### Paso 5 — Outputs y flujo temporal (5 sub-pasos, en este orden — NUNCA saltarse ni fusionar)
 
-1. **Brief** → `production/briefs/FYR_Brief_[Número]_[slug].md`: tema, fase, hook (nombre + Question Test), tabla slide-por-slide (texto exacto | asset o fondo | nota de intención), CTA. El brief YA indica, por slide, si el asset existe en el banco o necesita generarse (`[GENERAR EN GEMINI]`) — esa evaluación se hace aquí, no después.
+1. **Brief** → `production/briefs/FYR_Brief_[Número]_[slug].md`: tema, fase, hook (nombre + Question Test), tabla slide-por-slide (texto exacto | layout asignado segun Paso 2/3 | asset o fondo | nota de intencion), CTA. El numero de slides y el layout de cada uno ya vienen decididos por las reglas de los Pasos 2 y 3 — el brief los documenta, no los reinventa. El campo CTA puede quedar vacio o decir "ninguno (F1)" cuando la Fase Embudo asignada al tema es F1, segun la gradacion del Paso 3. El brief YA indica, por slide, si el asset existe en el banco o necesita generarse (`[GENERAR EN GEMINI]`) — esa evaluacion se hace aqui, no despues.
 2. **Fila CSV** → append a `production/canva_bulk_queue.csv`. Crear con header si no existe. Schema fijo:
    ```
    pieza_id,tema,hook_titulo,hook_sub,s2_txt,s3_txt,s4_txt,s5_txt,s6_txt,cta_txt,img1,img2,img3,img4,img5,img6,img7
@@ -146,7 +159,8 @@ Cuando el usuario pida un "kit para [creador]": mismo flujo, con estos cambios:
 ## 6. Reglas no negociables
 
 - **Diversidad étnica** en toda figura humana de prompts nuevos — nunca default a piel clara.
-- **Sin texto en ilustraciones** salvo objetos cuya narrativa lo exige (recibos, portadas de libro).
+- **Rostros:** prohibidos en assets de marca/iconos/decorativos; permitidos con expresion completa en escenas narrativas POV/emocionales de piezas de Content_Pieces (ver Brand Bible v2 y Policy v2.1).
+- **Texto en ilustraciones:** solo cuando el objeto narrado lo exige (etiquetas de semillero, recibos, portadas de libro, carteles dentro de la escena) — nunca texto decorativo suelto ni titulos superpuestos fuera de la escena misma.
 - **Plan antes de ejecutar:** en modo batch ("produce 5 piezas"), mostrar la lista de temas seleccionados y esperar OK antes de generar. Pieza única: generar directo (la aprobación ocurre al revisar el brief).
 - **Fail loudly:** ID no encontrado, archivo faltante, conteo que no cuadra → detenerse y reportar. Nunca aplicar un cambio silenciosamente incorrecto.
 - **Un paso a la vez:** nunca pedir al usuario múltiples acciones manuales en un solo mensaje.
