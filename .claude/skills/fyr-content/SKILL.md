@@ -133,7 +133,11 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Voz del Brand Bible: cálida, directa, sin banned words. Todo el copy final en **inglés** (mercado US), títulos de portada en el formato ya definido en la Malla.
 
 ### Paso 4 — Selección de assets
-Buscar en `Assets` por Tags relacionados al pilar/tema. Referenciar por nombre de archivo exacto + Link Drive. Si ningún asset calza para un slide clave, incluir en el brief un prompt de generación nuevo (bloque de estilo del Brand Bible + regla de diversidad) marcado como `[GENERAR EN GEMINI]` — no bloquear la pieza por eso.
+Dos búsquedas distintas en `Assets`, según qué necesita el slide:
+- **Imagen de escena** (contenido del tema): buscar por Tags relacionados al pilar/tema. Referenciar por nombre de archivo exacto + Link Drive.
+- **Elemento de layout fijo** (marco, etiqueta, nota, doble-marco, cordel, migas, polaroid — cuando el Paso 2 asignó uno de los 12 layouts): buscar por nombre `FYR_LAYOUT_[nombre-layout]_[aspecto]_v1.png` o `FYR_ASSET_marco-madera_[aspecto]_v1.png` en `Assets` — NO por tags de tema, son reutilizables entre piezas. Consultar `knowledge/reference_assets/FYR_Layout_Specs_v1.md` para la ventana exacta de cada uno antes de dimensionar la imagen de fondo a generar. Si el layout es Palabra-acuarela o Tachado (referencias de estilo, NO reutilizables), el brief debe indicar `[GENERAR EN GEMINI, usar de referencia [nombre-archivo]]` con la palabra/texto real del tema — nunca reutilizar el archivo de muestra directo.
+
+Si ningún asset calza para un slide clave, incluir en el brief un prompt de generación nuevo (bloque de estilo del Brand Bible + regla de diversidad) marcado como `[GENERAR EN GEMINI]` — no bloquear la pieza por eso.
 
 ### Paso 5 — Outputs y flujo temporal (5 sub-pasos, en este orden — NUNCA saltarse ni fusionar)
 
