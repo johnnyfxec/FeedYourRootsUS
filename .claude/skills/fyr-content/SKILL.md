@@ -107,20 +107,26 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Fórmula de contexto: [contexto que ubica a Morgan] + [elemento que desafía/sorprende dentro de ese contexto].
 - Alineación visual-verbal: el asset/imagen del slide 1 NUNCA debe resolver el loop que abre el texto.
 
-**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico:
-- 03 Numerico, 13 Lista -> Solo texto + acento (el numero/conteo ES el gancho visual)
-- 07 Contraste/Versus -> Marco grande, dos veces (antes/despues necesita comparacion directa)
+**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 4 layouts base (Marco grande, Full-bleed con overlay, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/layout_specs.md.
+- 03 Numerico, 13 Lista -> Solo texto + acento, o L12 Migas de progreso si el conteo es el eje central
+- 07 Contraste/Versus -> L8 Doble marco superpuesto (preferido, un solo slide) o L10 Tachado/correccion (alternativa, mas verbal) o Marco grande dos veces (si ninguno de los anteriores calza)
 - 04 Storytelling, 10 Dolor/Frustracion -> Full-bleed con overlay (inmersion emocional)
-- 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral (imagen de apoyo parcial, no revela todo)
-- 11 Mito, 05 Error Comun -> Solo texto + acento (la creencia a romper es verbal, no visual)
+- 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral, o L7 Nota-kraft en esquina, o L13 Ventana Polaroid (revelacion con foco)
+- 11 Mito, 05 Error Comun -> Solo texto + acento, o L9 Palabra-acuarela (la creencia como palabra dominante)
 - 17 Resultados/Transformacion, 19 Demostracion -> Marco grande (necesita evidencia visual clara)
-- 01 Negativo, 14 Advertencia, 09 Prediccion -> Full-bleed con overlay (la tension se siente mejor a sangre completa)
+- 01 Negativo, 14 Advertencia, 09 Prediccion -> Full-bleed con overlay, o L9 Palabra-acuarela (palabra de alerta dominante)
 - 02 Pregunta, 08 Autoridad, 15 Oportunidad, 16 Desafio, 18 Sorpresa -> libre segun el tema especifico, sin afinidad estructural fuerte
+- L6 Etiqueta colgante -> copy corto e intimo, cualquier hook que necesite sensacion de nota personal
+- L11 Cordel guia -> no depende de hook, es conector entre slides consecutivos — usar cuando se quiera dar continuidad visual fuerte a la secuencia
+
+**Regla de variedad ampliada:** con 12 layouts disponibles, ningun layout se repite mas de 2 veces en la misma pieza (antes era 'nunca consecutivo'; ahora ademas se limita la repeticion total).
+
+**Proporcion imagen/texto por funcion del slide** (aplica sin importar cual de los 12 layouts se use): Apertura de loop (hook fuerte) = 85-90% imagen / 10-15% texto. Desarrollo/agitacion = 60-75% imagen / 25-40% texto. Giro/revelacion = 50-65% imagen / 35-50% texto. Cierre/CTA = 70-85% imagen / 15-30% texto. Esta proporcion se declara como campo `% imagen` en la tabla slide-por-slide del brief (Paso 5).
 
 ### Paso 3 — Cuerpo (numero de slides segun Fase Embudo, cadena de loops)
 - **Numero de slides por Fase** (reemplaza el rango generico anterior): F1 Baja conciencia = 4-5 slides (incomodar es rapido, alargar diluye el golpe); F2 Media conciencia = 5-6 (necesita espacio para mostrar la alternativa sin apurar); F3 Alta conciencia = 6-7 (destruir objecion requiere mas desarrollo argumental, es la fase mas larga); F4 Autoridad = 4-5 (el resultado habla solo, exceso de slides diluye el impacto).
 - Slide 1: hook (loop 1 abierto). Slides intermedios: agitación y valor en pedazos, abrir loop nuevo antes de cerrar el anterior.
-- **Ultimo slide (cierre, sin plantilla fija):** cierre de todos los loops + CTA unico, graduado segun Fase (F1 implicito/sin mencionar Bundle, F2 suave nombrando el recurso gratuito, F3 directo nombrando el Bundle que resuelve la objecion, F4 de autoridad invitando a replicar el resultado). El layout del cierre se elige libremente entre los 4 layouts activos segun que sirva mejor a esa resolucion especifica — nunca un layout de marca fijo tipo catalogo.
+- **Ultimo slide (cierre, sin plantilla fija):** cierre de todos los loops + CTA unico, graduado segun Fase (F1 implicito/sin mencionar Bundle, F2 suave nombrando el recurso gratuito, F3 directo nombrando el Bundle que resuelve la objecion, F4 de autoridad invitando a replicar el resultado). El layout del cierre se elige libremente entre los 12 layouts activos (ver catalogo completo arriba en Paso 2) segun que sirva mejor a esa resolucion especifica — nunca un layout de marca fijo tipo catalogo.
 - **Regla de loop visual (obligatoria en el cierre):** el prompt de imagen del slide de cierre debe citar textualmente un elemento especifico del prompt de portada (objeto, color dominante, o composicion) e instruir que se repita transformado — mismo objeto, estado distinto. Esto invita a redeslizar desde el inicio, aumentando el watch-time/replay. Ejemplo: portada = "caja de zapatos desordenada"; cierre = "la misma caja, ahora organizada y cerrada con lazo".
 - Decidir por slide si lleva asset de fondo o solo texto sobre fondo de marca (Parchment #F5ECD7): el criterio es si la imagen añade tensión/credibilidad al loop. Nunca imagen decorativa por rellenar.
 - Voz del Brand Bible: cálida, directa, sin banned words. Todo el copy final en **inglés** (mercado US), títulos de portada en el formato ya definido en la Malla.
