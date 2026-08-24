@@ -9,6 +9,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 1. Marco grande (imagen enmarcada)
 
 **Assets:** `FYR_ASSET_marco-madera_4x5_v1.png`, `FYR_ASSET_marco-madera_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C12_Frames/`
 **Rol narrativo:** evidencia visual clara, resultado, contraste directo.
 **Activador (Hook):** 07 Contraste/Versus, 17 Resultados/Transformación, 19 Demostración.
 
@@ -66,6 +67,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 5. Etiqueta colgante
 
 **Assets:** `FYR_LAYOUT_etiqueta-colgante_4x5_v1.png`, `FYR_LAYOUT_etiqueta-colgante_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** copy corto e íntimo, sensación de nota personal.
 **Activador:** 04 Storytelling, 06 Secreto.
 
@@ -79,6 +81,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 6. Nota-kraft en esquina
 
 **Assets:** `FYR_LAYOUT_nota-esquina_4x5_v1.png`, `FYR_LAYOUT_nota-esquina_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** aside/comentario que no interrumpe la escena principal.
 **Activador:** 06 Secreto, 20 Revelación, 12 Curiosidad.
 
@@ -92,6 +95,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 7. Doble marco superpuesto
 
 **Assets:** `FYR_LAYOUT_doble-marco_4x5_v1.png`, `FYR_LAYOUT_doble-marco_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** antes/después en un solo slide, sin repetir Marco grande dos veces.
 **Activador:** 07 Contraste/Versus (uso primario, alternativa a Marco grande ×2).
 
@@ -109,6 +113,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 8. Palabra-acuarela (referencia de estilo — NO asset reutilizable)
 
 **Archivos:** `FYR_LAYOUT_palabra-acuarela_4x5_v1.png`, `FYR_LAYOUT_palabra-acuarela_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/Style_References/`
 **Rol narrativo:** una palabra clave como portada/hook visual dominante.
 **Activador:** 11 Mito, 01 Negativo, 14 Advertencia.
 
@@ -121,6 +126,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 9. Tachado/corrección (referencia de estilo — NO asset reutilizable)
 
 **Archivos:** `FYR_LAYOUT_tachado_4x5_v1.png`, `FYR_LAYOUT_tachado_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/Style_References/`
 **Rol narrativo:** visualiza la transformación directamente en el texto.
 **Activador:** 07 Contraste/Versus (alternativa a Doble marco, más verbal que visual).
 
@@ -133,6 +139,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 ## 10. Cordel guía
 
 **Assets:** `FYR_LAYOUT_cordel-guia_4x5_v1.png`, `FYR_LAYOUT_cordel-guia_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** continuidad visual entre slides consecutivos — no depende de un hook específico, es un conector.
 **Activador:** cualquiera, cuando se quiera dar continuidad fuerte a la secuencia.
 
@@ -147,6 +154,7 @@ Atraviesa el canvas de esquina a esquina en ambos aspectos.
 ## 11. Migas de progreso
 
 **Assets:** `FYR_LAYOUT_migas-progreso_4x5_v1.png`, `FYR_LAYOUT_migas-progreso_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** slides tipo lista/countdown con conteo visible — 3 de 5 elementos completos, 2 pendientes (plantilla de ejemplo; ajustar cantidad de "completos" según el slide real).
 **Activador:** 13 Lista, 03 Numérico.
 
@@ -160,15 +168,17 @@ Atraviesa el canvas de esquina a esquina en ambos aspectos.
 ## 12. Ventana Polaroid
 
 **Assets:** `FYR_LAYOUT_ventana-polaroid_4x5_v1.png`, `FYR_LAYOUT_ventana-polaroid_9x16_v1.png`
+**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
 **Rol narrativo:** momento de foco/revelación con fondo ambiental desenfocado.
 **Activador:** 20 Revelación, 18 Sorpresa.
 
 | | 4:5 (1080×1350) | 9:16 (1080×1920) |
 |---|---|---|
 | Canvas | Fondo desenfocado ocupa 100%, es parte opaca del asset | Igual |
-| Marco Polaroid (interior transparente) | Aproximadamente centrado, cuadrado — ventana interior exacta pendiente de medir en pasada separada | Igual, pendiente de medir ventana interior específica |
+| Ventana interior transparente (marco Polaroid) | x: 358–728 (370px ancho) / y: 453–831 (378px alto) — casi cuadrada | x: 333–746 (413px ancho) / y: 702–1122 (420px alto) — casi cuadrada |
+| Imagen de fondo a pedir en Gemini | Exactamente 370×378px, recortada/generada cuadrada | Exactamente 413×420px |
 
-**Pendiente:** ambos aspectos necesitan una segunda pasada de medición enfocada solo en el rectángulo blanco interior del marco Polaroid (no el bbox general del asset, que incluye el fondo desenfocado completo) antes de usarse en producción real.
+**Nota:** la ventana es intencionalmente casi 1:1 (formato Polaroid clásico) — la imagen que se inserte ahí debe generarse o recortarse a proporción cuadrada, no al aspect ratio del canvas completo.
 
 ---
 

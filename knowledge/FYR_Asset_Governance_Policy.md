@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 2.1 — 22 de agosto 2026**
+**Versión 2.2 — 24 de agosto 2026**
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
@@ -31,7 +31,11 @@ FYR/
 │   ├── C04-C05_Patterns/
 │   ├── C06_Texture/
 │   ├── C07-C08_Icon_Sets/
-│   └── Corners/
+│   ├── C09-C10_PDF_Covers/
+│   ├── C11_Corners/            (pendiente rehacer assets, ver Seccion 9)
+│   ├── C12_Frames/             (marcos de madera reutilizables, 4:5 y 9:16)
+│   └── C13_Layout_Elements/    (assets de los 12 layouts de Content_Pieces — ver knowledge/reference_assets/FYR_Layout_Specs_v1.md)
+│       └── Style_References/   (referencias de estilo NO reutilizables: palabra-acuarela, tachado)
 ├── 02_Decorative_Elements/          (E01-E36+, clip-art suelto 1:1, fondo transparente)
 ├── 03_Seed_Library/
 │   └── WObg/                        (L01-L101, fondo transparente — única versión en uso)

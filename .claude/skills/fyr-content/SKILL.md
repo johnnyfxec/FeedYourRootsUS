@@ -69,8 +69,9 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | `knowledge/FYR_Malla_60_Temas_Virales_v2.md` | Fuente de los 61 temas (solo para migración inicial; después Airtable manda) |
 | `knowledge/Sistema_Maestro_CRS_v2.md` | Fases de embudo, arquitectura de loops, Question Test, framework 6 pasos |
 | `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso |
-| `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad |
-| `FYR_Asset_Governance_Policy.md` (v2.0+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, y principio de duplicados semánticos en Themes |
+| `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad, excepcion de rostros en escenas narrativas (v2) |
+| `knowledge/FYR_Asset_Governance_Policy.md` (v2.2+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, estructura `01_Brand_Assets/C01-C13` (incluye C12_Frames y C13_Layout_Elements), y principio de duplicados semánticos en Themes |
+| `knowledge/reference_assets/FYR_Layout_Specs_v1.md` | Medidas exactas (bbox, ventanas de contenido) de los 12 layouts en 4:5 y 9:16, con ruta de Drive de cada asset — consultar SIEMPRE antes de generar un prompt de imagen que use un layout con marco/asset fijo |
 
 **Adaptación obligatoria del CRS:** el sistema fue escrito para el avatar de trading/libertad financiera. Al aplicarlo, traducir SIEMPRE al avatar Morgan (28-42, patio suburbano, busca soberanía alimentaria): el dolor no es "depender de un sueldo", es "depender del supermercado / no saber qué come su familia / sentir que la autosuficiencia es para gente con 5 acres". La ciencia (loops, fases, hooks) se conserva; el contenido se traduce.
 
@@ -107,7 +108,7 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Fórmula de contexto: [contexto que ubica a Morgan] + [elemento que desafía/sorprende dentro de ese contexto].
 - Alineación visual-verbal: el asset/imagen del slide 1 NUNCA debe resolver el loop que abre el texto.
 
-**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 4 layouts base (Marco grande, Full-bleed con overlay, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/layout_specs.md.
+**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 4 layouts base (Marco grande, Full-bleed con overlay, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/reference_assets/FYR_Layout_Specs_v1.md.
 - 03 Numerico, 13 Lista -> Solo texto + acento, o L12 Migas de progreso si el conteo es el eje central
 - 07 Contraste/Versus -> L8 Doble marco superpuesto (preferido, un solo slide) o L10 Tachado/correccion (alternativa, mas verbal) o Marco grande dos veces (si ninguno de los anteriores calza)
 - 04 Storytelling, 10 Dolor/Frustracion -> Full-bleed con overlay (inmersion emocional)
@@ -165,7 +166,7 @@ Cuando el usuario pida un "kit para [creador]": mismo flujo, con estos cambios:
 ## 6. Reglas no negociables
 
 - **Diversidad étnica** en toda figura humana de prompts nuevos — nunca default a piel clara.
-- **Rostros:** prohibidos en assets de marca/iconos/decorativos; permitidos con expresion completa en escenas narrativas POV/emocionales de piezas de Content_Pieces (ver Brand Bible v2 y Policy v2.1).
+- **Rostros:** prohibidos en assets de marca/iconos/decorativos; permitidos con expresion completa en escenas narrativas POV/emocionales de piezas de Content_Pieces (ver Brand Bible v2 y Policy v2.2).
 - **Texto en ilustraciones:** solo cuando el objeto narrado lo exige (etiquetas de semillero, recibos, portadas de libro, carteles dentro de la escena) — nunca texto decorativo suelto ni titulos superpuestos fuera de la escena misma.
 - **Plan antes de ejecutar:** en modo batch ("produce 5 piezas"), mostrar la lista de temas seleccionados y esperar OK antes de generar. Pieza única: generar directo (la aprobación ocurre al revisar el brief).
 - **Fail loudly:** ID no encontrado, archivo faltante, conteo que no cuadra → detenerse y reportar. Nunca aplicar un cambio silenciosamente incorrecto.
