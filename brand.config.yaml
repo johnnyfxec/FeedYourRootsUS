@@ -1,0 +1,28 @@
+# trend-scout — configuración de marca
+# Copiar este archivo como "brand.config.yaml" en la raíz del repo activo
+# (mismo nivel que la carpeta knowledge/) antes del primer uso de la skill.
+#
+# Este archivo es lo único que cambia al migrar el sistema a otra marca/industria.
+# Ninguna otra parte de trend-scout debe tener nombres de marca hardcodeados.
+
+brand: feed-your-roots
+avatar: "Morgan, 28-42, suburbano US, busca soberania alimentaria en poco terreno. Cree que autosuficiencia = mucho terreno y dinero (creencia a desafiar)."
+
+airtable_base: appMy5aOwifSbBLPR
+
+pais: US
+industria_creative_center: "Home & Garden"
+plataformas:
+  - TikTok
+  - Instagram Reels
+
+# Rutas relativas a la raíz del repo — deben existir o la skill falla con mensaje claro
+pilares_path: knowledge/FYR_Malla_60_Temas_Virales_v2.md
+hooks_path: knowledge/hooks_verbales_20_v2.md
+crs_path: knowledge/Sistema_Maestro_CRS_v2.md
+brand_bible_path: knowledge/Feed-Your-Roots-Brand-Bible.md
+
+banned_words: true
+
+# Skill productora a la que esta skill deja señales listas (solo informativo, no invoca nada)
+skill_productora: fyr-content
