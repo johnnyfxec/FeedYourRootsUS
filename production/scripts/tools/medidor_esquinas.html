@@ -231,6 +231,7 @@ function showResults() {
 
   const summary = {
     archivo: currentFileName,
+    dimensiones_imagen: { w: img.width, h: img.height },
     esquinas: named,
     ancho_promedio: Math.round(((widthTop + widthBottom) / 2) * 10) / 10,
     alto_promedio: Math.round(((heightLeft + heightRight) / 2) * 10) / 10,
