@@ -129,6 +129,19 @@ Si en algún punto parece que el proyecto está acumulando demasiado código/her
 
 ---
 
+## Estrategia de ramas
+
+Este repo es GitHub Pages (tiene `CNAME`, `index.html` en raíz) — lo que está en `main` se sirve EN VIVO en feedyourroots.us, sin paso de build/deploy intermedio. Esto hace que `main` sea más sensible de lo que parece.
+
+- **Código del sitio (HTML/CSS/JS que afecta funcionamiento o apariencia):** trabajar en rama separada + revisión de Johnny antes de mergear a `main`. Da un punto de control antes de que algo llegue a producción.
+- **Contenido/texto (briefs, copy, knowledge base, trabajo del skill `fyr-content`):** puede ir directo a `main`, riesgo bajo — no es código que pueda romper el sitio.
+- **Sesiones de Claude Code (contenedor remoto, sin acceso al filesystem de Johnny):** por defecto trabajan en su propia rama (`claude/nombre-de-sesion`), nunca directo en `main`, salvo que la tarea sea puramente de contenido de bajo riesgo.
+- Fusionar ramas entre sesiones/entornos es seguro siempre que no se haya tocado el mismo archivo en ambos lados — git resuelve solo (fast-forward o merge limpio). Conflicto real solo si ambos editaron las mismas líneas del mismo archivo.
+- Antes de empezar a trabajar en cualquier sesión: `git pull` (o `fetch` + `merge`) desde el remoto para traer lo que se haya hecho en otro entorno. Antes de cerrar/cambiar de entorno: `git push`.
+- Para ver el contenido de una rama remota sin fusionarla ni cambiarte a ella: `git show origin/nombre-rama:ruta/archivo.md`.
+
+---
+
 ## Registro en Airtable de archivos nuevos
 
 Cualquier asset de imagen nuevo (marco, layout, escena) que se sube a Drive **también se registra en la tabla `Assets` de Airtable** en la misma sesión — nunca se deja para después. Si un campo de Airtable (ej. `Reutilizable en`) no tiene la opción de ubicación necesaria todavía, usar `typecast: true` al crear el record para que Airtable la cree automáticamente — no requiere edición manual del schema salvo que typecast no lo soporte para ese tipo de campo.
