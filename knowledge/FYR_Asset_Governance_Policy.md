@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 1.0 — 22 de agosto 2026**
+**Versión 2.2 — 24 de agosto 2026**
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
@@ -15,6 +15,8 @@ Todo asset se clasifica por **una sola pregunta**: ¿es identidad de marca reuti
 
 Cuando algo no encaje limpio en una categoría, la pregunta correcta no es "¿dónde cabe mejor?" sino "¿para qué se va a usar realmente?" — la función define la ubicación, no la apariencia.
 
+**Nota de gobernanza sobre `Themes`:** aunque esta política cubre assets visuales, el control de calidad empieza antes — en la tabla `Themes` misma. Ningún tema nuevo se crea sin verificar que no exista ya un duplicado semántico (mismo dolor del avatar en palabras distintas). El detalle mecánico de esa verificación vive en el `SKILL.md` (fuera del alcance de este documento), pero el principio es el mismo que rige aquí: la función define la existencia, no la redacción superficial.
+
 ---
 
 ## 2. Estructura de carpetas (Google Drive — `FYR/`)
@@ -29,7 +31,11 @@ FYR/
 │   ├── C04-C05_Patterns/
 │   ├── C06_Texture/
 │   ├── C07-C08_Icon_Sets/
-│   └── Corners/
+│   ├── C09-C10_PDF_Covers/
+│   ├── C11_Corners/            (pendiente rehacer assets, ver Seccion 9)
+│   ├── C12_Frames/             (marcos de madera reutilizables, 4:5 y 9:16)
+│   └── C13_Layout_Elements/    (assets de los 12 layouts de Content_Pieces — ver knowledge/reference_assets/FYR_Layout_Specs_v1.md)
+│       └── Style_References/   (referencias de estilo NO reutilizables: palabra-acuarela, tachado)
 ├── 02_Decorative_Elements/          (E01-E36+, clip-art suelto 1:1, fondo transparente)
 ├── 03_Seed_Library/
 │   └── WObg/                        (L01-L101, fondo transparente — única versión en uso)
@@ -46,7 +52,8 @@ FYR/
 │   │   ├── IG_Square/
 │   │   ├── IG_Story/
 │   │   ├── Pinterest_Pins/
-│   │   └── Video_Cover_Templates/
+│   │   ├── Video_Cover_Templates/
+│   │   └── Content_Pieces/          (carruseles/videos completos generados desde la tabla Themes — ver Sección 6)
 │   ├── Ad_Creatives/
 │   │   ├── Meta/
 │   │   ├── Hooks/
@@ -80,6 +87,7 @@ FYR/
 | `STOCK-` | Narrative Stock |
 | `COVER-` | Portadas de producto |
 | `FYR_EXTRA_` | Asset aprobado sin categoría asignada al momento de crearlo |
+| `FYR_PZA_[tema]` | Piezas completas de la Malla de Temas (carrusel/video, un archivo por slide) |
 
 **Regla de versión:** un archivo solo sube de número de versión (`v2`, `v3`...) **después** de que la versión anterior ya fue subida a Drive y confirmada. Nunca versionar en el nombre antes de tener la anterior archivada — evita huecos de versión sin sentido.
 
@@ -91,7 +99,7 @@ FYR/
 
 **Bloque de estilo base — usar siempre como punto de partida:**
 ```
-Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized with the flat, confident color sensibility of contemporary Oatly packaging. Fine ink linework: delicate, slightly imperfect 1–2pt lines with visible hand tremor, precise on subjects, looser at edges. Color applied as soft watercolor washes that bleed gently past the linework, layered over a warm parchment background (#F5ECD7) — never pure white. Palette limited to forest green (#4A7C59), terracotta orange (#D4732A), warm brown (#8B5E3C), harvest gold (#F0C040). Light paper grain, dry-brush edges, occasional pencil under-sketch showing through. Compositions breathe: at least 30% negative parchment space. NEVER include: photorealism, 3D rendering, neon or saturated primary colors, digital gradients, text or lettering, human faces, sci-fi or fantasy elements, plastic objects, hard black outlines, pure white backgrounds.
+Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized with the flat, confident color sensibility of contemporary Oatly packaging. Fine ink linework: delicate, slightly imperfect 1–2pt lines with visible hand tremor, precise on subjects, looser at edges. Color applied as soft watercolor washes that bleed gently past the linework, layered over a warm parchment background (#F5ECD7) — never pure white. Palette limited to forest green (#4A7C59), terracotta orange (#D4732A), warm brown (#8B5E3C), harvest gold (#F0C040). Light paper grain, dry-brush edges, occasional pencil under-sketch showing through. Compositions breathe: at least 30% negative parchment space. NEVER include: photorealism, 3D rendering, neon or saturated primary colors, digital gradients, text or lettering, sci-fi or fantasy elements, plastic objects, hard black outlines, pure white backgrounds.
 ```
 
 **Excepciones aprendidas (cuándo desviarse conscientemente del bloque base):**
@@ -99,7 +107,9 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 - **Stickers decorativos con color botánico real (ej. semilla partida, corona de trigo):** cuando el propósito es destacar y ser memorable, el color botánico honesto (verde-musgo, ámbar de abeja) puede superar a la paleta estricta de 2 colores. Se decide caso por caso, nunca por defecto.
 - **Recibos, carteles, objetos cuya identidad depende de tener texto:** la regla "no text" no aplica cuando el texto es parte de la narrativa del objeto (ej. un recibo de supermercado). Si el texto es decorativo/rotulado, sí se prohíbe.
 
-**Regla de diversidad étnica (no negociable):** toda figura humana (manos, personas parciales) debe representar diversidad de tonos de piel a través del conjunto de contenido — nunca default a piel clara como estándar.
+**Regla de diversidad étnica (no negociable):** toda figura humana (manos, personas parciales, rostros) debe representar diversidad de tonos de piel a través del conjunto de contenido — nunca default a piel clara como estándar.
+
+**Regla de rostros (v2.0):** Brand Assets, íconos y elementos decorativos NUNCA muestran rostro humano — manos cortadas en la muñeca siguen siendo el estándar ahí. Pero escenas narrativas POV/emocionales (piezas de `Content_Pieces`, Sección 6) SÍ pueden mostrar rostro completo con expresión cuando la emoción es el punto de la toma — aplicando siempre la regla de diversidad de arriba.
 
 ---
 
@@ -123,7 +133,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 3. **Verificar reglas técnicas** (tiling si aplica, diversidad si hay personas, ausencia de texto no deseado).
 4. Si falla: **ajustar el prompt de forma quirúrgica** (una variable a la vez) — no regenerar desde cero sin diagnóstico.
 5. Si pasa 2-3 intentos sin lograrlo: pausar y repensar el enfoque en vez de seguir iterando a ciegas.
-6. **Aprobado** → nombrar según convención (Sección 3) → subir a la carpeta correcta (Sección 2) → registrar en Airtable (Sección 7).
+6. **Aprobado** → nombrar según convención (Sección 3) → **si es una pieza de `Content_Pieces/`: verificar si `PZA_[tema]/` ya existe en Drive; crear la subcarpeta de fecha de hoy dentro (nueva o primera vez, según corresponda)** → subir a la carpeta correcta (Sección 2) → registrar en Airtable (Sección 7).
 
 ---
 
@@ -148,6 +158,8 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 
 **Regla de oro:** ningún asset se considera "terminado" hasta que tiene su fila en Airtable **con el Link Drive real** (no un placeholder). Un asset sin link es un asset invisible para cualquier agente futuro.
 
+**Nota sobre `ID Pieza` en `Content_Pieces`:** usa el mismo identificador que la carpeta de Drive (`PZA_[tema]`, ej. `PZA_3.1`) — nunca un consecutivo genérico aparte. El tema es el identificador natural; dos sistemas de ID para la misma pieza desincroniza Drive y Airtable sin necesidad.
+
 **Cómo obtener el link correcto sin errores:** listar la carpeta de Drive completa (`search_files` con `parentId`), nunca escribir un link de memoria o adivinado. Cruzar por nombre de archivo exacto, nunca por posición o suposición de orden.
 
 ---
@@ -164,9 +176,10 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 ## 9. Qué NO está automatizado todavía (honestidad operativa)
 
 - Generación de imagen en Gemini/Nano Banana — sigue siendo un paso manual de Johnny.
-- Ensamblaje de carrusel en Canva — Canva MCP puede ayudar, pero requiere plantilla base con placeholders ya definida.
+- Ensamblaje de carrusel en Canva — Canva MCP puede ayudar, pero requiere plantilla base con placeholders ya definida. Mejora futura: configurar Bulk Create para exportar directo a la carpeta `PZA_[tema]/[fecha]/` que ya existe al momento de generar, cerrando el ciclo sin subida manual intermedia.
 - Publicación/programación en redes sociales — no hay conector de publicación directa disponible; sigue siendo manual.
 - Producción de copy/guión — puede generarse por Claude a partir de la Malla de 60 Temas + este documento, pero requiere revisión humana antes de publicar.
+- Producción recurrente por cadencia (semanal/quincenal) — depende de una futura skill de análisis de performance que le indique a `fyr-content` qué ángulos priorizar; hasta entonces, cada corrida la inicia el usuario manualmente.
 
 ---
 
