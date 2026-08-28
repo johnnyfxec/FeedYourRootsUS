@@ -11,6 +11,11 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ## 2026-08-28
 
+- **FYR_Protocolo_De_Trabajo.md** — agrega sección "Estrategia de ramas",
+  fusionando el conocimiento que vivía en CLAUDE.md (rama de Claude Code):
+  main es producción en vivo vía GitHub Pages, código de sitio va en rama
+  separada con revisión previa, contenido/texto puede ir directo a main.
+
 - **FYR_Motor_Ensamblado_Arquitectura_v1.md** (creado) — especifica los 6
   dominios de diseño de `assemble.py`: geometría de canvas, los 4 tipos de
   layout (A/B/C/D), tipografía, recorte de imagen, contrato del script,
