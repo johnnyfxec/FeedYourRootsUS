@@ -65,6 +65,7 @@ Come put your hands in the dirt with us.
 - Scale: H1 = 48px, H2 = 36px, H3 = 28px
 - Letter spacing: -0.5px
 - Usage: chapter titles, cover text, hero statements. Never below 24px.
+- **Excepción — contenido de video/carrusel (Instagram, TikTok):** usar **Source Serif Pro, weight Regular** (archivo real: `SourceSerifPro-Regular.ttf`, no el sucesor Source Serif 4) en lugar de Playfair Display para el título de portada/cierre. Tamaño 93px con contorno 6px `#5C3A1E`, medidos por pixel contra el mockup validado. Mejor legibilidad en thumbnail pequeño de feed/reel. Playfair Display se mantiene como fuente de display para el sitio web, landing pages y piezas impresas grandes (ver `FYR_Malla_60_Temas_Virales_v2.md`, criterio de uso por formato).
 
 **Body Font — DM Sans**
 - Weights: Regular (400), Medium (500)
