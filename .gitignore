@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+*.pyc
+
+# Temporales de trabajo (nunca deben commitearse -- ver protocolo)
+_tests_output/
+_test_*.png
+_check_*.png
