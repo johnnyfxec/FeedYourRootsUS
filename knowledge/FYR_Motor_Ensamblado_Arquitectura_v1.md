@@ -1,5 +1,5 @@
 # FYR — Arquitectura del Motor de Ensamblado (assemble.py)
-**Versión 1.0 — 24 de agosto 2026**
+**Versión 1.1 — 30 de agosto 2026**
 **Propósito:** especificación completa de los 6 dominios que debe resolver el motor de ensamblado local (Pillow, sin Canva) para producir slides finales sin margen de error. Este documento se lee ANTES de escribir o modificar `assemble.py` — es el contrato que el código debe cumplir, no una sugerencia.
 
 ---
@@ -63,7 +63,11 @@ ventana_h = ventana_h_original * frame_scale
 texto_y_inicio = frame_y + (alto_original_del_asset_marco * frame_scale) + 20px_margen
 ```
 
-**Doble marco:** mismo algoritmo pero aplicado 2 veces (una por cada uno de los 2 marcos que trae el asset), usando el bbox individual de cada marco ya medido dentro del PNG compuesto. Dos imágenes de escena distintas, dos ventanas.
+**Doble marco:** DESACTUALIZADO el algoritmo de arriba para este caso — los 2 marcos del asset real están ROTADOS (-8.5° y +11° aprox, no alineados a ejes), medidos con `medidor_esquinas.html` sobre las 4 esquinas reales de cada ventana. Cada imagen de escena se recorta (crop-to-fill) al tamaño de su ventana SIN rotar, luego esa imagen recortada se rota al ángulo real medido, y se pega centrada en el punto medio real de la ventana (`cx`, `cy`) — no se calcula con `frame_scale` simple. Ver `ROTATED_WINDOWS` en `layout_specs.py`.
+
+**marco_grande_portada (4:5, sin subtítulo):** variante de portada que NO escala por `porcentaje_imagen`/altura como marco_grande — escala por ANCHO FIJO (808px medido), replicando el mismo ancho absoluto que ocupa el marco en la portada 9:16 (mismo ancho de canvas, 1080px en ambos formatos — decisión de consistencia de marca: 4:5 vertical / 9:16 cuadrado como default de toda portada). Solo lleva título, nunca subtítulo. El bloque de texto usa un ancho propio medido (898px), no el mismo ancho del marco.
+
+**marco_grande_cuadrado (9:16, con subtítulo):** portada de reel/video. El asset es un lienzo COMPLETO (1080×1920, no solo el marco) con la vid decorativa y la hoja ya integrados en su posición final de diseño — se pega FIJO en (0,0), sin ningún escalado dinámico. La ventana interior (cuadrada, ~722×728px) recibe la imagen de escena. Título y subtítulo se posicionan con coordenadas Y ABSOLUTAS medidas directamente sobre el mockup real (no calculadas de forma encadenada desde el título) — ver la nota de la Sección 3 sobre `editor_posicion_texto.html` y el hallazgo del bug de centrado más abajo.
 
 ### 2.2 — Tipo B: Contenedor Fijo (Etiqueta, Nota, Polaroid)
 
@@ -71,9 +75,11 @@ Usa el asset a escala fija — no depende del % imagen/texto del slide (estos la
 
 | Layout | Escala de uso | Zona de texto (dentro del cuerpo del asset, % relativo al bbox del asset) |
 |---|---|---|
-| Etiqueta colgante | 100% (tamaño nativo del asset) | Centro del rectángulo kraft, ~65% del ancho del cuerpo, ~50% del alto del cuerpo |
-| Nota-kraft esquina | 100% | Centro de la cara visible de la nota, ~80% ancho, ~70% alto |
+| Etiqueta colgante | 100% (tamaño nativo del asset) | 85% del ancho, 85% del alto del rectángulo medido (`ROTATED_WINDOWS`) — valor MEDIDO, no estimado. El rectángulo medido con `medidor_esquinas.html` ya excluye el ojal/cordel (la medición empezó justo debajo de esa zona), es 100% zona segura de texto. |
+| Nota-kraft esquina | 100% | 85% del ancho, 85% del alto (mismo criterio que etiqueta colgante) |
 | Ventana Polaroid | 100% | La ventana interior YA medida en Layout_Specs recibe la IMAGEN (no texto) — el texto de este layout (si existe) va como caption debajo del Polaroid, centrado, en el 10% inferior del canvas |
+
+**Rotación real:** etiqueta colgante y nota-kraft están ROTADAS en el asset real (~11-12°, medido con `medidor_esquinas.html`) — el texto se renderiza en un lienzo aparte y se rota al mismo ángulo antes de pegarse (`render_text_block_rotated` en `text_renderer.py`), igual principio que el doble marco de la Sección 2.1. Ventana Polaroid y marco_grande, en cambio, se confirmaron SIN rotación real (ángulo medido ~0°, dentro del margen de error de medición manual).
 
 **Regla de posición del asset en canvas:** se coloca en la posición relativa donde fue medido originalmente (bbox de Layout_Specs, convertido a % del canvas) — no se re-centra ni se mueve, porque su composición interna (sombra, ángulo) ya fue diseñada para esa posición.
 
@@ -109,13 +115,15 @@ Se agregan como capa final, encima de cualquier slide ya resuelto (Tipo A, B, C,
 
 Ningún texto se renderiza con tamaño "a ojo" — cada ROL tiene fuente, tamaño base, color y comportamiento de overflow ya decididos.
 
-| Rol | Fuente | Tamaño base (4:5) | Color | Uso |
-|---|---|---|---|---|
-| Título de portada/cierre | SourceSerifPro-Regular.ttf | 93px (medido, cap-height=61px) | `#E8B84B` (Gold) con contorno `#5C3A1E` 6px (medido) | Marco grande en slide 1/cierre |
-| Subtítulo | Lora.ttf, weight Italic | 28px | `#5C3A1E` (Brown) | Debajo del título |
-| Texto de cuerpo (slides intermedios) | Lora.ttf, weight Regular | 36-44px (ver regla de ajuste abajo) | `#5C3A1E` o `#D4732A` (Terra) según énfasis del brief | Full-bleed, Solo texto, Texto+lateral |
-| CTA de cierre | DMSans.ttf, weight Bold | 32px | `#5C3A1E` | Última línea del cierre |
-| Palabra dominante (dentro de imagen Tipo C) | — ya horneada por Gemini, el script no la toca | — | — | Palabra-acuarela |
+| Rol | Fuente | Tamaño base (4:5) | Color | line_spacing | Uso |
+|---|---|---|---|---|---|
+| Título de portada/cierre | SourceSerifPro-Regular.ttf | 93px (medido, cap-height=61px) | `#E8B84B` (Gold) con contorno `#5C3A1E` 5px (medido) | 0.743 (medido con editor_posicion_texto.html) | marco_grande_portada (4:5), marco_grande_cuadrado (9:16) |
+| Subtítulo | Lora-BoldItalic.ttf | 47px (medido, cap-height=35.7px) | `#1A1A1A` (negro, no Brown) | 0.777 (medido) | Debajo del título, solo en marco_grande_cuadrado (9:16) — marco_grande_portada en 4:5 no lleva subtítulo |
+| Texto de cuerpo (slides intermedios) | Lora.ttf, weight Regular | 36-44px (ver regla de ajuste abajo) | `#5C3A1E` o `#D4732A` (Terra) según énfasis del brief | 1.2 (default) | Full-bleed, Solo texto, Texto+lateral, etiqueta_colgante, nota_esquina, ventana_polaroid (caption) |
+| CTA de cierre | DMSans.ttf, weight Bold | 32px | `#5C3A1E` | 1.2 (default) | Última línea del cierre |
+| Palabra dominante (dentro de imagen Tipo C) | — ya horneada por Gemini, el script no la toca | — | — | — | Palabra-acuarela |
+
+**Sobre `line_spacing`:** es un multiplicador de `(ascent+descent)` de la fuente real, no del tamaño de fuente directo (distinto del `line-height` de CSS). Los valores de título y subtítulo se midieron con la herramienta `production/scripts/tools/editor_posicion_texto.html`, cargando el mockup real y ajustando hasta que el texto renderizado calzara con las líneas base reales — no son valores teóricos.
 
 **Tamaño base para 9:16:** mismo valor en px que 4:5 (NO se escala proporcional al alto mayor) — el canvas es más alto pero el texto debe seguir siendo legible al mismo tamaño físico relativo a la pantalla del celular, que es igual en ambos formatos.
 
@@ -152,18 +160,32 @@ Un archivo `PZA_[tema]_config.json` (Sección 6 define su schema exacto).
 ### 5.2 — Módulos internos (modularidad real, no monolito)
 
 ```
-assemble.py
-├── config_loader.py       → lee y VALIDA el JSON contra el schema (Sección 6) antes de tocar nada
-├── layout_specs_reader.py → lee FYR_Layout_Specs_v1.md, expone las coordenadas como diccionario Python
-├── layout_classifier.py   → dado un nombre de layout, retorna su Tipo (A/B/C/D) y su función de composición
-├── compositors/
-│   ├── tipo_a.py           → lógica de la Sección 2.1
-│   ├── tipo_b.py           → lógica de la Sección 2.2
-│   ├── tipo_c.py           → lógica de la Sección 2.3
-│   └── acentos.py          → lógica de la Sección 2.4
-├── text_renderer.py       → aplica la Sección 3 completa (fuente, overflow, color)
-├── image_fetcher.py       → descarga/cachea desde Drive (assets fijos cacheados permanentemente, escenas por pieza)
-└── main.py                → orquesta: lee config → por cada slide, clasifica layout → compone → renderiza texto → exporta PNG
+production/scripts/assemble/
+  layout_specs.py         -- constantes Python directas (CANVAS, WINDOWS,
+                             ROTATED_WINDOWS, ASSETS, TYPOGRAPHY, etc.) --
+                             reemplaza el layout_specs_reader.py planeado
+                             originalmente (parsear el .md era fragil, se
+                             decidio mantener las coordenadas como codigo
+                             Python, con el .md como fuente humana de referencia)
+  config_loader.py        -- lee y VALIDA el JSON contra el schema (Seccion 6)
+  layout_classifier.py    -- dado un nombre de layout, retorna su Tipo
+                             (A/B/C/D/BASE) y su funcion de composicion
+  compositors/
+    tipo_a.py              -- Seccion 2.1 (marco_grande, marco_grande_portada,
+                             marco_grande_cuadrado, doble_marco)
+    tipo_b.py              -- Seccion 2.2
+    tipo_c.py              -- Seccion 2.3
+    base.py                -- Seccion 2.5 (full_bleed, solo_texto,
+                             texto_lateral -- no estaba en el arbol original)
+    acentos.py             -- Seccion 2.4
+  text_renderer.py        -- Seccion 3 completa (fuente, overflow, color, rotacion)
+  image_fetcher.py        -- VERIFICA que assets/escenas existan localmente,
+                             reporta rutas de Drive para lo que falte -- NO
+                             descarga por si mismo (Claude Code, con su Drive
+                             MCP, resuelve los faltantes antes de main.py)
+  main.py                 -- orquesta: lee config, verifica assets, por cada
+                             slide clasifica layout, compone, renderiza texto,
+                             exporta PNG
 ```
 
 **Por qué modular y no un solo archivo:** cada compositor se puede probar aisladamente contra un slide de prueba sin correr el pipeline completo — y si mañana se agrega un layout 13, solo se toca `layout_classifier.py` + un nuevo archivo en `compositors/`, nada más se reescribe.
@@ -179,7 +201,7 @@ assemble.py
 | Layout declarado en JSON no existe en el clasificador | Detener antes de procesar ese slide, error explícito de "layout desconocido: X" |
 
 ### 5.4 — Salida
-Un PNG por slide, nombrado `FYR_PZA_[tema]_S[n]_v[version].png`, guardado localmente en `production/output/PZA_[tema]/`, y subido a la carpeta de fecha en Drive ya creada por el flujo existente.
+Un PNG por slide, nombrado `{pieza_id}_S{n}_v{version}.png` (sin prefijo FYR_ adicional, el pieza_id ya lo incluye si corresponde), guardado localmente en `production/output/{pieza_id}/`. La subida a Drive (carpeta de fecha dentro de `05_Marketing_Assets/Social_Media/Content_Pieces/`) y el registro en Airtable son un paso posterior, manual o de otra skill -- main.py no sube nada por si mismo.
 
 ---
 
@@ -187,7 +209,7 @@ Un PNG por slide, nombrado `FYR_PZA_[tema]_S[n]_v[version].png`, guardado localm
 
 ### 6.1 — Principio: Claude Code nunca escribe coordenadas
 
-El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout es Tipo A) el % imagen/texto ya decidido en el brief. Las coordenadas viven exclusivamente en `FYR_Layout_Specs_v1.md`, leídas por `layout_specs_reader.py`. Esto es lo que garantiza cero margen de error — un solo lugar de verdad para números, nunca duplicados ni reinventados por slide.
+El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout es Tipo A) el % imagen/texto ya decidido en el brief. Las coordenadas viven exclusivamente en `layout_specs.py` (con `knowledge/reference_assets/FYR_Layout_Specs_v1.md` como fuente humana de referencia que `layout_specs.py` replica). Esto es lo que garantiza cero margen de error — un solo lugar de verdad para números, nunca duplicados ni reinventados por slide.
 
 ### 6.2 — Schema completo
 
@@ -246,8 +268,25 @@ El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout
 
 ---
 
-## 7. Lo que este documento NO resuelve todavía (honestidad operativa)
+## 7. Lo que este documento NO resuelve todavia (honestidad operativa)
 
-- Los valores exactos de zona de texto para Tipo B (Sección 2.2) son un **primer criterio razonable, no medido con precisión de píxel** como sí lo están las ventanas de imagen — deben verificarse contra el primer ensamblaje real y ajustarse si el texto se ve mal posicionado.
-- La tabla de tipografía (Sección 3) usa tamaños base estimados a partir de lo que se vio bien en los mockups de hoy — no hay una medición formal de legibilidad en dispositivo real todavía.
-- El comportamiento de `Texto+imagen lateral` cuando el brief no especifica izquierda/derecha no está definido — asumir alternancia (par=izquierda, impar=derecha) hasta que se decida lo contrario.
+Resuelto desde la v1.0 (ya no son pendientes):
+- Zona de texto de Tipo B: medida con precision real (85%/85%, ver Seccion 2.2), no estimada.
+- Tipografia de titulo/subtitulo: medida con precision de pixel usando editor_posicion_texto.html sobre mockups reales, no estimada de los mockups a ojo.
+- Rotacion de doble_marco, etiqueta_colgante, nota_esquina: medida y resuelta con medidor_esquinas.html.
+
+Sigue pendiente:
+- El comportamiento de Texto+imagen lateral cuando el brief no especifica izquierda/derecha no esta definido -- asumir alternancia (par=izquierda, impar=derecha) hasta que se decida lo contrario.
+- Tipo C (palabra_acuarela, tachado) y acentos.py (cordel_guia, migas_progreso) tienen codigo completo y probado a nivel de carga de modulo, pero nunca se corrieron con un PNG real de Gemini ni se vieron renderizados de verdad -- falta validacion visual real.
+- doble_marco solo se probo con imagenes de escena sinteticas (color solido), nunca con ilustraciones reales.
+- Texto de cuerpo (Tipo B, full_bleed, solo_texto, texto_lateral) sigue en Lora.ttf Regular, line_spacing default 1.2 -- nunca se midio con la misma precision que titulo/subtitulo. Puede necesitar el mismo tratamiento si se ve mal en produccion real.
+
+## 8. Leccion aprendida -- bug de centrado vertical en texto encadenado (25-30 ago 2026)
+
+Al construir marco_grande_cuadrado, el titulo y el subtitulo se desplazaban hacia abajo de forma impredecible, incluso con posiciones Y medidas correctamente con la herramienta. La causa: render_text_block (la funcion original de renderizado) centra el texto verticalmente dentro del box que recibe. Cuando fit_text reducia internamente el tamano de fuente (buscando que el texto quepa), el total_h real quedaba mas chico que el box calculado desde afuera, y el centrado automatico generaba un offset variable e impredecible -- offset que se acumulaba en cascada cuando el subtitulo se posicionaba en funcion de donde habia terminado el titulo.
+
+Fix: render_text_block_top (nueva funcion en text_renderer.py) dibuja el texto exactamente desde la y indicada, sin ningun centrado automatico, y retorna height y line_h reales para que el llamador controle el flujo con precision.
+
+Decision de arquitectura derivada: las posiciones Y de titulo y subtitulo en marco_grande_cuadrado son ahora ABSOLUTAS (cada una medida independientemente con editor_posicion_texto.html), no encadenadas (titulo + line_h + espacio -> subtitulo). El calculo encadenado fue la fuente de varios bugs de acumulacion de error durante esta sesion -- la posicion absoluta es mas simple y mas robusta para ajustes futuros, aunque requiera una medicion extra por cada bloque de texto en vez de una sola.
+
+Herramienta nueva: production/scripts/tools/editor_posicion_texto.html -- carga la imagen de portada real y permite ajustar posicion Y, ancho, tamano de fuente e interlineado de titulo/subtitulo con sliders sobre la imagen real, exportando los valores finales en pixeles reales del canvas de produccion. Reutilizable para cualquier ajuste futuro de posicion de texto sobre un asset real.
