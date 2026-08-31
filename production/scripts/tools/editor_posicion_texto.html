@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FYR — Editor de posición de texto</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 0; background: #1a1a1a; color: #f5ecd7;
+    font-family: -apple-system, sans-serif; overflow-y: auto; min-height: 100vh;
+  }
+  #toolbar {
+    padding: 10px 12px; background: #0a0a0a; display: flex; gap: 8px;
+    align-items: center; flex-wrap: wrap; border-bottom: 2px solid #4a7c59;
+    position: sticky; top: 0; z-index: 10;
+  }
+  #toolbar input[type=file] { color: #f5ecd7; max-width: 160px; font-size: 12px; }
+  #status { font-size: 13px; font-weight: 600; color: #e8b84b; }
+  #canvasWrap {
+    position: relative; width: 100%; overflow: hidden; background: #111;
+    display: flex; justify-content: center;
+  }
+  #canvasInner { position: relative; }
+  #bgImg { display: block; max-width: 100%; height: auto; }
+  .overlay-text {
+    position: absolute; font-family: Georgia, serif; text-align: center;
+    white-space: pre-line; cursor: move; user-select: none;
+    -webkit-user-select: none; touch-action: none;
+  }
+  #tituloOverlay {
+    color: #E8B84B;
+    font-weight: 700; line-height: 1.05;
+  }
+  #subtituloOverlay {
+    color: #1A1A1A; font-style: italic; font-weight: 700; line-height: 1.05;
+  }
+  #controls {
+    padding: 12px; background: #0a0a0a; display: flex; flex-direction: column; gap: 14px;
+  }
+  .ctrl-group { display: flex; flex-direction: column; gap: 4px; }
+  .ctrl-group label { font-size: 12px; color: #a8d5ba; display: flex; justify-content: space-between; }
+  .ctrl-group input[type=range] { width: 100%; }
+  .ctrl-group input[type=text] { background: #1a1a1a; color: #f5ecd7; border: 1px solid #4a7c59; border-radius: 4px; padding: 6px; font-size: 13px; }
+  h3 { color: #e8b84b; font-size: 13px; margin: 8px 0 0 0; border-top: 1px solid #333; padding-top: 10px; }
+  #output {
+    background: #1a1a1a; padding: 10px; border-radius: 6px; font-size: 11px;
+    color: #a8d5ba; white-space: pre; overflow-x: auto; margin-top: 8px;
+  }
+  button {
+    background: #4a7c59; color: #f5ecd7; border: none; padding: 8px 12px;
+    border-radius: 6px; font-size: 13px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <input type="file" id="fileInput" accept="image/*">
+  <div id="status">Cargá la imagen de portada</div>
+</div>
+
+<div id="canvasWrap">
+  <div id="canvasInner">
+    <img id="bgImg" style="display:none">
+    <div id="tituloOverlay" class="overlay-text" style="display:none">5 THINGS EVEN A
+3-YEAR-OLD CAN DO</div>
+    <div id="subtituloOverlay" class="overlay-text" style="display:none">The garden doesnt ask
+for grown-up hands.</div>
+  </div>
+</div>
+
+<div id="controls">
+  <h3>Texto</h3>
+  <div class="ctrl-group">
+    <label>Título</label>
+    <input type="text" id="tituloText" value="5 THINGS EVEN A
+3-YEAR-OLD CAN DO">
+  </div>
+  <div class="ctrl-group">
+    <label>Subtítulo</label>
+    <input type="text" id="subtituloText" value="The garden doesnt ask
+for grown-up hands.">
+  </div>
+
+  <h3>Título</h3>
+  <div class="ctrl-group">
+    <label>Posición Y (px reales de 1920) <span id="tituloYNum">1320</span></label>
+    <input type="range" id="tituloY" min="900" max="1700" value="1320" step="1">
+  </div>
+  <div class="ctrl-group">
+    <label>Ancho (FIJO, ya confirmado -- no editable) <span id="tituloWNum">898</span></label>
+    <input type="range" id="tituloW" min="898" max="898" value="898" step="1" disabled>
+  </div>
+  <div class="ctrl-group">
+    <label>Tamaño de fuente (FIJO, ya confirmado -- no editable) <span id="tituloSizeNum">93</span></label>
+    <input type="range" id="tituloSize" min="93" max="93" value="93" step="1" disabled>
+  </div>
+  <div class="ctrl-group">
+    <label>Interlineado (multiplicador) <span id="tituloLSNum">0.873</span></label>
+    <input type="range" id="tituloLS" min="0.5" max="2" value="0.873" step="0.001">
+  </div>
+
+  <h3>Subtítulo</h3>
+  <div class="ctrl-group">
+    <label>Posición Y (px reales de 1920) <span id="subYNum">1502</span></label>
+    <input type="range" id="subY" min="900" max="1850" value="1502" step="1">
+  </div>
+  <div class="ctrl-group">
+    <label>Ancho (FIJO, 65% del titulo, ya confirmado) <span id="subWNum">584</span></label>
+    <input type="range" id="subW" min="584" max="584" value="584" step="1" disabled>
+  </div>
+  <div class="ctrl-group">
+    <label>Tamaño de fuente (FIJO, ya confirmado -- no editable) <span id="subSizeNum">50</span></label>
+    <input type="range" id="subSize" min="50" max="50" value="50" step="1" disabled>
+  </div>
+  <div class="ctrl-group">
+    <label>Interlineado (multiplicador) <span id="subLSNum">0.936</span></label>
+    <input type="range" id="subLS" min="0.5" max="2" value="0.936" step="0.001">
+  </div>
+
+  <div id="output">Cargá una imagen para ver los valores</div>
+  <button id="copyBtn">Copiar valores</button>
+</div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const bgImg = document.getElementById('bgImg');
+const status = document.getElementById('status');
+const canvasInner = document.getElementById('canvasInner');
+const tituloOverlay = document.getElementById('tituloOverlay');
+const subtituloOverlay = document.getElementById('subtituloOverlay');
+
+let realW = 1080, realH = 1920, displayScale = 1;
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    bgImg.onload = () => {
+      realW = bgImg.naturalWidth;
+      realH = bgImg.naturalHeight;
+      displayScale = bgImg.clientWidth / realW;
+      bgImg.style.display = 'block';
+      tituloOverlay.style.display = 'block';
+      subtituloOverlay.style.display = 'block';
+      status.textContent = `Cargado: ${realW}x${realH}`;
+      updateAll();
+    };
+    bgImg.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+window.addEventListener('resize', () => {
+  if (realW) {
+    displayScale = bgImg.clientWidth / realW;
+    updateAll();
+  }
+});
+
+const inputs = ['tituloText','subtituloText','tituloY','tituloW','tituloSize','tituloLS','subY','subW','subSize','subLS'];
+inputs.forEach(id => {
+  document.getElementById(id).addEventListener('input', updateAll);
+});
+
+function updateAll() {
+  displayScale = bgImg.clientWidth / realW;
+
+  const tituloText = document.getElementById('tituloText').value;
+  const subtituloText = document.getElementById('subtituloText').value;
+  const tituloY = parseFloat(document.getElementById('tituloY').value);
+  const tituloW = parseFloat(document.getElementById('tituloW').value);
+  const tituloSize = parseFloat(document.getElementById('tituloSize').value);
+  const tituloLS = parseFloat(document.getElementById('tituloLS').value);
+  const subY = parseFloat(document.getElementById('subY').value);
+  const subW = parseFloat(document.getElementById('subW').value);
+  const subSize = parseFloat(document.getElementById('subSize').value);
+  const subLS = parseFloat(document.getElementById('subLS').value);
+
+  document.getElementById('tituloYNum').textContent = tituloY.toFixed(0);
+  document.getElementById('tituloWNum').textContent = tituloW.toFixed(0);
+  document.getElementById('tituloSizeNum').textContent = tituloSize.toFixed(0);
+  document.getElementById('tituloLSNum').textContent = tituloLS.toFixed(3);
+  document.getElementById('subYNum').textContent = subY.toFixed(0);
+  document.getElementById('subWNum').textContent = subW.toFixed(0);
+  document.getElementById('subSizeNum').textContent = subSize.toFixed(0);
+  document.getElementById('subLSNum').textContent = subLS.toFixed(3);
+
+  tituloOverlay.textContent = tituloText;
+  subtituloOverlay.textContent = subtituloText;
+
+  const tituloX = (realW - tituloW) / 2;
+  tituloOverlay.style.left = (tituloX * displayScale) + 'px';
+  tituloOverlay.style.top = (tituloY * displayScale) + 'px';
+  tituloOverlay.style.width = (tituloW * displayScale) + 'px';
+  tituloOverlay.style.fontSize = (tituloSize * displayScale) + 'px';
+  tituloOverlay.style.setProperty('-webkit-text-stroke', (6 * displayScale) + 'px #5C3A1E');
+  tituloOverlay.style.lineHeight = tituloLS;
+
+  const subX = (realW - subW) / 2;
+  subtituloOverlay.style.left = (subX * displayScale) + 'px';
+  subtituloOverlay.style.top = (subY * displayScale) + 'px';
+  subtituloOverlay.style.width = (subW * displayScale) + 'px';
+  subtituloOverlay.style.fontSize = (subSize * displayScale) + 'px';
+  subtituloOverlay.style.lineHeight = subLS;
+
+  document.getElementById('output').textContent =
+`TITULO_Y_MEDIDO = ${tituloY.toFixed(1)}
+TITULO_ANCHO = ${tituloW.toFixed(0)}
+TITULO_SIZE = ${tituloSize.toFixed(0)}
+TITULO_LINE_SPACING = ${tituloLS.toFixed(3)}
+
+SUBTITULO_Y = ${subY.toFixed(1)}
+SUBTITULO_ANCHO = ${subW.toFixed(0)}
+SUBTITULO_SIZE = ${subSize.toFixed(0)}
+SUBTITULO_LINE_SPACING = ${subLS.toFixed(3)}`;
+}
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    status.textContent = 'Copiado!';
+    setTimeout(() => { status.textContent = `Cargado: ${realW}x${realH}`; }, 1500);
+  }).catch(() => {
+    status.textContent = 'No se pudo copiar, seleccioná el texto manualmente';
+  });
+});
+</script>
+
+</body>
+</html>
