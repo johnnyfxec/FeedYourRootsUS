@@ -1,0 +1,34 @@
+{
+  "pieza_id": "PZA_demo",
+  "aspecto": "4:5",
+  "slides": [
+    {
+      "numero": 1,
+      "layout": "marco_grande_portada",
+      "imagen_escena": "S1_portada.png",
+      "texto_titulo": "MY SEED BOX WAS A DISASTER"
+    },
+    {
+      "numero": 2,
+      "layout": "full_bleed",
+      "imagen_escena": "S2_antes.png",
+      "texto_overlay": "Every seed packet just... thrown in a box."
+    },
+    {
+      "numero": 3,
+      "layout": "etiqueta_colgante",
+      "texto_cuerpo": "Sort by planting month, not by plant type. Your future self will thank you."
+    },
+    {
+      "numero": 4,
+      "layout": "ventana_polaroid",
+      "imagen_escena": "S4_resultado.png",
+      "texto_cuerpo": "Week 3: everything finally has its place."
+    },
+    {
+      "numero": 5,
+      "layout": "solo_texto",
+      "texto_cuerpo": "Small changes. Real results. Start today."
+    }
+  ]
+}

@@ -4,6 +4,8 @@ from layout_specs import LAYOUT_TYPES
 
 REQUIRED_BY_LAYOUT = {
     "marco_grande":      ["porcentaje_imagen", "imagen_escena"],
+    "marco_grande_portada": ["texto_titulo", "imagen_escena"],
+    "marco_grande_cuadrado": ["imagen_escena"],
     "doble_marco":       ["porcentaje_imagen", "imagen_escena_1", "imagen_escena_2"],
     "etiqueta_colgante": ["texto_cuerpo"],
     "nota_esquina":      ["texto_cuerpo"],
@@ -48,8 +50,8 @@ def load_config(path):
             if not slide.get(req):
                 errors.append(f"Slide {n} ({layout}): falta campo obligatorio {req}")
         # Tipo A necesita al menos un texto (excepto doble_marco donde es opcional)
-        if layout == "marco_grande" and not (slide.get("texto_titulo") or slide.get("texto_subtitulo")):
-            errors.append(f"Slide {n} (marco_grande): requiere texto_titulo o texto_subtitulo")
+        if layout in ("marco_grande", "marco_grande_cuadrado") and not (slide.get("texto_titulo") or slide.get("texto_subtitulo")):
+            errors.append(f"Slide {n} ({layout}): requiere texto_titulo o texto_subtitulo")
         acento = slide.get("acento")
         if acento not in VALID_ACCENTS:
             errors.append(f"Slide {n}: acento invalido: {acento}")

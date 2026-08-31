@@ -70,7 +70,7 @@ def fit_text(text, role, max_width, max_height, draw):
     while size >= min_size:
         font = _load_font(spec["font"], size)
         lines = _wrap_text(text, font, max_width, draw)
-        height, _ = _block_height(lines, font)
+        height, _ = _block_height(lines, font, line_spacing=spec.get("line_spacing", 1.2))
         if height <= max_height:
             return lines, font, False
         size -= STEP_PX
@@ -78,7 +78,7 @@ def fit_text(text, role, max_width, max_height, draw):
     # Minimo alcanzado y sigue sin caber: truncar
     font = _load_font(spec["font"], min_size)
     lines = _wrap_text(text, font, max_width, draw)
-    _, line_h = _block_height(lines, font)
+    _, line_h = _block_height(lines, font, line_spacing=spec.get("line_spacing", 1.2))
     max_lines = max(1, int(max_height // line_h))
     kept = lines[:max_lines]
     if kept:
@@ -102,8 +102,8 @@ def render_text_block(canvas, text, role, box, align="center"):
     draw = ImageDraw.Draw(canvas)
 
     lines, font, truncated = fit_text(text, role, w, h, draw)
-    _, line_h = _block_height(lines, font)
-    total_h, _ = _block_height(lines, font)
+    _, line_h = _block_height(lines, font, line_spacing=spec.get("line_spacing", 1.2))
+    total_h, _ = _block_height(lines, font, line_spacing=spec.get("line_spacing", 1.2))
     cursor_y = y + max(0, (h - total_h) / 2)  # centrado vertical en el box
 
     for line in lines:
@@ -126,6 +126,48 @@ def render_text_block(canvas, text, role, box, align="center"):
         cursor_y += line_h
 
     return {"truncated": truncated, "lines_rendered": len(lines)}
+
+
+def render_text_block_top(canvas, text, role, x, y, w, max_h, align="center"):
+    """Como render_text_block, pero SIN centrado vertical automatico -- el
+    texto arranca exactamente en `y`, sin offset. Existe porque el centrado
+    automatico de render_text_block genera un offset impredecible cuando el
+    tamano de fuente se reduce internamente (fit_text puede bajar de 93 a
+    91px por ejemplo), y ese offset se acumula en cascada cuando se
+    encadenan varios bloques de texto (titulo -> subtitulo) uno debajo del
+    otro con una Y calculada a partir de donde termino el anterior.
+    Retorna dict con 'truncated' y 'height' (alto real usado, para que el
+    llamador pueda encadenar el siguiente bloque con precision)."""
+    if role not in TYPOGRAPHY:
+        raise TextRenderError(f"rol de texto desconocido: {role}")
+
+    spec = TYPOGRAPHY[role]
+    draw = ImageDraw.Draw(canvas)
+
+    lines, font, truncated = fit_text(text, role, w, max_h, draw)
+    total_h, line_h = _block_height(lines, font, line_spacing=spec.get("line_spacing", 1.2))
+
+    cursor_y = y  # SIN offset de centrado -- arranca exactamente en y
+    for line in lines:
+        line_w = draw.textlength(line, font=font)
+        if align == "center":
+            cursor_x = x + (w - line_w) / 2
+        elif align == "left":
+            cursor_x = x
+        else:
+            cursor_x = x + (w - line_w)
+
+        if spec.get("stroke") and spec.get("stroke_w", 0) > 0:
+            draw.text(
+                (cursor_x, cursor_y), line, font=font,
+                fill=spec["color"], stroke_width=spec["stroke_w"],
+                stroke_fill=spec["stroke"],
+            )
+        else:
+            draw.text((cursor_x, cursor_y), line, font=font, fill=spec["color"])
+        cursor_y += line_h
+
+    return {"truncated": truncated, "lines_rendered": len(lines), "height": total_h, "line_h": line_h}
 
 
 def render_text_block_rotated(canvas, text, role, w, h, angle, cx, cy, align="center"):
