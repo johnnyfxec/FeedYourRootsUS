@@ -9,6 +9,42 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-08-30
+
+- **assemble.py (COMPLETO)** -- el motor de ensamblado local queda terminado:
+  main.py (orquestador), image_fetcher.py (verificacion de assets, no
+  descarga directa), compositores Tipo A/B/C/BASE/acentos completos y
+  probados. Primera pieza real generada de punta a punta (PZA_demo, 5
+  slides en produccion/output/).
+- **marco_grande_cuadrado (layout nuevo)** -- portada de reel/video 9:16,
+  asset fijo con vid+hoja integrados (FYR_ASSET_marco-cuadrado_9x16_v1.png,
+  registrado en Airtable y Drive C12_Frames), sin escalado dinamico.
+- **marco_grande_portada (layout nuevo)** -- portada de carrusel 4:5, sin
+  subtitulo, ancho fijo (808px) replicando el mismo ancho absoluto que la
+  portada 9:16 -- decision de consistencia de marca (4:5 vertical / 9:16
+  cuadrado como default de toda portada).
+- **Bug critico resuelto: centrado vertical impredecible en texto
+  encadenado** -- render_text_block centraba el texto dentro de su box,
+  generando offset variable cuando el tamano de fuente se reducia
+  internamente. Fix: render_text_block_top (nueva funcion), y decision de
+  usar posiciones Y absolutas (medidas independientes) en vez de
+  encadenadas para titulo/subtitulo de portada.
+- **Herramienta nueva: editor_posicion_texto.html** -- carga la portada
+  real y permite ajustar posicion/tamano/interlineado de texto con
+  sliders sobre la imagen real, exportando valores en pixeles reales.
+- **Geometria rotada medida:** doble_marco, etiqueta_colgante,
+  nota_esquina -- todos confirmados rotados en el asset real (~8-12 grados)
+  con medidor_esquinas.html, corrigiendo el algoritmo simple original que
+  asumia alineacion a ejes.
+- **FYR_Asset_Governance_Policy.md** -- aclarada la descripcion de
+  C12_Frames (dos tipos de marco distintos: rectangular alto vs cuadrado
+  con decoracion integrada).
+- **Feed-Your-Roots-Brand-Bible.md** -- excepcion tipografica Source Serif
+  Pro corregida (nombre real, no el sucesor Source Serif 4).
+- **FYR_Protocolo_De_Trabajo.md** -- fusionada estrategia de ramas desde
+  CLAUDE.md (rama de Claude Code).
+- **TikTok:** cuenta activa (estaba bloqueada por SIM prepago, ya resuelto).
+
 ## 2026-08-28
 
 - **FYR_Protocolo_De_Trabajo.md** — agrega sección "Estrategia de ramas",
