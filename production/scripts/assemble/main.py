@@ -51,7 +51,7 @@ def assemble_slide(slide, aspecto, assets_dir):
     return canvas, warnings
 
 
-def assemble_pieza(config_path, assets_dir=None, output_dir=None, version=1):
+def assemble_pieza(config_path, assets_dir=None, output_dir=None, version=1, skip_asset_check=False):
     cfg = load_config(config_path)
     pieza_id = cfg["pieza_id"]
     aspecto = cfg["aspecto"]
@@ -59,6 +59,18 @@ def assemble_pieza(config_path, assets_dir=None, output_dir=None, version=1):
     assets_dir = assets_dir or DEFAULT_ASSETS_DIR
     output_dir = output_dir or os.path.join(DEFAULT_OUTPUT_DIR, pieza_id)
     os.makedirs(output_dir, exist_ok=True)
+
+    if not skip_asset_check:
+        from image_fetcher import check_assets
+        check = check_assets(config_path, assets_dir)
+        if not check["listo_para_ensamblar"]:
+            faltantes = check["layout_assets_faltantes"] + check["escenas_faltantes"]
+            nombres = [f.get("filename", "?") for f in faltantes]
+            raise FileNotFoundError(
+                f"Assets faltantes antes de ensamblar {pieza_id}: {nombres}. "
+                f"Corre image_fetcher.py para el detalle completo de donde buscarlos, "
+                f"o usa skip_asset_check=True si ya los verificaste por otra via."
+            )
 
     all_warnings = []
     errors = []
