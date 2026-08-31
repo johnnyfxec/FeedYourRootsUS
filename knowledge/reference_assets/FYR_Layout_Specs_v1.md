@@ -66,49 +66,84 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 ## 5. Etiqueta colgante
 
-**Assets:** `FYR_LAYOUT_etiqueta-colgante_4x5_v1.png`, `FYR_LAYOUT_etiqueta-colgante_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** copy corto e íntimo, sensación de nota personal.
-**Activador:** 04 Storytelling, 06 Secreto.
+Assets: FYR_LAYOUT_etiqueta-colgante_4x5_v1.png, FYR_LAYOUT_etiqueta-colgante_9x16_v1.png
+Ubicacion en Drive: 01_Brand_Assets/C13_Layout_Elements/
+Rol narrativo: copy corto e intimo, sensacion de nota personal.
+Activador: 04 Storytelling, 06 Secreto.
 
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
+ACTUALIZADO 30-ago-2026: el rectangulo kraft esta ROTADO en el asset real (no alineado a ejes como se asumia antes). Medido con medidor_esquinas.html (4 esquinas reales).
+
+| | 4:5 (1080x1350) | 9:16 (1080x1920) |
 |---|---|---|
-| Bbox del contenido opaco | x: 555–931 (51%-86%) / y: 160–1141 (12%-85%) | x: 541–987 (50%-91%) / y: 344–1515 (18%-79%) |
-| Zona de texto disponible | Dentro del cuerpo de la etiqueta, aprox. x: 580-910, y: 480-1050 | Dentro del cuerpo de la etiqueta, proporcional a la posición de arriba |
+| Centro del rectangulo (rotado) | cx=742.2, cy=898.7 | cx=762.4, cy=1233.3 |
+| Ancho x Alto (del rectangulo, sin rotar) | 275.4 x 347.9 | 330.9 x 411.3 |
+| Angulo de rotacion | 11.98 grados | 10.77 grados |
+| Zona de texto | 85% del ancho, 85% del alto del rectangulo medido -- ya excluye el ojal/cordel (la medicion empezo justo debajo de esa zona), es 100% zona segura | igual criterio |
+
+El texto se renderiza en un lienzo aparte y se rota al mismo angulo antes de pegarse centrado en (cx, cy) -- ver render_text_block_rotated en text_renderer.py.
 
 ---
 
 ## 6. Nota-kraft en esquina
 
-**Assets:** `FYR_LAYOUT_nota-esquina_4x5_v1.png`, `FYR_LAYOUT_nota-esquina_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** aside/comentario que no interrumpe la escena principal.
-**Activador:** 06 Secreto, 20 Revelación, 12 Curiosidad.
+Assets: FYR_LAYOUT_nota-esquina_4x5_v1.png, FYR_LAYOUT_nota-esquina_9x16_v1.png
+Ubicacion en Drive: 01_Brand_Assets/C13_Layout_Elements/
+Rol narrativo: aside/comentario que no interrumpe la escena principal.
+Activador: 06 Secreto, 20 Revelacion, 12 Curiosidad.
 
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
+ACTUALIZADO 30-ago-2026: mismo hallazgo que etiqueta colgante -- rotada en el asset real.
+
+| | 4:5 (1080x1350) | 9:16 (1080x1920) |
 |---|---|---|
-| Bbox del contenido opaco | x: 410–924 (38%-86%) / y: 581–1189 (43%-88%) | x: 390–986 (36%-91%) / y: 854–1556 (44%-81%) |
-| Zona de texto disponible | Sobre la cara visible de la nota, aprox. x: 430-880, y: 620-1120 | Proporcional, dentro de la cara visible de la nota |
+| Centro del rectangulo (rotado) | cx=666.6, cy=928.0 | cx=690.7, cy=1257.3 |
+| Ancho x Alto (del rectangulo, sin rotar) | 337.0 x 327.7 | 412.8 x 373.8 |
+| Angulo de rotacion | 12.08 grados | 11.66 grados |
+| Zona de texto | 85% del ancho, 85% del alto del rectangulo medido | igual criterio |
 
 ---
 
 ## 7. Doble marco superpuesto
 
-**Assets:** `FYR_LAYOUT_doble-marco_4x5_v1.png`, `FYR_LAYOUT_doble-marco_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** antes/después en un solo slide, sin repetir Marco grande dos veces.
-**Activador:** 07 Contraste/Versus (uso primario, alternativa a Marco grande ×2).
+Assets: FYR_LAYOUT_doble-marco_4x5_v1.png, FYR_LAYOUT_doble-marco_9x16_v1.png
+Ubicacion en Drive: 01_Brand_Assets/C13_Layout_Elements/
+Rol narrativo: antes/despues en un solo slide, sin repetir Marco grande dos veces.
+Activador: 07 Contraste/Versus (uso primario, alternativa a Marco grande x2).
 
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
-|---|---|---|
-| Bbox del contenido opaco | x: 58–1011 (5%-94%) / y: 86–1273 (6%-94%) | x: 54–1021 (5%-95%) / y: 368–1556 (19%-81%) |
-| Marco trasero (rotado -6°) | Posición superior-izquierda | Posición superior |
-| Marco frontal (rotado +4°) | Posición inferior-derecha, superpuesto con sombra | Posición inferior, superpuesto con sombra |
-| Imágenes a pedir en Gemini | Dos escenas (antes/después), sin marco propio, recortadas a la ventana interior de cada marco individual — medir cada ventana por separado antes de usar en producción | Igual, proporciones verticales |
+ACTUALIZADO 30-ago-2026: pendiente resuelto -- ambas ventanas medidas por separado con medidor_esquinas.html (4 esquinas reales de cada una).
 
-**Nota de historial:** la primera generación 9:16 de este layout salió con el interior de ambos marcos en negro sólido en vez de transparente — corregido en v2 (el archivo referenciado arriba). Verificar siempre alpha real antes de dar por buena una entrega.
+| | 4:5 -- trasero | 4:5 -- frontal | 9:16 -- trasero | 9:16 -- frontal |
+|---|---|---|---|---|
+| Ancho x Alto | 434.8 x 584.4 | 448.0 x 588.0 | 439.9 x 598.1 | 451.8 x 589.3 |
+| Angulo | -8.47 grados | 10.89 grados | -8.70 grados | 10.93 grados |
+| Centro (cx, cy) | 349.1, 441.8 | 702.6, 907.6 | 347.7, 721.3 | 704.0, 1193.1 |
+
+Cada imagen de escena se recorta (crop-to-fill, con 2% de overscan para evitar bordes blancos en las esquinas) al tamano de su ventana SIN rotar, luego se rota al angulo real, y se pega centrada en (cx, cy). El marco de madera (con alpha real) va encima, tapando cualquier sobrante.
+
+Nota de historial: la primera generacion 9:16 de este layout salio con el interior de ambos marcos en negro solido en vez de transparente -- corregido en v2 (el archivo referenciado arriba). Verificar siempre alpha real antes de dar por buena una entrega.
 
 ---
+
+## 13. Marco cuadrado (portada de reel/video 9:16) -- NUEVO 30-ago-2026
+
+Asset: FYR_ASSET_marco-cuadrado_9x16_v1.png (solo 9:16, no existe version 4:5 -- el 4:5 usa el marco_grande normal via marco_grande_portada)
+Ubicacion en Drive: 01_Brand_Assets/C12_Frames/
+Rol narrativo: portada estandar de reel/video, con vid y hoja decorativas ya integradas en el asset.
+Activador: cualquier tema, es el formato de portada por defecto para 9:16 (decision de consistencia de marca: 4:5 vertical / 9:16 cuadrado).
+
+El asset es un LIENZO COMPLETO (1080x1920, no solo el marco recortado) con la vid y la hoja ya en su posicion final de diseno -- se pega fijo en (0,0), sin ningun escalado dinamico.
+
+| | Valor medido (9:16) |
+|---|---|
+| Ventana interior (para la imagen de escena) | x=179.4, y=320.3, ancho=722.0, alto=727.8 -- casi cuadrada, angulo de rotacion practicamente 0 (confirmado sin rotacion real) |
+| Y superior del titulo | 1234.0 (medido con editor_posicion_texto.html) |
+| Ancho del bloque de titulo | 898px, sin subtitulo en este layout aplica el mismo ancho a la portada 4:5 (marco_grande_portada) |
+| Y superior del subtitulo | 1454.0 |
+| Ancho del bloque de subtitulo | 584px (65% del ancho del titulo) |
+
+Ambas posiciones Y son ABSOLUTAS, medidas independientemente -- no se calculan de forma encadenada (titulo + espacio -> subtitulo), ver Seccion 8 de FYR_Motor_Ensamblado_Arquitectura_v1.md para el porque.
+
+---
+
 
 ## 8. Palabra-acuarela (referencia de estilo — NO asset reutilizable)
 
