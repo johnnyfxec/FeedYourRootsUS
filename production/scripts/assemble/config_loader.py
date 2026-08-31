@@ -6,7 +6,7 @@ REQUIRED_BY_LAYOUT = {
     "marco_grande":      ["porcentaje_imagen", "imagen_escena"],
     "marco_grande_portada": ["texto_titulo", "imagen_escena"],
     "marco_grande_cuadrado": ["imagen_escena"],
-    "doble_marco":       ["porcentaje_imagen", "imagen_escena_1", "imagen_escena_2"],
+    "doble_marco":       ["imagen_escena_1", "imagen_escena_2"],
     "etiqueta_colgante": ["texto_cuerpo"],
     "nota_esquina":      ["texto_cuerpo"],
     "ventana_polaroid":  ["imagen_escena"],

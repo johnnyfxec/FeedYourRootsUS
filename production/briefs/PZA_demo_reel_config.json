@@ -1,0 +1,31 @@
+{
+  "pieza_id": "PZA_demo_reel",
+  "aspecto": "9:16",
+  "slides": [
+    {
+      "numero": 1,
+      "layout": "marco_grande_cuadrado",
+      "imagen_escena": "R1_huerto.png",
+      "texto_titulo": "3 THINGS I CHANGED IN MY GARDEN",
+      "texto_subtitulo": "Small yard, real harvest."
+    },
+    {
+      "numero": 2,
+      "layout": "texto_lateral",
+      "imagen_escena": "R2_regando.png",
+      "texto_cuerpo": "First: I stopped watering every single day. Roots need to search for water.",
+      "lado_imagen": "izquierda"
+    },
+    {
+      "numero": 3,
+      "layout": "full_bleed",
+      "imagen_escena": "R3_composta.png",
+      "texto_overlay": "Second: I started composting kitchen scraps. Free soil, less waste."
+    },
+    {
+      "numero": 4,
+      "layout": "solo_texto",
+      "texto_cuerpo": "Third: I planted things I actually eat, not what looked good online."
+    }
+  ]
+}

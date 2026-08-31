@@ -292,7 +292,14 @@ def _compose_marco_grande_cuadrado(canvas, slide, aspecto, assets_dir):
 
     titulo_x = round((canvas_w - TITULO_ANCHO) / 2)
     subtitulo_x = round((canvas_w - SUBTITULO_ANCHO) / 2)
-    max_h_disponible = canvas_h - TITULO_Y_MEDIDO
+    SUBTITULO_Y_MEDIDO_REF = 1454.0
+    # El titulo NUNCA debe crecer hacia el subtitulo -- su max_h real es
+    # el espacio hasta donde arranca el subtitulo (si existe), no todo el
+    # canvas restante. Con este limite real, fit_text reduce el tamano
+    # automaticamente para textos largos (dentro del minimo de 70%, que
+    # SI alcanza para 2 lineas en este espacio) -- nunca trunca un titulo,
+    # que quedaria sin sentido semantico.
+    max_h_disponible = (SUBTITULO_Y_MEDIDO_REF - TITULO_Y_MEDIDO) if subtitulo else (canvas_h - TITULO_Y_MEDIDO)
 
     # Espacio fijo entre titulo y subtitulo, medido con medidor_esquinas.html
     # sobre el mockup real (78.3px entre la ultima linea del titulo y la

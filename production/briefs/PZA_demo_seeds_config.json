@@ -1,0 +1,45 @@
+{
+  "pieza_id": "PZA_demo_seeds",
+  "aspecto": "4:5",
+  "slides": [
+    {
+      "numero": 1,
+      "layout": "marco_grande_portada",
+      "imagen_escena": "S1_caja_desordenada.png",
+      "texto_titulo": "THE MISTAKE THAT WAS RUINING MY SEEDS"
+    },
+    {
+      "numero": 2,
+      "layout": "full_bleed",
+      "imagen_escena": "S2_semillas_regadas.png",
+      "texto_overlay": "Every packet just... thrown in a box. No order at all."
+    },
+    {
+      "numero": 3,
+      "layout": "etiqueta_colgante",
+      "texto_cuerpo": "Sort by planting month, not by plant type. It changes everything."
+    },
+    {
+      "numero": 4,
+      "layout": "doble_marco",
+      "imagen_escena_1": "S4a_antes.png",
+      "imagen_escena_2": "S4b_despues.png"
+    },
+    {
+      "numero": 5,
+      "layout": "nota_esquina",
+      "texto_cuerpo": "Fun fact: seeds stored this way stay viable up to 3 years longer."
+    },
+    {
+      "numero": 6,
+      "layout": "ventana_polaroid",
+      "imagen_escena": "S6_resultado_final.png",
+      "texto_cuerpo": "Week 4: everything finally has a home."
+    },
+    {
+      "numero": 7,
+      "layout": "solo_texto",
+      "texto_cuerpo": "Small system. Real results. Start sorting today."
+    }
+  ]
+}
