@@ -7,7 +7,7 @@ import os
 from PIL import Image, ImageDraw
 
 from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone
-from text_renderer import crop_to_fill, render_text_block
+from text_renderer import crop_to_fill, render_text_block, render_text_block_top
 
 
 class CompositorError(Exception):
@@ -87,15 +87,26 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     bg = Image.new("RGB", (canvas_w, canvas_h), _hex_to_rgb(PARCHMENT))
     canvas.paste(bg, (0, 0))
 
-    imagen_h = round(canvas_h * 2 / 3)
+    # Proporcion derivada (decision de Johnny, 13-sep-2026): la zona de
+    # imagen se calcula a partir del ratio real de la imagen, no un
+    # porcentaje fijo -- altura ideal = ancho del canvas / ratio de la
+    # imagen. Topes: maximo 80% de imagen (deja piso de 20% para texto,
+    # validado contra un caso real de imagen casi-4:5 -- ver Arquitectura
+    # Seccion 2.5). Sin piso minimo de imagen: ninguna imagen del catalogo
+    # actual es panoramica: si eso cambia, revisar este criterio.
     scene = _load_scene(imagen_escena, assets_dir)
+    img_ratio = scene.width / scene.height
+    altura_ideal = canvas_w / img_ratio
+    imagen_h = round(min(altura_ideal, canvas_h * 0.80))
+
     scene_fit, off_x, off_y = _contain_fit(scene, canvas_w, imagen_h)
     canvas.paste(scene_fit, (off_x, off_y))
 
     franja_y = imagen_h
     franja_h = canvas_h - franja_y
-    box = (round(canvas_w * 0.10), franja_y + 20, round(canvas_w * 0.80), franja_h - 40)
-    r = render_text_block(canvas, texto, "cuerpo", box)
+    texto_y = franja_y + 20
+    texto_max_h = franja_h - 40
+    r = render_text_block_top(canvas, texto, "cuerpo", round(canvas_w * 0.10), texto_y, round(canvas_w * 0.80), texto_max_h)
 
     warnings = []
     if r["truncated"]:
@@ -111,8 +122,7 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
     canvas_w = CANVAS[aspecto]["w"]
     margen_top, margen_bottom, usable_h = usable_zone(aspecto)
 
-    box = (round(canvas_w * 0.12), round(margen_top), round(canvas_w * 0.76), round(usable_h))
-    r = render_text_block(canvas, texto, "cuerpo", box)
+    r = render_text_block_top(canvas, texto, "cuerpo", round(canvas_w * 0.12), round(margen_top), round(canvas_w * 0.76), round(usable_h))
 
     warnings = []
     if r["truncated"]:
@@ -156,8 +166,7 @@ def _compose_texto_lateral(canvas, slide, aspecto, assets_dir):
 
     canvas.paste(scene_cropped, (img_x, round(margen_top)))
 
-    box = (text_x0, round(margen_top), text_x1 - text_x0, round(usable_h))
-    r = render_text_block(canvas, texto, "cuerpo", box, align=align)
+    r = render_text_block_top(canvas, texto, "cuerpo", text_x0, round(margen_top), text_x1 - text_x0, round(usable_h), align=align)
 
     warnings = []
     if r["truncated"]:

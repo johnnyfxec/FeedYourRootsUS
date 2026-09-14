@@ -9,6 +9,62 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-09-13 a 2026-09-14
+
+- **Bug critico resuelto: centrado impredecible en marco_grande_portada** --
+  mismo patron que el bug de 30-ago mencionado abajo, ahora en el titulo de
+  portada de carrusel: render_text_block centraba el texto dentro de su box,
+  generando offset cuando fit_text reducia la fuente. Fix: render_text_block_top
+  con margen fijo de 20px bajo el marco.
+- **Salto de linea manual en titulos (\n en texto_titulo)** -- _wrap_text
+  hacia text.split(), que colapsaba \n como espacio -- no habia forma de
+  forzar jerarquia retorica en un titulo de 2 lineas. Fix: _wrap_text respeta
+  \n como salto forzado, wrap automatico dentro de cada segmento.
+- **full_bleed corregido de raiz + ventana_texto (layout nuevo)** -- full_bleed
+  recortaba la imagen al canvas completo y pegaba un overlay semi-transparente
+  encima, dejando SIEMPRE imagen real visible detras del texto sin importar el
+  contenido. Confirmado con evidencia visual real en PZA_1.2 Slide 2.
+  full_bleed se corrige a SOLO imagen (modo contain, nunca crop), nunca texto.
+  ventana_texto (nuevo) reemplaza el uso-con-texto: imagen contenida arriba +
+  franja de texto SOLIDA (sin transparencia) abajo. Refaccion completa de
+  punta a punta: codigo (base.py, config_loader.py, layout_specs.py),
+  gobernanza (FYR_Layout_Specs_v1.md, FYR_Motor_Ensamblado_Arquitectura_v1.md,
+  FYR_Principios_De_Composicion.md), SKILL.md (3 referencias corregidas), y
+  migracion de los 4 briefs existentes que usaban full_bleed con texto.
+- **Proporcion derivada en ventana_texto** -- la zona de imagen ya no es 2/3
+  fijo, se calcula a partir del ratio real de la imagen (ancho canvas / ratio),
+  con tope maximo 80% imagen / piso minimo 20% texto. Validado con caso real
+  (portada del Half-Acre Blueprint, ratio 0.773 -> 78% imagen calculado antes
+  del tope, coincide con el 80% pedido).
+- **render_text_block_top aplicado a texto de cuerpo** -- solo_texto,
+  ventana_texto, texto_lateral usaban render_text_block (centrado, con el
+  mismo bug de offset). Los 3 migrados a render_text_block_top.
+- **Politica de salto de linea manual en texto de cuerpo (gobernanza nueva)**
+  -- 3 formas retoricas identificadas (producto/activo nombrado -> linea
+  propia; serie de clausulas cortas -> setup agrupado + remate aislado; caso
+  general -> pausa gramatical mas cercana al punto medio), con verificacion
+  de ancho real via draw.textlength() antes de fijar el corte. Documentado en
+  FYR_Motor_Ensamblado_Arquitectura_v1.md Seccion 3.
+- **Puentes narrativos entre slides de imagen pura (gobernanza nueva,
+  FYR_Principios_De_Composicion.md Seccion 8)** -- Test de Silueta (principio
+  de animacion clasica) + apertura/cierre de loop narrativo (ya documentado
+  en Sistema_Maestro_CRS_v2.md) combinados en una regla: cuando una secuencia
+  de full_bleed cambia de sujeto o abre un loop sin nombrarlo, insertar un
+  slide solo_texto puente -- nunca agregarle texto a la imagen. Fase 4 del
+  roadmap (extension a video/reels) identificada y anotada, no iniciada.
+- **Limpieza de repositorio:** .gitignore actualizado (produccion nunca va a
+  Git -- production/briefs/, assets_local/, output/, pdfs_normalized/);
+  archivos ya trackeados desde antes sacados del tracking con git rm --cached
+  (contenido intacto en disco). Confirmado que las 3 piezas demo
+  (PZA_demo/_seeds/_reel) usaban placeholders sinteticos que ocultaban el bug
+  de full_bleed -- no son referencia confiable hasta regenerarse.
+- **FYR_Protocolo_De_Trabajo.md** -- 6 reglas de comportamiento nuevas:
+  codigo siempre con indice de linea, grep/sed de confirmacion en el mismo
+  bloque que el cambio, comando de Termux automatico ante pedidos de
+  actualizar/verificar, prohibicion de /tmp, evitar `!` en heredocs de bash
+  interactivo (history expansion), y registro obligatorio en este CHANGELOG
+  tras hitos importantes.
+
 ## 2026-08-30
 
 - **assemble.py (COMPLETO)** -- el motor de ensamblado local queda terminado:

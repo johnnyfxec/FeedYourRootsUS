@@ -88,5 +88,25 @@ Estado actual: ninguno de estos 4 checks existe todavia en codigo. Este document
 - Fase 1: config_loader.py exige rol_narrativo en el schema; etiqueta_colgante/nota_esquina exigen imagen de fondo; doble_marco gana campo de texto de anclaje (con medicion previa).
 - Fase 2: motor de decision -- dado el rol_narrativo y el layout, calcular automaticamente tamano/posicion dentro de los rangos de la Seccion 1, en vez de coordenadas fijas por layout.
 - Fase 3: checklist de auto-verificacion (Seccion 6) implementado como funcion que corre antes de que main.py de una pieza por exportada.
+- Fase 4 (identificada 13-sep-2026, no iniciada): extender la Seccion 8 (Puentes narrativos) a video/reels. El tiempo aparece como variable nueva -- el Test de Silueta deja de ser solo composicion y se vuelve tambien de duracion (una imagen que necesita 3 segundos para leerse pero el clip solo la sostiene 2 rompe el loop por timing, no por diseno). En video el puente narrativo puede resolverse con una linea de narracion cayendo sobre la imagen existente (insercion temporal) en vez de un slide nuevo (insercion espacial) -- mecanismo distinto, no el mismo truco trasladado. La unidad atomica de planeacion en video probablemente deba ser el "beat" (imagen + duracion + linea de narracion + movimiento de camara + caption), no el "slide" -- FYR ya tiene un precedente de esto en el shot list de 13 beats documentado para "Video 1 (WHY)".
 
 Cada fase se ataca como su propia sesion de trabajo, con verificacion visual real antes de pasar a la siguiente -- el mismo metodo que usamos para construir el resto de assemble.py, aplicado a esta capa nueva.
+
+---
+
+## 8. Puentes narrativos entre slides de imagen pura (13-sep-2026, decision de Johnny)
+
+**Problema que resuelve:** una secuencia de slides full_bleed (imagen pura, sin texto -- ver Seccion 2) puede perder al espectador de baja capacidad de inferencia cuando el SUJETO o REGISTRO de la imagen cambia de un slide al siguiente, sin ningun texto que marque el giro. Confirmado con evidencia real en PZA_1.2: Slide 2 (ilustracion-journal comparando "mi media acre" vs "el vecino de 5 acres") pasa a Slide 3 (foto de un patio descuidado) sin que nada aclare de quien es ese patio -- podria leerse como mas detalle del vecino, o como el "antes" del narrador. El espectador pierde el hilo no por mal diseño de cada imagen, sino porque el salto entre ellas no esta anclado.
+
+**Marco conceptual (dos principios de oficio narrativo, no inventados para FYR):**
+
+1. **Test de Silueta** (principio de animacion clasica -- Disney/Pixar exigen que cada frame se lea solo, en 1-2 segundos, sin depender de contexto externo): aplicado a una imagen aislada, no explica si el sujeto es "yo" o "el otro", ni si es metafora o documento real, ese frame FALLA el test -- necesita anclaje.
+2. **Apertura/cierre de loop narrativo** (ya documentado como arquitectura de hook en Sistema_Maestro_CRS_v2.md, Parte 3): un CIERRE de loop puede ser puramente visual -- el cerebro reconoce una resolucion sin que haga falta explicarla (ej. Slide 3 a Slide 4 en PZA_1.2, antes/despues del mismo espacio, el contraste cierra solo). Una APERTURA o GIRO de loop (una pregunta nueva que la imagen genera pero nadie formula en palabras) SIEMPRE necesita anclaje textual -- el cerebro no puede registrar una pregunta que nadie hizo.
+
+**Regla de aplicacion:** entre dos slides full_bleed consecutivos, evaluar la transicion contra ambos principios:
+- Si el segundo slide PASA el Test de Silueta por si solo (queda claro quien/que/por que sin ayuda externa) Y la transicion es un CIERRE de loop (resolucion, contraste, pago de una promesa ya hecha) -> no necesita puente.
+- Si el segundo slide FALLA el Test de Silueta, O la transicion es una APERTURA/GIRO de loop (cambio de sujeto, cambio de "el otro" a "yo", cambio de metafora a documento real) -> insertar un slide `solo_texto` corto (una sola clausula, no un parrafo) entre ambos que nombre el giro.
+
+**No es "cada full_bleed necesita texto"** -- eso contradiria la Seccion 2 (full_bleed es SOLO imagen, sin excepcion). La solucion nunca es agregarle texto a la imagen -- es insertar un slide puente nuevo entre las dos imagenes.
+
+**Ejemplo real aplicado (PZA_1.2):** entre Slide 2 (journal) y Slide 3 (patio descuidado) se inserta un slide `solo_texto` nuevo con el texto "This is where my half acre started." -- resuelve el Test de Silueta (establece que el patio es del narrador, "my") y nombra la apertura del loop (un punto de partida, "started", antes de mostrar la transformacion en los slides siguientes).

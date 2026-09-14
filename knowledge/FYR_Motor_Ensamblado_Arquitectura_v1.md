@@ -137,6 +137,24 @@ Ningún texto se renderiza con tamaño "a ojo" — cada ROL tiene fuente, tamañ
 3. Si el bloque de texto resultante excede el alto disponible de su zona: reducir tamaño en pasos de 2px y repetir, hasta un mínimo de 70% del tamaño base.
 4. Si aún al mínimo no cabe: truncar con "…" al final de la última línea que sí cabe, y registrar advertencia en el log de ensamblado (no falla el proceso completo, pero se reporta al usuario al final).
 
+### Política de salto de línea manual en texto de cuerpo (13-sep-2026, decisión de Johnny)
+
+**Problema que resuelve:** `_wrap_text` (text_renderer.py) soporta `\n` como salto de línea forzado desde el fix de título del 13-sep, pero ningún texto de cuerpo (`texto_cuerpo`, `texto_overlay`) lo estaba usando -- el wrap automático por ancho corta a ciegas, sin criterio retórico, y puede dejar una palabra de conector huérfana en su propia línea (ej. "Every" separado de "square foot has a job"). Confirmado con evidencia visual real en PZA_1.2 Slide 5.
+
+**Principio general:** quien arma el brief (Claude Code u otra sesión) decide el/los `\n` de un texto de cuerpo ANTES de que el motor lo reciba -- mismo principio que "Claude Code nunca escribe coordenadas" (Sección 6.1): el motor no adivina la jerarquía retórica, la ejecuta.
+
+**Las 3 formas retóricas de texto de cuerpo en FYR, y su regla de corte:**
+
+1. **Nombra un producto o activo de FYR** (ej. "The Half-Acre Blueprint", "Seed Library"): el nombre del producto va SOLO en su propia línea -- resalta la marca, igual que el patrón usado en título (ver ejemplo "5 ACRES\nVS HALF AN ACRE"). El resto de la oración se reparte en la(s) línea(s) siguientes, cortando en la pausa gramatical más natural (coma, conjunción) si no entra completo en una sola línea.
+   - Ejemplo: `"The Half-Acre Blueprint\nshows you exactly where everything goes,\nbefore you plant a thing."`
+
+2. **Serie de 2-3 cláusulas cortas terminadas en punto** (patrón reframe o CTA -- ej. "It's not the land. It's the layout. Every square foot has a job."): agrupar las cláusulas de setup en una línea, aislar el remate/punchline (la última cláusula, la que cierra la idea) en su propia línea -- misma lógica de peso retórico que el título.
+   - Ejemplo: `"It's not the land. It's the layout.\nEvery square foot has a job."`
+
+3. **Caso general** (oración única, sin producto nombrado, sin estructura de remate): cortar en la pausa gramatical más cercana al punto medio visual del texto (coma, conjunción que inicia una cláusula nueva) -- nunca partir un sintagma a media frase, nunca dejar un conector o preposición solo en su línea.
+
+**Verificación antes de fijar el corte:** cada línea propuesta no debe superar ~90% del ancho disponible real del layout (864px en `ventana_texto`, 821px en `solo_texto` -- ambos para aspecto 4:5; `texto_lateral` varía según `porcentaje_imagen`), medido con `draw.textlength()` contra la fuente y tamaño real del rol "cuerpo" (Lora.ttf, 40px) -- no estimado a ojo. Si una línea propuesta se pasa del 90%, se busca otro punto de corte antes de darla por buena.
+
 ---
 
 ## 4. Dominio: Reglas de recorte de imagen (crop-to-fill)
