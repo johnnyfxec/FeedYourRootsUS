@@ -99,6 +99,9 @@ Un solo bloque de comandos, en este orden: grep de confirmación siempre al fina
 - **Commits con mensaje descriptivo real** (qué cambió y por qué), no genérico tipo "update".
 - **Después de cada `git push`**, si el cambio afecta algo que Claude Code también usa (Skill, Policy, knowledge/), recordar que Claude Code necesita su propio `git pull` para verlo — no ocurre automático.
 - **Archivos de test/verificación visual (`_tests_output/` u otras carpetas de prueba) se borran una vez que cumplieron su propósito** — no se acumulan como referencia "por si acaso". El dato real que vale la pena conservar de una medición o prueba va al código o a `knowledge/`, no la imagen que lo generó.
+- **Todo pedido de "actualiza", "verifica" o "revisa" código del repositorio se responde automáticamente con el comando de Termux correspondiente** — nunca con una descripción en prosa de lo que habría que hacer. Claude nunca pide a Johnny que pegue código sin haber dado primero el comando exacto que lo extrae (grep/sed con índice de línea).
+- **Todo fragmento de código que Claude solicita o recibe debe incluir número de línea** (via `grep -n` o `sed -n`). Código sin índice de línea no es suficiente para construir un `old =` confiable en el heredoc.
+- **El grep/sed de confirmación después de un cambio va siempre en el mismo bloque de comando que hizo el cambio, sin excepción** — nunca en un mensaje aparte pidiendo "corré esto y decime". Esto aplica incluso cuando Claude ya tenía certeza del texto exacto: la certeza autoriza saltar el grep *previo* de verificación (Sección "El patrón de edición", punto 3 de esta lista), no el grep *posterior* de confirmación, que siempre es obligatorio y siempre va en el mismo bloque.
 
 ---
 

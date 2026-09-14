@@ -223,15 +223,18 @@ def _compose_marco_grande_portada(canvas, slide, aspecto, assets_dir):
     canvas.paste(scene_cropped, (paste_x, paste_y))
     canvas.alpha_composite(frame_resized, (round(frame_x), round(frame_y)))
 
-    # Bloque de texto: ancho fijo medido, centrado verticalmente entre el
-    # borde inferior del marco y el borde inferior del canvas.
+    # Bloque de texto: ancho fijo medido, anclado (no centrado) a un
+    # margen fijo debajo del borde inferior del marco -- fix del bug de
+    # centrado vertical (ver Arquitectura v1.1 Seccion 8).
     frame_bottom = frame_y + frame_h_final
-    espacio_disponible = canvas_h - frame_bottom
+    MARGEN_MARCO_TITULO = 20  # px -- punto de partida, ajustar tras revision visual
+    titulo_y = frame_bottom + MARGEN_MARCO_TITULO
+    espacio_disponible = canvas_h - titulo_y
     texto_x = (canvas_w - texto_w_target) / 2
 
-    r = render_text_block(
+    r = render_text_block_top(
         canvas, titulo, "titulo",
-        (round(texto_x), round(frame_bottom), texto_w_target, round(espacio_disponible)),
+        round(texto_x), round(titulo_y), texto_w_target, round(espacio_disponible),
     )
 
     warnings = []

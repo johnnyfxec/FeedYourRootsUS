@@ -30,21 +30,27 @@ def _load_font(font_file, size):
 
 
 def _wrap_text(text, font, max_width, draw):
-    """Word-wrap simple: acumula palabras mientras quepan en max_width."""
-    words = text.split()
-    if not words:
-        return []
+    """Word-wrap con soporte de salto de linea manual (\n). Cada segmento
+    separado por \n en el texto original se trata como una linea forzada
+    -- respeta la jerarquia retorica decidida en el brief (ver
+    FYR_Protocolo_De_Trabajo.md, regla de jerarquia de titulo). Dentro de
+    cada segmento forzado, se aplica el mismo word-wrap automatico por
+    ancho de siempre, por si el segmento no entra en max_width."""
     lines = []
-    current = words[0]
-    for word in words[1:]:
-        trial = f"{current} {word}"
-        w = draw.textlength(trial, font=font)
-        if w <= max_width:
-            current = trial
-        else:
-            lines.append(current)
-            current = word
-    lines.append(current)
+    for segment in text.split("\n"):
+        words = segment.split()
+        if not words:
+            continue
+        current = words[0]
+        for word in words[1:]:
+            trial = f"{current} {word}"
+            w = draw.textlength(trial, font=font)
+            if w <= max_width:
+                current = trial
+            else:
+                lines.append(current)
+                current = word
+        lines.append(current)
     return lines
 
 
