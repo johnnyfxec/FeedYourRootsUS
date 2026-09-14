@@ -6,3 +6,11 @@ __pycache__/
 _tests_output/
 _test_*.png
 _check_*.png
+_grid_*.png
+
+# Produccion para redes sociales (solo vive en Termux -- el repo es
+# gobernanza + compositores/motor + web, nunca output de contenido)
+production/briefs/
+production/assets_local/
+production/output/
+pdfs_normalized/
