@@ -101,11 +101,14 @@ Se agregan como capa final, encima de cualquier slide ya resuelto (Tipo A, B, C,
 
 **Regla:** el JSON de un slide puede declarar `"acento": "cordel_guia"` opcionalmente además de su `layout` principal — nunca un acento sin layout base.
 
-### 2.5 — Layouts sin asset fijo (Full-bleed, Solo texto+acento, Texto+lateral)
+### 2.5 — Layouts sin asset fijo (Full-bleed, Ventana+texto, Solo texto+acento, Texto+lateral)
+
+**Corrección 13-sep-2026 (decisión de Johnny):** la especificación original de Full-bleed (imagen al 100% del canvas + overlay semi-transparente encima) siempre dejaba imagen real visible detrás del texto, sin importar el contenido de la imagen -- confirmado con evidencia visual real en PZA_1.2 Slide 2. Full-bleed se corrige a SOLO imagen, sin texto nunca; el caso con texto se separa en el layout nuevo Ventana+texto.
 
 | Layout | Composición |
 |---|---|
-| **Full-bleed** | Imagen de escena ocupa 100% canvas (crop-to-fill si no calza exacto) → franja overlay parchment semi-transparente (alpha 90-95%) en el tercio inferior → texto centrado sobre la franja |
+| **Full-bleed** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) dentro del canvas completo, centrada, con el espacio sobrante en parchment sólido → NUNCA lleva texto (campo `texto_overlay` no aceptado, error de validación si se incluye) |
+| **Ventana+texto** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) en los dos tercios superiores del canvas, centrada, con el espacio sobrante en parchment sólido → franja de texto SÓLIDA (sin transparencia, sin imagen detrás) en el tercio inferior |
 | **Solo texto+acento** | Fondo parchment sólido → texto centrado en el 100% del área de contenido (sin ventana de imagen) → acento botánico opcional (pequeño, no listado en Layout_Specs porque usa el banco de 130+ ilustraciones sueltas, no un asset de layout fijo) |
 | **Texto+lateral** | Fondo parchment sólido → imagen de escena sin marco, 40-60% del ancho, en el lado declarado por el brief (izquierda/derecha) → texto en el lado opuesto, alineado hacia el borde exterior (no hacia el centro) |
 

@@ -35,7 +35,8 @@ No todas las combinaciones de layout y acento tienen sentido narrativo, aunque t
 
 | Layout | Acento valido | Acento INVALIDO (nunca combinar) | Motivo |
 |---|---|---|---|
-| full_bleed | migas_progreso (solo si el slide es parte de una secuencia tipo lista/countdown real, con estado de progreso correcto) | migas_progreso generico sobre imagen sin relacion de secuencia | El acento debe reflejar progreso REAL, no decorar una imagen aislada |
+| full_bleed | ninguno (correccion 13-sep-2026: full_bleed es SOLO imagen, sin texto -- un acento de progreso sin texto que lo narre no comunica secuencia real) | cualquiera | Sin texto que establezca la secuencia, ningun acento tiene contexto narrativo que reflejar |
+| ventana_texto | migas_progreso (solo si el slide es parte de una secuencia tipo lista/countdown real, con estado de progreso correcto -- layout nuevo 13-sep-2026, reemplaza el uso con texto que antes vivia en full_bleed; migas_progreso en si mismo sigue sin terminar de implementarse, ver Arquitectura Seccion 7) | migas_progreso generico sobre imagen sin relacion de secuencia | El acento debe reflejar progreso REAL, no decorar una imagen aislada |
 | solo_texto | cordel_guia (solo si el slide conecta visualmente con el siguiente/anterior en una secuencia real) | cordel_guia sobre texto centrado sin continuidad | El cordel es un conector de secuencia, no decoracion de un slide aislado |
 | marco_grande_portada / marco_grande_cuadrado | (no lleva acentos, ya tiene su propia decoracion integrada) | cualquiera | Ya satura visualmente con marco + vid + hoja + texto |
 | doble_marco | Texto de anclaje corto (ver Seccion 4) | -- | Sin texto, dos imagenes sin contexto no comunican nada (aprendizaje del 31-ago) |

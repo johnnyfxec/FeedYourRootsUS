@@ -24,16 +24,35 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 ---
 
-## 2. Full-bleed con overlay
+## 2. Full-bleed (solo imagen)
 
-**Asset:** ninguno — la imagen generada ES el fondo completo.
-**Rol narrativo:** inmersión emocional, momento de tensión.
+**Corrección 13-sep-2026:** este layout NUNCA lleva texto — decisión de Johnny tras detectar que la versión anterior (con overlay semi-transparente) siempre dejaba imagen real visible detrás del texto, sin importar el contenido de la imagen. Si el slide necesita texto, usar Sección 2b (Ventana + texto) en su lugar.
+
+**Asset:** ninguno — la imagen generada ocupa el layout completo.
+**Rol narrativo:** inmersión visual pura, sin mensaje verbal superpuesto.
+**Activador:** cualquier hook donde la imagen sola comunique el mensaje (ver Sección 2b para el caso con texto).
+
+| | Especificación |
+|---|---|
+| Imagen a pedir en Gemini | Cualquier proporción — el compositor la contiene completa (modo "contain", nunca recorta) dentro del canvas (1080×1350 en 4:5, 1080×1920 en 9:16) |
+| Espacio sobrante | Si la proporción de la imagen no llena el canvas exacto, el espacio libre se rellena en parchment sólido (#F5ECD7), nunca se recorta la imagen para forzar el encaje |
+| Texto | Nunca lleva — campo `texto_overlay` no aceptado, error de validación si se incluye |
+
+---
+
+## 2b. Ventana + texto
+
+**Layout nuevo, 13-sep-2026** — reemplaza el uso con texto que antes vivía (incorrectamente) dentro de "Full-bleed con overlay". La imagen se contiene completa (nunca se recorta) en los dos tercios superiores; el tercio inferior es una franja de texto SÓLIDA, sin imagen detrás, sin transparencia.
+
+**Asset:** ninguno.
+**Rol narrativo:** inmersión emocional con mensaje verbal — el caso que antes se llamaba "Full-bleed con overlay".
 **Activador:** 04 Storytelling, 10 Dolor/Frustración, 01 Negativo, 14 Advertencia, 09 Predicción.
 
 | | Especificación |
 |---|---|
-| Imagen de fondo a pedir en Gemini | Exactamente 1080×1350px (4:5) o 1080×1920px (9:16) — edge-to-edge, sin marco ni vid propia |
-| Franja de texto | Overlay semi-transparente (parchment #F5ECD7, alpha ~90-95%) sobre el tercio inferior de la imagen |
+| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") en los dos tercios superiores del canvas (720px de alto en 4:5, 1280px en 9:16) |
+| Espacio sobrante | Relleno en parchment sólido (#F5ECD7) si la proporción no llena exacto los dos tercios |
+| Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) en el tercio inferior del canvas |
 
 ---
 

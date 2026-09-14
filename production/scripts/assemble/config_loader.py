@@ -12,7 +12,8 @@ REQUIRED_BY_LAYOUT = {
     "ventana_polaroid":  ["imagen_escena"],
     "palabra_acuarela":  ["imagen_final"],
     "tachado":           ["imagen_final"],
-    "full_bleed":        ["imagen_escena", "texto_overlay"],
+    "full_bleed":        ["imagen_escena"],
+    "ventana_texto":     ["imagen_escena", "texto_overlay"],
     "solo_texto":        ["texto_cuerpo"],
     "texto_lateral":     ["imagen_escena", "texto_cuerpo"],
 }

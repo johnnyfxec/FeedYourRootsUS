@@ -180,6 +180,7 @@ LAYOUT_TYPES = {
     "cordel_guia": "D",
     "migas_progreso": "D",
     "full_bleed": "BASE",
+    "ventana_texto": "BASE",
     "solo_texto": "BASE",
     "texto_lateral": "BASE",
 }

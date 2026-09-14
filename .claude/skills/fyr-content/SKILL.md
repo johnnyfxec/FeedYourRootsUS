@@ -110,14 +110,14 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Fórmula de contexto: [contexto que ubica a Morgan] + [elemento que desafía/sorprende dentro de ese contexto].
 - Alineación visual-verbal: el asset/imagen del slide 1 NUNCA debe resolver el loop que abre el texto.
 
-**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 4 layouts base (Marco grande, Full-bleed con overlay, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/reference_assets/FYR_Layout_Specs_v1.md.
+**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 5 layouts base (Marco grande, Full-bleed solo imagen, Ventana+texto, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/reference_assets/FYR_Layout_Specs_v1.md. IMPORTANTE (correccion 13-sep-2026): Full-bleed NUNCA lleva texto -- si el hook necesita mensaje verbal sobre la imagen, usar Ventana+texto, no Full-bleed.
 - 03 Numerico, 13 Lista -> Solo texto + acento, o L12 Migas de progreso si el conteo es el eje central
 - 07 Contraste/Versus -> L8 Doble marco superpuesto (preferido, un solo slide) o L10 Tachado/correccion (alternativa, mas verbal) o Marco grande dos veces (si ninguno de los anteriores calza)
-- 04 Storytelling, 10 Dolor/Frustracion -> Full-bleed con overlay (inmersion emocional)
+- 04 Storytelling, 10 Dolor/Frustracion -> Ventana+texto (inmersion emocional con mensaje)
 - 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral, o L7 Nota-kraft en esquina, o L13 Ventana Polaroid (revelacion con foco)
 - 11 Mito, 05 Error Comun -> Solo texto + acento, o L9 Palabra-acuarela (la creencia como palabra dominante)
 - 17 Resultados/Transformacion, 19 Demostracion -> Marco grande (necesita evidencia visual clara)
-- 01 Negativo, 14 Advertencia, 09 Prediccion -> Full-bleed con overlay, o L9 Palabra-acuarela (palabra de alerta dominante)
+- 01 Negativo, 14 Advertencia, 09 Prediccion -> Ventana+texto, o L9 Palabra-acuarela (palabra de alerta dominante)
 - 02 Pregunta, 08 Autoridad, 15 Oportunidad, 16 Desafio, 18 Sorpresa -> libre segun el tema especifico, sin afinidad estructural fuerte
 - L6 Etiqueta colgante -> copy corto e intimo, cualquier hook que necesite sensacion de nota personal
 - L11 Cordel guia -> no depende de hook, es conector entre slides consecutivos — usar cuando se quiera dar continuidad visual fuerte a la secuencia
