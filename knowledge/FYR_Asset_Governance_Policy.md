@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 2.2 — 24 de agosto 2026**
+**Versión 2.3 — 15 de septiembre 2026**
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
@@ -27,7 +27,9 @@ FYR/
 │   ├── Book_Elements/              (QR, DYK boxes — piezas reutilizables del libro)
 │   └── Cover_Drafts_Archive/       (borradores históricos, no usar en producción)
 ├── 01_Brand_Assets/
-│   ├── C01-C03_Logo_Concepts/
+│   ├── C01-C03_Logo_Concepts/     (exploracion historica -- ver C14 para el simbolo activo)
+│   ├── C14_Brand_Mark/             (simbolo oficial de marca, lockups aprobados -- ver
+│   │                              knowledge/FYR_Brand_Mark_Spec_v1.md para reglas medibles)
 │   ├── C04-C05_Patterns/
 │   ├── C06_Texture/
 │   ├── C07-C08_Icon_Sets/
@@ -109,6 +111,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 **Excepciones aprendidas (cuándo desviarse conscientemente del bloque base):**
 - **Patrones tileables (C4-C5):** el fondo debe pedirse **perfectamente plano, sin textura de papel**, o el patrón no repetirá sin costuras. La textura de papel es incompatible con seamless tiling.
 - **Stickers decorativos con color botánico real (ej. semilla partida, corona de trigo):** cuando el propósito es destacar y ser memorable, el color botánico honesto (verde-musgo, ámbar de abeja) puede superar a la paleta estricta de 2 colores. Se decide caso por caso, nunca por defecto.
+- **Simbolo/logo de marca (C14):** el bloque de estilo base (acuarela, linea con temblor) se abandona por completo para el simbolo activo de marca. Un logo necesita sobrevivir a 16px, bordado y troquelado -- la textura de acuarela se vuelve mancha ilegible a esos tamanos. Excepcion aprobada: tinta plana solida, un solo color, sin textura de papel, silueta cerrada. Ver `knowledge/FYR_Brand_Mark_Spec_v1.md` para las reglas exactas. Esto NO aplica a ilustraciones de marca como el Tree of Life (C01), que si sigue el bloque base.
 - **Recibos, carteles, objetos cuya identidad depende de tener texto:** la regla "no text" no aplica cuando el texto es parte de la narrativa del objeto (ej. un recibo de supermercado). Si el texto es decorativo/rotulado, sí se prohíbe.
 
 **Regla de diversidad étnica (no negociable):** toda figura humana (manos, personas parciales, rostros) debe representar diversidad de tonos de piel a través del conjunto de contenido — nunca default a piel clara como estándar.

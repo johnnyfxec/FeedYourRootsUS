@@ -9,6 +9,26 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-09-15
+
+- **Simbolo oficial de marca (C14)** -- alta del logo/isotipo aprobado
+  (frasco con arbol), trazado en vector desde el original de Johnny.
+  4 variantes de color + lockup horizontal + lockup vertical, registrados
+  en Airtable (4 filas, un registro por pieza maestra agrupando sus
+  variantes). Nuevo `knowledge/FYR_Brand_Mark_Spec_v1.md` con reglas
+  medibles (espacio de proteccion X = 15.6% altura, minimo 32px con
+  excepcion favicon 16px, proporcion fija 1:1.405).
+- **FYR_Asset_Governance_Policy.md** -- v2.3: separacion de C14_Brand_Mark
+  de C01-C03_Logo_Concepts (que pasa a ser exploracion historica), y
+  excepcion de estilo documentada para el simbolo de marca (tinta plana,
+  sin acuarela -- unica excepcion al bloque de estilo base).
+- **Badge FYR retirado** de uso activo (no llego a existir en repo/Airtable,
+  solo en Drive). **Tree of Life (C01)** reclasificado: ya no es "logo
+  oficial", pasa a ilustracion insignia de marca -- descripcion en Airtable
+  corregida.
+- **Pendiente v1.1** (no bloqueante): gap del lockup vertical mide 142px,
+  deberia ser X=99.5px -- ver seccion "Pendientes" en FYR_Brand_Mark_Spec_v1.md.
+
 ## 2026-09-13 a 2026-09-14
 
 - **Bug critico resuelto: centrado impredecible en marco_grande_portada** --
