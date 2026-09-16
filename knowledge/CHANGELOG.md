@@ -13,6 +13,7 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 - **favicon.ico** -- publicado en la raiz del repo (era el ultimo pendiente
   de la Rama web del handoff del simbolo C14). Fuente: Drive
+- **Wordmark solo (cuarta variante de marca)** -- 'Feed Your Roots' sin simbolo, Playfair Display Bold, 4 colores. Aprobado solo para cuando el simbolo ya aparece en otra parte de la misma pieza -- nunca como primera aparicion de marca. Documentado en FYR_Brand_Mark_Spec_v1.md Seccion 05 y en el PDF del manual. Registrado en Airtable y Drive (01_Brand_Assets/C14_Brand_Mark/).
   `01_Brand_Assets/C14_Brand_Mark/favicon.ico`.
 - **FYR_Protocolo_De_Trabajo.md** -- se prohibe `sed -n` como comando de
   lectura por indice de linea; se reemplaza por `cat -n` / `awk` con `NR`

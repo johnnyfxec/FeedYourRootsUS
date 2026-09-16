@@ -81,4 +81,5 @@ El símbolo siempre es un solo color. Harvest Gold y Story Brown nunca se usan e
 - `FYR_C14_logo-frasco_1x1_v1.svg` — símbolo maestro + 4 variantes de color + 8 tamaños PNG
 - `FYR_C14_lockup-horizontal_16x5_v1.svg` — + 4 variantes de color, SVG y PNG
 - `FYR_C14_lockup-vertical_1x1_v1.svg` — + 4 variantes de color, SVG y PNG
+- `FYR_C14_wordmark-solo_v1.svg` — wordmark sin símbolo (cuarta variante, ver Sección 05) + 4 variantes de color, SVG y PNG
 - `favicon.ico` — pendiente de despliegue en rama web (ver Protocolo de Trabajo, Estrategia de ramas)
