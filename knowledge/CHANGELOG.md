@@ -9,6 +9,20 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-09-16
+
+- **favicon.ico** -- publicado en la raiz del repo (era el ultimo pendiente
+  de la Rama web del handoff del simbolo C14). Fuente: Drive
+  `01_Brand_Assets/C14_Brand_Mark/favicon.ico`.
+- **FYR_Protocolo_De_Trabajo.md** -- se prohibe `sed -n` como comando de
+  lectura por indice de linea; se reemplaza por `cat -n` / `awk` con `NR`
+  en los tres puntos del documento que lo mencionaban. Se agrega regla
+  nueva: cuando el texto de un reemplazo (`old`) tiene mas de una linea
+  y contiene tildes o ene, usar reemplazo por indice de linea
+  (`readlines()` + `assert` de la linea esperada) en vez de heredoc de
+  texto largo como primer intento -- evita fallos de assert por
+  diferencias de codificacion/normalizacion Unicode.
+
 ## 2026-09-15
 
 - **Simbolo oficial de marca (C14)** -- alta del logo/isotipo aprobado
