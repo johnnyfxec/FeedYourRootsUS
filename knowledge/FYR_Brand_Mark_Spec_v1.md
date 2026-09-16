@@ -41,8 +41,7 @@ El símbolo siempre es un solo color. Harvest Gold y Story Brown nunca se usan e
 
 **Horizontal** (`FYR_C14_lockup-horizontal_16x5_v1`) — símbolo a la izquierda, wordmark "Feed Your Roots" en Playfair Display Bold a la derecha, una sola línea. El gap entre símbolo y wordmark es X. La línea base del wordmark alinea con la base del frasco.
 
-**Vertical** (`FYR_C14_lockup-vertical_4x5_v1`) — símbolo arriba, wordmark centrado debajo.
-⚠️ **Pendiente v1.1:** el gap actual en el archivo es 142px; la regla dice que debe ser X (99.5px en este archivo). No corregido aún — ver sección "Pendientes" abajo.
+**Vertical** (`FYR_C14_lockup-vertical_1x1_v1`) — símbolo arriba, wordmark centrado debajo. Regenerado sept 2026 en canvas 1:1 real (el 4x5 anterior tenía margen interno de fábrica excesivo, no documentado en esta spec); gap símbolo-wordmark = X.
 
 **Solo símbolo** — obligatorio para avatares, favicons y cualquier aplicación bajo 120 px. El wordmark nunca se coloca dentro del frasco.
 
@@ -72,13 +71,12 @@ El símbolo siempre es un solo color. Harvest Gold y Story Brown nunca se usan e
 
 ## Pendientes para v1.1
 
-1. Gap del lockup vertical: cambiar `translate(94.685 1192.465)` a `translate(94.685 1149.965)` en los 4 SVG verticales (`FYR_C14_lockup-vertical*_4x5_v1.svg`) para que el gap sea exactamente X.
-2. Proporción del wordmark respecto al símbolo (hoy ~17% de la altura del símbolo) no está escrita como regla — definir tras ver el lockup en uso real (cabecera del sitio, portada).
-3. El PDF v1.0 cita `FYR_C14_logo-frasco_1x1_v2.svg` en el bloque de versión de la página 1 — el archivo real es `v1`. Corregir en la próxima revisión del PDF.
+1. Proporción del wordmark respecto al símbolo (hoy ~17% de la altura del símbolo) no está escrita como regla — definir tras ver el lockup en uso real (cabecera del sitio, portada).
+2. El PDF v1.0 cita `FYR_C14_logo-frasco_1x1_v2.svg` en el bloque de versión de la página 1 — el archivo real es `v1`. Corregir en la próxima revisión del PDF.
 
 ## Archivos fuente (Drive: `01_Brand_Assets/C14_Brand_Mark/`)
 
 - `FYR_C14_logo-frasco_1x1_v1.svg` — símbolo maestro + 4 variantes de color + 8 tamaños PNG
 - `FYR_C14_lockup-horizontal_16x5_v1.svg` — + 4 variantes de color, SVG y PNG
-- `FYR_C14_lockup-vertical_4x5_v1.svg` — + 4 variantes de color, SVG y PNG
+- `FYR_C14_lockup-vertical_1x1_v1.svg` — + 4 variantes de color, SVG y PNG
 - `favicon.ico` — pendiente de despliegue en rama web (ver Protocolo de Trabajo, Estrategia de ramas)
