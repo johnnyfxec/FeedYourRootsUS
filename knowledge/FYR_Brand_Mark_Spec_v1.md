@@ -45,6 +45,8 @@ El símbolo siempre es un solo color. Harvest Gold y Story Brown nunca se usan e
 
 **Solo símbolo** — obligatorio para avatares, favicons y cualquier aplicación bajo 120 px. El wordmark nunca se coloca dentro del frasco.
 
+**Wordmark solo (cuarta variante, sin símbolo)** — únicamente cuando el símbolo ya está presente en otra parte de la misma pieza o el mismo contexto (ej. el símbolo ya aparece en el footer, o en el cuerpo del email). Nunca como primera aparición de marca en una pieza -- ahí siempre va lockup o símbolo solo. Tipografía Playfair Display Bold (nunca Satisfy). Tamaño: hereda el tamaño de wordmark ya usado en el lockup horizontal para el mismo contexto, sin escala propia. Sin elemento decorativo. Mismas 4 variantes de color que el resto del sistema.
+
 ## 06 — Usos prohibidos
 
 - Nunca estirar. Proporción fija: **1 : 1.405** (ancho : alto).
