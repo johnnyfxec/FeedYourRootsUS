@@ -40,10 +40,15 @@ Nunca se asume el contenido de memoria. Se pide siempre:
 ```bash
 grep -n "texto a buscar" ruta/al/archivo.md
 ```
-o, si la línea es larga o tiene caracteres especiales, se usa `sed -n` con rango de líneas:
+o, si la línea es larga o tiene caracteres especiales o hace falta ver contexto alrededor, se usa `cat -n` con rango de líneas vía `head`/`tail`, o `awk` con `NR`:
 ```bash
-sed -n '135,140p' ruta/al/archivo.md
+cat -n ruta/al/archivo.md | head -n 15
 ```
+o, para un rango específico:
+```bash
+awk 'NR==135,NR==140{print NR": "$0}' ruta/al/archivo.md
+```
+**`sed -n` queda prohibido para este propósito** — usar siempre `cat`/`awk` con número de línea explícito.
 
 Johnny pega el resultado real. Solo con ese texto confirmado se construye el reemplazo — nunca antes.
 
@@ -99,12 +104,13 @@ Un solo bloque de comandos, en este orden: grep de confirmación siempre al fina
 - **Commits con mensaje descriptivo real** (qué cambió y por qué), no genérico tipo "update".
 - **Después de cada `git push`**, si el cambio afecta algo que Claude Code también usa (Skill, Policy, knowledge/), recordar que Claude Code necesita su propio `git pull` para verlo — no ocurre automático.
 - **Archivos de test/verificación visual (`_tests_output/` u otras carpetas de prueba) se borran una vez que cumplieron su propósito** — no se acumulan como referencia "por si acaso". El dato real que vale la pena conservar de una medición o prueba va al código o a `knowledge/`, no la imagen que lo generó.
-- **Todo pedido de "actualiza", "verifica" o "revisa" código del repositorio se responde automáticamente con el comando de Termux correspondiente** — nunca con una descripción en prosa de lo que habría que hacer. Claude nunca pide a Johnny que pegue código sin haber dado primero el comando exacto que lo extrae (grep/sed con índice de línea).
-- **Todo fragmento de código que Claude solicita o recibe debe incluir número de línea** (via `grep -n` o `sed -n`). Código sin índice de línea no es suficiente para construir un `old =` confiable en el heredoc.
-- **El grep/sed de confirmación después de un cambio va siempre en el mismo bloque de comando que hizo el cambio, sin excepción** — nunca en un mensaje aparte pidiendo "corré esto y decime". Esto aplica incluso cuando Claude ya tenía certeza del texto exacto: la certeza autoriza saltar el grep *previo* de verificación (Sección "El patrón de edición", punto 3 de esta lista), no el grep *posterior* de confirmación, que siempre es obligatorio y siempre va en el mismo bloque.
+- **Todo pedido de "actualiza", "verifica" o "revisa" código del repositorio se responde automáticamente con el comando de Termux correspondiente** — nunca con una descripción en prosa de lo que habría que hacer. Claude nunca pide a Johnny que pegue código sin haber dado primero el comando exacto que lo extrae (grep/cat/awk con índice de línea).
+- **Todo fragmento de código que Claude solicita o recibe debe incluir número de línea** (via `grep -n`, `cat -n` o `awk` con `NR`). Código sin índice de línea no es suficiente para construir un `old =` confiable en el heredoc.
+- **El grep/cat/awk de confirmación después de un cambio va siempre en el mismo bloque de comando que hizo el cambio, sin excepción** — nunca en un mensaje aparte pidiendo "corré esto y decime". Esto aplica incluso cuando Claude ya tenía certeza del texto exacto: la certeza autoriza saltar el grep *previo* de verificación (Sección "El patrón de edición", punto 3 de esta lista), no el grep *posterior* de confirmación, que siempre es obligatorio y siempre va en el mismo bloque.
 - **Después de una cantidad importante de cambios o hitos en una sesión (bugs resueltos, layouts nuevos, políticas de gobernanza nuevas), se registra una entrada en `knowledge/CHANGELOG.md` antes de cerrar esa sesión de trabajo** — mismo formato que las entradas existentes (`## FECHA` + bullets `**Documento/Feature** -- qué cambió y por qué`). Un cambio aislado y chico (un typo, un ajuste de 1 línea) no necesita entrada propia; una sesión con varios hitos reales sí, para no depender de la memoria de la conversación para reconstruir qué se decidió y por qué.
 - **`/tmp` está prohibido sin excepción, incluso para scripts de una sola corrida que se borran de inmediato.** No hay caso especial de "descartable" que lo habilite -- en el Termux de Johnny además está bloqueado por permisos, así que cualquier comando que lo use falla. Para un script Python temporal de verificación, usar un heredoc de `python3 << 'PYEOF' ... PYEOF` directo (sin escribir archivo intermedio), o si hace falta archivo, crearlo dentro del repo en una ruta ya cubierta por `.gitignore` y borrarlo al final del mismo bloque.
 - **Nunca usar `!` dentro de comandos Python pasados con `-c` a bash interactivo** (ej. `!r` en f-strings) -- bash lo interpreta como history expansion y corrompe el comando completo, arrastrando errores de sintaxis a las líneas siguientes. Preferir heredoc (`python3 << 'PYEOF'`) para cualquier script con f-strings, comillas anidadas, o caracteres especiales -- nunca `-c` con lógica no trivial.
+- **Si el `old` de un reemplazo incluye texto largo (más de una línea) con tildes o ñ, no usar el heredoc de texto como primer intento** — ir directo a reemplazo por índice de línea (`readlines()`, verificar la línea esperada con `assert lines[N].startswith(...)`, reemplazar `lines[N:M]`). Esto evita fallos de `assert` por diferencias de codificación/normalización Unicode entre lo tipeado en el heredoc y lo real del archivo. El heredoc de texto largo queda reservado para bloques sin tildes/ñ o de una sola línea corta.
 
 ---
 
