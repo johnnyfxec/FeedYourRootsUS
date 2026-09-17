@@ -4,6 +4,8 @@ Este documento existe para que cualquier sesión de Claude (chat o Claude Code) 
 
 **Este archivo vive en dos lugares que deben mantenerse sincronizados:** como archivo de Proyecto en Claude.ai (para esta sesión de chat) y como `knowledge/FYR_Protocolo_De_Trabajo.md` en el repo real de Termux (para que Claude Code también lo siga). Cualquier cambio a este documento se hace en AMBOS lugares en la misma sesión — nunca en uno solo.
 
+**Cómo actualizar el project knowledge de Claude.ai (este archivo u otros: Policy, Spec, CHANGELOG):** Claude edita PRIMERO el archivo real en `knowledge/` del repo de Termux (patrón de edición normal de este protocolo), y en el MISMO bloque de comandos lo copia a `/storage/emulated/0/Download/knowledge-update/` para que Johnny lo suba manualmente a project knowledge. Nunca al revés (nunca generar el contenido nuevo directo para Downloads sin que exista primero en el repo) — el repo de Termux es siempre la fuente de verdad.
+
 ---
 
 ## Regla de oro
