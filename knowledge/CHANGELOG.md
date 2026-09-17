@@ -23,6 +23,38 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
   (`readlines()` + `assert` de la linea esperada) en vez de heredoc de
   texto largo como primer intento -- evita fallos de assert por
   diferencias de codificacion/normalizacion Unicode.
+- **Rama web completada** -- las 16 referencias originales a la marca vieja
+  (nav, footer, 4 paginas legales, 6 correos transaccionales) se reemplazaron
+  por el simbolo C14 (Root Black en nav, lockup vertical en footer).
+  build/build.py se corrio para propagar los cambios a las paginas generadas.
+  Los 10 archivos del logo viejo (assets/brand/) y los 8 del lockup vertical
+  4x5 obsoleto se borraron del repo tras confirmar cero referencias activas.
+- **Lockup vertical corregido (segunda revision)** -- el archivo 1x1 generado
+  inicialmente traia fondo solido incorrecto en la variante -parchment
+  (deberia ser transparente, como el resto del sistema). Se regenero con
+  Claude Design, fondo transparente en las 4 variantes de color, verificado
+  con svgelements antes de aceptar. Actualizado en repo, Drive y Airtable.
+- **assets/brand/ reestructurado** -- la subcarpeta c14/ (36 archivos mezclados)
+  se separo en icons/, lockups-horizontal/, lockups-vertical/, wordmarks/ por
+  tipo de pieza. Las 24 referencias en 13 archivos del sitio se actualizaron
+  a las nuevas rutas. Nombres de archivo intactos por trazabilidad con
+  Drive/Airtable.
+- **7 plantillas de Resend actualizadas** -- thankyou-complete, -homestead,
+  -family, -starter, -core y outreach-creators. Header con wordmark-solo,
+  footer con lockup-vertical (160px, sin el SVG decorativo de brote que
+  tenian antes). Padding del footer reducido para no duplicar el margen
+  interno del propio lockup. 6 correos de prueba enviados y verificados.
+- **og:image y favicon adaptativo** -- index.html y las 4 paginas legales
+  ganan etiquetas og:image/twitter:image (simbolo 1024px, para preview de
+  WhatsApp/redes) que faltaban. Favicon con dos variantes SVG segun
+  prefers-color-scheme (negro en modo claro, parchment en modo oscuro) --
+  antes el favicon negro se perdia en tabs con tema oscuro.
+- **FYR_Protocolo_De_Trabajo.md** -- se documenta el proceso estandar para
+  actualizar el project knowledge de Claude.ai: editar primero en el repo
+  de Termux, copiar a Downloads/knowledge-update/, Johnny sube manualmente.
+  Nunca generar contenido nuevo directo para Downloads sin que exista
+  primero en el repo.
+
 
 ## 2026-09-15
 
