@@ -56,7 +56,9 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
 Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~206 registros con link Drive verificado.
 
-**Campos de video en `Content_Pieces`:** `Ruta JSON` (`flduZXIO9iQ89U6Kt`, texto) ya existe; `ID de variante` (texto) se crea con el conector (`create_field`) o a mano si aún no está (ver `knowledge/FYR_Protocolo_Edicion_Video.md` Secciones 8 y 10).
+**Regla de propiedad de Airtable:** Claude hace TODAS las escrituras (crear, actualizar, borrar registros y campos) en el paso que corresponde de cada skill; Johnny no edita Airtable a mano.
+
+**Campos de video en `Content_Pieces`:** `Ruta JSON` (`flduZXIO9iQ89U6Kt`, texto) ya existe; `ID de variante` (`fldnCOYKQf6SscuMz`, texto; formato `voz|subtítulo|cierre`, ej. `Neural2-J|B-e14|cierreB`) también existe (ver `knowledge/FYR_Protocolo_Edicion_Video.md` Secciones 8 y 10).
 
 **Regla:** para singleSelect/multipleSelects escribir el nombre de la opción como string y usar `typecast: true` cuando la opción pueda no existir aún (crea la opción automáticamente).
 

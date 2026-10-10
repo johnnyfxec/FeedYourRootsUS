@@ -56,7 +56,7 @@ Indicar siempre: qué imágenes bajar de Drive y con qué nombres; que cada slid
 Pedir que revise con repetición activada: unión final→inicio, subtítulos que caben (palabras largas), ritmo de pausas, nitidez. Registrar su veredicto; si cambia una regla VALIDADO o resuelve un EN PRUEBA, **editar la sección correspondiente del Protocolo en su sitio** (no anexar al final) y actualizar el `CHANGELOG.md`.
 
 ### Paso 6 — Registro
-Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`; en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Ruta JSON`, `ID de variante` y `Estado Producción = Ensamblado` (MP4 aprobado y en Drive); `Publicado` solo cuando sale a la red. Los WAV y `timings.json` no se suben. Si el campo `ID de variante` aún no existe, anotar la variante al inicio de `Copy Completo`. Marcar el tema como `Usado` en `Themes` solo cuando la pieza se publique.
+Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`; en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Ruta JSON`, `ID de variante` y `Estado Producción = Ensamblado` (MP4 aprobado y en Drive); `Publicado` solo cuando sale a la red. Los WAV y `timings.json` no se suben. Claude hace estas escrituras en Airtable; Johnny no las hace a mano. Marcar el tema como `Usado` en `Themes` solo cuando la pieza se publique.
 
 ## Reglas no negociables
 1. No decidir ni modificar hook, CTA, fase o promesa del brief. Solo aplicar marcas de pausa/énfasis y ajustar el cierre bajo las reglas del §4; si el cierre cambia el sentido, avisar.

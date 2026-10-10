@@ -190,7 +190,7 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 ## 10. Registro en el sistema
 
 - **Drive:** el MP4 final vive junto a las imágenes de la pieza, en `Content_Pieces/PZA_[tema]/[fecha]/`. Los WAV y `timings.json` son intermedios regenerables: no se suben.
-- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `Assets en Drive` → `Ensamblado` = MP4 renderizado y aprobado → `Publicado`), `Ruta JSON` (ruta del `pieza_X.json` en el repo). PENDIENTE: crear el campo `ID de variante` (texto).
+- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `Assets en Drive` → `Ensamblado` = MP4 renderizado y aprobado → `Publicado`), `Ruta JSON` (ruta del `pieza_X.json` en el repo). `ID de variante` (`voz|subtítulo|cierre`). Todas las escrituras en Airtable las hace Claude en el paso correspondiente de la skill; Johnny no las hace a mano.
 - **Skill:** `fyr-video-assembler` (`.claude/skills/fyr-video-assembler/SKILL.md`) guía a Claude para escribir el JSON de pieza y entregar los bloques de comandos de este procedimiento. Se comunica con `fyr-content` a través de Airtable y de los archivos del repo, nunca invocándola.
 
 ---
@@ -203,5 +203,4 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 4. Alerta de presupuesto en Google Cloud.
 5. Motor único parametrizado (`--pieza`) en vez de copiar la carpeta por pieza.
 6. Alineación en la nube si se adopta Chirp 3 HD o Gemini-TTS.
-7. Campo de Airtable `ID de variante` (`Ruta JSON` ya existe).
-8. Cierre visual en loop y subtítulo que desaparece al terminar la palabra: sin probar.
+7. Cierre visual en loop y subtítulo que desaparece al terminar la palabra: sin probar.
