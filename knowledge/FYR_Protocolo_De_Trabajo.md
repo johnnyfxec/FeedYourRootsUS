@@ -1,34 +1,44 @@
-# FYR — Protocolo de trabajo (edición de archivos en repositorio)
+# FYR — Protocolo de trabajo (repositorio, skills y conocimiento)
 
 Este documento existe para que cualquier sesión de Claude (chat o Claude Code) siga el mismo proceso, sin que Johnny tenga que re-explicarlo cada vez.
 
-**Este archivo vive en dos lugares que deben mantenerse sincronizados:** como archivo de Proyecto en Claude.ai (para esta sesión de chat) y como `knowledge/FYR_Protocolo_De_Trabajo.md` en el repo real de Termux (para que Claude Code también lo siga). Cualquier cambio a este documento se hace en AMBOS lugares en la misma sesión — nunca en uno solo.
-
-**Cómo actualizar el project knowledge de Claude.ai (este archivo u otros: Policy, Spec, CHANGELOG):** Claude edita PRIMERO el archivo real en `knowledge/` del repo de Termux (patrón de edición normal de este protocolo), y en el MISMO bloque de comandos lo copia a `/storage/emulated/0/Download/knowledge-update/` para que Johnny lo suba manualmente a project knowledge. Nunca al revés (nunca generar el contenido nuevo directo para Downloads sin que exista primero en el repo) — el repo de Termux es siempre la fuente de verdad.
+**Fuente de verdad: el repositorio de GitHub (`knowledge/`, `.claude/skills/`, `production/`).** El Proyecto de Claude.ai es un espejo de lectura para las sesiones de chat. Se actualizó el 10-oct-2026: desde que una sesión de Claude Code puede clonar el repo, editarlo y escribir en el Proyecto, Johnny ya no copia archivos a mano entre Termux, Descargas y el Proyecto.
 
 ---
 
 ## Regla de oro
 
-**Todo archivo que ya vive en el repositorio de Termux (`~/FeedYourRootsUS`) se edita EN Termux, vía comando — nunca regenerando el archivo completo desde el chat.** Regenerar completo cuesta tokens innecesarios y arriesga perder contexto/contenido que no debía cambiar.
+**Cuando Claude tiene el repo clonado en su sesión, Claude edita el archivo directamente (edición quirúrgica del fragmento, nunca regenerando el archivo completo), hace commit con mensaje descriptivo y sube.** Johnny no ejecuta comandos para esto. Regenerar un archivo completo cuesta tokens y arriesga perder contenido que no debía cambiar.
 
-Esto aplica sin excepción a: `FYR_Asset_Governance_Policy.md`, `SKILL.md`, cualquier archivo en `knowledge/`, cualquier archivo en `production/`.
+**Actualizar un documento significa revisarlo y reescribir lo que quedó viejo en su lugar** — no anexar un parche al final. Un documento de política debe leerse como la realidad actual, sin capas históricas contradictorias.
 
-**Único caso donde SÍ se genera un archivo nuevo desde el chat:** cuando el archivo no existe todavía en el repo (primera creación). Ahí se entrega completo una vez, se descarga, y de ahí en adelante se edita solo por comando.
+**Qué sigue haciendo Johnny (lo que Claude no puede):** correr el pipeline de video en la PC (necesita las credenciales de Google y el equipo), bajar imágenes de Drive, revisar los videos, crear/aprobar cosas en cuentas de terceros, y hacer `git pull` en la PC para recibir los cambios.
+
+### Dónde escribe Claude
+
+| Qué | Dónde | Cómo |
+|---|---|---|
+| Documentos de `knowledge/`, skills, `CHANGELOG.md` | **`main` directo**, cuando Johnny lo pide en la sesión | commit + push |
+| Código que corre en la PC (`production/scripts/`, `assemble.py`) | **Rama `claude/<nombre>`**; pasa a `main` cuando Johnny confirma que funcionó | commit + push de rama, luego merge |
+| Espejo en el Proyecto de Claude.ai | `project_write` desde la misma sesión, en el mismo turno que el commit | Claude lo hace; Johnny no sube nada |
+| Skills de la cuenta de Claude.ai | Tarjeta `propose_skills` (Johnny pulsa Guardar) | el archivo del repo es la versión de referencia |
+
+Nunca `git push --force`, nunca reescribir historia, nunca commitear credenciales ni salidas de trabajo (`node_modules/`, `build/`, `salida/`, `img/`).
 
 ---
 
-## Los tres entornos — no confundirlos
+## Los entornos — no confundirlos
 
-| Entorno | Qué es | Cómo se accede |
+| Entorno | Qué es | Qué se hace ahí |
 |---|---|---|
-| **Termux (tablet Android)** | El clon real del repo, donde Johnny teclea comandos a mano | App Termux directa |
-| **Claude Code (dentro de la app)** | Otra sesión de Claude, con su propio clon del mismo repo, corre la skill `fyr-content` | Tab/sesión de Claude Code en la app |
-| **PC con Windows (VSCodium + Git Bash)** | Tercer clon del repo, donde corre el pipeline de video (Node, Google Cloud TTS, Clipkit). Es el único entorno con el equipo y las credenciales para producir video | VSCodium con terminal Git Bash (NO PowerShell) |
+| **Sesión de Claude Code (nube)** | Clon propio del repo, con acceso al Proyecto de Claude.ai y a los conectores (Airtable, Drive…) | Editar documentos, skills y código; commits y push; sincronizar el Proyecto; consultar y ajustar Airtable. Es el entorno principal. |
+| **PC con Windows (VSCodium + Git Bash)** | Otro clon del repo | Correr el pipeline de video (Node, Google Cloud TTS, Clipkit): único entorno con las credenciales y el equipo. Se recibe lo de Claude con `git pull`. |
+| **Termux (tablet Android)** | Otro clon, para teclear comandos a mano | Respaldo cuando no hay sesión de Claude Code; ver «Respaldo: edición por comando». |
+| **Chat de Claude.ai (Proyecto)** | Conversación con el conocimiento del Proyecto | Planear y decidir. No toca el repo; lo que decida se aplica en una sesión de Claude Code. |
 
-Son clones independientes del mismo repo de GitHub. Un cambio en uno **no aparece automáticamente** en los otros — hay que `git push` desde donde se editó y `git pull` desde donde se quiere ver el cambio. Flujo habitual del video: la tablet (Termux) o una sesión de Claude edita scripts/JSON → push → `git pull` en la PC. Los scripts y JSON viajan por repo; las imágenes, el audio y el video viajan por Drive.
+Los clones son independientes: un cambio en uno no aparece en los otros hasta hacer `git push` donde se editó y `git pull` donde se quiere ver. Los scripts y JSON viajan por repo; las imágenes, el audio y el video viajan por Drive.
 
-Claude (sesión de chat) **no tiene acceso directo a Termux, a la PC ni al Claude Code de Johnny** — no puede ejecutar comandos en ellos. Solo puede: (a) darle a Johnny el comando exacto para que él lo corra, o (b) generar contenido nuevo para que Johnny lo baje y lo suba manualmente. Excepción: una sesión de Claude en la nube con el repo adjuntado puede clonarlo, editar `knowledge/` y las skills, y subir una rama `claude/<nombre>` para que Johnny la revise y la integre; nunca toca `main` por su cuenta ni ejecuta nada en la PC o en Termux.
+Lo que una sesión de Claude Code **no** puede: ejecutar nada en la PC ni en Termux, usar las credenciales de Google de Johnny, ni salir a internet más allá de las listas permitidas (registros de paquetes y GitHub). Para eso entrega a Johnny el bloque de comandos exacto.
 
 **Cuidado con alias de shell que redefinen comandos estándar de Unix.** Si un comando básico (`touch`, `ls`, etc.) empieza a comportarse de forma inesperada (por ejemplo, abre Claude Code solo, o cambia de directorio solo), verificar primero con `type nombre_comando` antes de asumir que es un bug del script — puede ser un alias personal en `.bashrc`/`.bash_profile` pisando el comando real.
 
@@ -47,7 +57,10 @@ Claude las tiene presentes siempre que Johnny diga que está en la PC o que el t
 
 ---
 
-## El patrón de edición: grep → Python heredoc → grep
+## Respaldo: edición por comando (Termux, PC o cuando Claude no tiene el repo clonado)
+
+Todo lo que sigue hasta «Reglas de comportamiento» aplica solo cuando Johnny debe pegar comandos él mismo. Si Claude tiene el repo clonado, edita directo y nada de esto es necesario.
+
 
 Para cualquier edición a un archivo ya existente en el repo:
 
@@ -102,12 +115,22 @@ Un solo bloque de comandos, en este orden: grep de confirmación siempre al fina
 
 ---
 
-## Reglas de comportamiento (aprendidas de correcciones reales de Johnny)
+## Reglas de comportamiento
+
+### Generales (toda sesión)
+
+- **`git add` siempre con rutas explícitas, nunca `git add .` ni `git add -A` sin revisar antes.** En Termux el repo vive dentro de un repo git más grande que incluye el home completo (`.npm`, `.cache`, otros proyectos) — un `add` sin acotar puede arrastrar archivos ajenos a FYR. Siempre confirmar con `git status` antes de `git commit`.
+- **Commits con mensaje descriptivo real** (qué cambió y por qué), no genérico tipo "update".
+- **Después de cada `git push`** que afecte lo que se ejecuta en la PC o en Termux (scripts, JSON, skills), esos clones necesitan su propio `git pull` — no ocurre automático. Claude lo recuerda con el comando exacto.
+- **Archivos de test/verificación visual (`_tests_output/` u otras carpetas de prueba) se borran una vez que cumplieron su propósito** — no se acumulan como referencia "por si acaso". El dato real que vale la pena conservar de una medición o prueba va al código o a `knowledge/`, no la imagen que lo generó.
+- **Nunca dejar resultados de trabajo real fuera del repo.** Los temporales van en una carpeta cubierta por `.gitignore` (o en el directorio temporal de la sesión) y se borran al terminar; el dato que vale conservar va al código o a `knowledge/`.
+- **Después de una cantidad importante de cambios o hitos en una sesión (bugs resueltos, layouts nuevos, políticas de gobernanza nuevas), se registra una entrada en `knowledge/CHANGELOG.md` antes de cerrar esa sesión de trabajo, en el mismo commit que el cambio** — mismo formato que las entradas existentes (`## FECHA` + bullets `**Documento/Feature** -- qué cambió y por qué`). Un cambio aislado y chico (un typo, un ajuste de 1 línea) no necesita entrada propia; una sesión con varios hitos reales sí, para no depender de la memoria de la conversación para reconstruir qué se decidió y por qué.
+
+### Modo comando (solo cuando Johnny pega los comandos él mismo)
 
 - **Nunca encadenar varios comandos especulativos sin confirmar el anterior.** Si el primer comando de una cadena falla, toda la cadena se pierde y hay que repetir. Un paso, una confirmación, siguiente paso.
 - **Nunca mandar grep + comando de reemplazo en el mismo mensaje si Claude no está seguro del texto exacto.** El grep existe para *obtener* información antes de actuar — pedirlo y no esperar la respuesta es teatro inútil.
 - **Si Claude ya tiene certeza del texto exacto** (porque lo escribió él mismo momentos antes y fue confirmado), puede dar grep+reemplazo+grep en un solo bloque de una vez — no hace falta partir en dos mensajes cuando no hay incertidumbre real.
-- **Nunca trabajar en `/tmp`.** Todo vive dentro del repositorio real. Para descargas temporales de fuentes/assets externos que no son del proyecto, usar una carpeta fuera del repo pero dentro del HOME de Termux (ej. `~/tmp_downloads`), y limpiarla al terminar — nunca dejar resultados de trabajo real ahí, esos van directo al repo.
 - **Nunca sugerir abrir Claude Code dentro de Termux ni mezclar los dos entornos.** Cuando Johnny está en Termux, los comandos son bash/Python puro — nunca `claude` como comando.
 - **Los archivos que Johnny descarga del chat llegan a `/storage/emulated/0/Download/`.** El patrón para moverlos al repo siempre verifica que haya exactamente 1 coincidencia antes de mover, para no arrastrar duplicados de descargas repetidas:
 ```bash
@@ -116,14 +139,9 @@ Un solo bloque de comandos, en este orden: grep de confirmación siempre al fina
   if [ "$n" -ne 1 ]; then echo "❌ FALLO: $n coincidencias en Download (esperaba 1)."; ls $D/nombre_archivo*.md 2>/dev/null; else \
   mv $D/nombre_archivo.md ruta/destino/nombre_archivo.md && echo "✓ movido al repo"; fi
 ```
-- **`git add` siempre con rutas explícitas, nunca `git add .` ni `git add -A` sin revisar antes.** El repo de Termux vive dentro de un repo git más grande que incluye el home completo (`.npm`, `.cache`, otros proyectos) — un `add` sin acotar puede arrastrar archivos ajenos a FYR. Siempre confirmar con `git status` antes de `git commit`.
-- **Commits con mensaje descriptivo real** (qué cambió y por qué), no genérico tipo "update".
-- **Después de cada `git push`**, si el cambio afecta algo que Claude Code también usa (Skill, Policy, knowledge/), recordar que Claude Code necesita su propio `git pull` para verlo — no ocurre automático.
-- **Archivos de test/verificación visual (`_tests_output/` u otras carpetas de prueba) se borran una vez que cumplieron su propósito** — no se acumulan como referencia "por si acaso". El dato real que vale la pena conservar de una medición o prueba va al código o a `knowledge/`, no la imagen que lo generó.
 - **Todo pedido de "actualiza", "verifica" o "revisa" código del repositorio se responde automáticamente con el comando de Termux correspondiente** — nunca con una descripción en prosa de lo que habría que hacer. Claude nunca pide a Johnny que pegue código sin haber dado primero el comando exacto que lo extrae (grep/cat/awk con índice de línea).
 - **Todo fragmento de código que Claude solicita o recibe debe incluir número de línea** (via `grep -n`, `cat -n` o `awk` con `NR`). Código sin índice de línea no es suficiente para construir un `old =` confiable en el heredoc.
 - **El grep/cat/awk de confirmación después de un cambio va siempre en el mismo bloque de comando que hizo el cambio, sin excepción** — nunca en un mensaje aparte pidiendo "corré esto y decime". Esto aplica incluso cuando Claude ya tenía certeza del texto exacto: la certeza autoriza saltar el grep *previo* de verificación (Sección "El patrón de edición", punto 3 de esta lista), no el grep *posterior* de confirmación, que siempre es obligatorio y siempre va en el mismo bloque.
-- **Después de una cantidad importante de cambios o hitos en una sesión (bugs resueltos, layouts nuevos, políticas de gobernanza nuevas), se registra una entrada en `knowledge/CHANGELOG.md` antes de cerrar esa sesión de trabajo** — mismo formato que las entradas existentes (`## FECHA` + bullets `**Documento/Feature** -- qué cambió y por qué`). Un cambio aislado y chico (un typo, un ajuste de 1 línea) no necesita entrada propia; una sesión con varios hitos reales sí, para no depender de la memoria de la conversación para reconstruir qué se decidió y por qué.
 - **`/tmp` está prohibido sin excepción, incluso para scripts de una sola corrida que se borran de inmediato.** No hay caso especial de "descartable" que lo habilite -- en el Termux de Johnny además está bloqueado por permisos, así que cualquier comando que lo use falla. Para un script Python temporal de verificación, usar un heredoc de `python3 << 'PYEOF' ... PYEOF` directo (sin escribir archivo intermedio), o si hace falta archivo, crearlo dentro del repo en una ruta ya cubierta por `.gitignore` y borrarlo al final del mismo bloque.
 - **Nunca usar `!` dentro de comandos Python pasados con `-c` a bash interactivo** (ej. `!r` en f-strings) -- bash lo interpreta como history expansion y corrompe el comando completo, arrastrando errores de sintaxis a las líneas siguientes. Preferir heredoc (`python3 << 'PYEOF'`) para cualquier script con f-strings, comillas anidadas, o caracteres especiales -- nunca `-c` con lógica no trivial.
 - **Si el `old` de un reemplazo incluye texto largo (más de una línea) con tildes o ñ, no usar el heredoc de texto como primer intento** — ir directo a reemplazo por índice de línea (`readlines()`, verificar la línea esperada con `assert lines[N].startswith(...)`, reemplazar `lines[N:M]`). Esto evita fallos de `assert` por diferencias de codificación/normalización Unicode entre lo tipeado en el heredoc y lo real del archivo. El heredoc de texto largo queda reservado para bloques sin tildes/ñ o de una sola línea corta.
@@ -143,7 +161,7 @@ Este tipo de auditoría cruzada ha encontrado errores reales más de una vez —
 
 ## Registro de cambios (CHANGELOG)
 
-`knowledge/CHANGELOG.md` es el registro legible de cambios a los documentos de `knowledge/` — complementa a `git log`, no lo reemplaza. Cada vez que se cierra un cambio de documentación (no código), se agrega una entrada nueva ahí mismo, en el mismo bloque de comandos que hace el commit correspondiente. Formato: fecha, documento(s) afectados, qué cambió y por qué en lenguaje natural — no solo el mensaje técnico del commit.
+`knowledge/CHANGELOG.md` es el registro legible de cambios a los documentos de `knowledge/` — complementa a `git log`, no lo reemplaza. Cada vez que se cierra un cambio de documentación (no código), se agrega una entrada nueva ahí mismo, en el mismo commit. Formato: fecha, documento(s) afectados, qué cambió y por qué en lenguaje natural — no solo el mensaje técnico del commit.
 
 Esto existe porque el historial de git responde "qué cambió y cuándo" pero no siempre "por qué" de forma legible sin abrir cada commit uno por uno.
 
@@ -161,9 +179,9 @@ Si en algún punto parece que el proyecto está acumulando demasiado código/her
 
 Este repo es GitHub Pages (tiene `CNAME`, `index.html` en raíz) — lo que está en `main` se sirve EN VIVO en feedyourroots.us, sin paso de build/deploy intermedio. Esto hace que `main` sea más sensible de lo que parece.
 
-- **Código del sitio (HTML/CSS/JS que afecta funcionamiento o apariencia):** trabajar en rama separada + revisión de Johnny antes de mergear a `main`. Da un punto de control antes de que algo llegue a producción.
-- **Contenido/texto (briefs, copy, knowledge base, trabajo del skill `fyr-content`):** puede ir directo a `main`, riesgo bajo — no es código que pueda romper el sitio.
-- **Sesiones de Claude Code (contenedor remoto, sin acceso al filesystem de Johnny):** por defecto trabajan en su propia rama (`claude/nombre-de-sesion`), nunca directo en `main`, salvo que la tarea sea puramente de contenido de bajo riesgo.
+- **Código del sitio (HTML/CSS/JS en la raíz que afecta funcionamiento o apariencia) y código que corre en la PC (`production/scripts/`, `assemble.py`):** rama separada (`claude/<nombre>`) + confirmación de Johnny antes de mergear a `main`. Da un punto de control antes de que algo llegue a producción o rompa una corrida.
+- **Contenido/texto (briefs, copy, `knowledge/`, skills en `.claude/skills/`, `CHANGELOG.md`):** Claude lo sube directo a `main` cuando Johnny lo pide en la sesión; riesgo bajo, no es código que pueda romper el sitio.
+- **Sesiones de Claude Code (contenedor remoto):** push a `main` está permitido (la rama no tiene protección; verificado 10-oct-2026), pero se usa solo para contenido de bajo riesgo como arriba. Todo lo demás, en rama. Nunca `--force`.
 - Fusionar ramas entre sesiones/entornos es seguro siempre que no se haya tocado el mismo archivo en ambos lados — git resuelve solo (fast-forward o merge limpio). Conflicto real solo si ambos editaron las mismas líneas del mismo archivo.
 - Antes de empezar a trabajar en cualquier sesión: `git pull` (o `fetch` + `merge`) desde el remoto para traer lo que se haya hecho en otro entorno. Antes de cerrar/cambiar de entorno: `git push`.
 - Para ver el contenido de una rama remota sin fusionarla ni cambiarte a ella: `git show origin/nombre-rama:ruta/archivo.md`.

@@ -89,13 +89,13 @@ La última frase del video se diseña para que, al reiniciarse la reproducción,
 | Tipo | Qué es | Ejemplo (PZA_4.2) | Estado |
 |---|---|---|---|
 | **B — Pregunta** | La última frase es una pregunta cuya respuesta son las primeras palabras del video. | "…Family guide, link in bio.// **How young is too young for the garden?**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
-| **A — Frase cortada** | La última frase queda sin terminar y el inicio la completa. Sin puntuación final; cola de silencio corta (`FYR_TAIL_LAST=0.15`). | "…Family guide, link in bio.// **Because the truth is**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
+| **A — Frase cortada** | La última frase queda sin terminar y el inicio la completa. Sin puntuación final; cola de silencio mínima (`FYR_TAIL_LAST=0.05`). | "…Family guide, link in bio.// **Because the truth is**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
 
 **Regla aprendida (10-oct-2026):** la pregunta **no debe repetir la respuesta**. La primera versión ("who says a *three-year-old* is too small…?") ya contenía "three-year-old"; al reiniciar no había hueco que llenar y la pregunta sonaba pegada. La pregunta abre el hueco; el inicio del video lo llena.
 
 **Cierre visual** (regla de loop visual de `SKILL.md`, Paso 3): el último slide puede repetir transformado un elemento de la portada. NO probado en video todavía.
 
-Comparación A vs B del piloto: renderizadas el 10-oct-2026 como `PZA_4.2__cierreB_pregunta.mp4` y `PZA_4.2__cierreA_cortado.mp4`; veredicto de Johnny pendiente. Al decidirse, esta sección pasa a VALIDADO con el ganador (o con la regla de alternancia) y se mide después con datos reales de publicación.
+**Veredicto del piloto (10-oct-2026):** a Johnny le gustaron ambos cierres, así que se mantiene la alternancia A/B (no se descarta ninguno). Dos ajustes pedidos: (1) la **espera entre el final y el reinicio se recorta a la mitad** (ver `TAIL_LAST` en §7); (2) la **pregunta B debe sonar más orgánica**: registro hablado y casual, con un arranque conversacional corto (tipo "Wait, …" / "Ever wonder …"), no una pregunta de manual. Se renderiza de nuevo y se juzga por oído; el ganador final se mide después con datos reales de publicación (retención y replays).
 
 ---
 
@@ -151,7 +151,7 @@ Variante por defecto: **`B-e14`** — una palabra a la vez.
 |---|---|
 | Silencio antes de la voz por slide (`HEAD`) | 0.15 s |
 | Silencio después de la voz (`TAIL`) | 0.65 s (antes 0.40: más aire entre slides) |
-| Cola del último slide (`TAIL_LAST`) | 0.90 s por defecto; se cambia con la variable de entorno `FYR_TAIL_LAST` (cierre A: 0.15) |
+| Cola del último slide (`TAIL_LAST`) | 0.35 s por defecto (cierre B); se cambia con la variable de entorno `FYR_TAIL_LAST` (cierre A: 0.05). Era 0.90 y 0.15: Johnny pidió recortar a la mitad la espera entre el final y el reinicio del loop (10-oct). EN PRUEBA |
 | Transición entre slides | Crossfade de 0.25 s (`fade-in` ease-out) |
 | Movimiento | Zoom lineal 1.00→1.07 en los slides 2–N; portada estática |
 | Voz | Entra en `inicio del slide + HEAD`; cada slide tiene su propio WAV |
@@ -178,7 +178,7 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 
 1. **Preparar.** `git pull`. Bajar de Drive las imágenes a `img/` con los nombres del JSON. Confirmar fuente en `fonts/` y credenciales: `echo $GOOGLE_APPLICATION_CREDENTIALS`.
 2. **Voz.** `node tts.mjs`. Cada slide debe decir `marks`; si dice `fallback-proporcional`, esa voz no devolvió marcas.
-3. **Render.** `node render.mjs B-e14` (varias a la vez: `node render.mjs B-e14 B-e14-gold`). Para cierre A: `FYR_TAIL_LAST=0.15 node render.mjs B-e14`. Salida en `salida/PZA_X__sub<VARIANTE>.mp4`; copiar con el nombre de variante antes del siguiente render (se sobrescribe).
+3. **Render.** `node render.mjs B-e14` (varias a la vez: `node render.mjs B-e14 B-e14-gold`). Para cierre A: `FYR_TAIL_LAST=0.05 node render.mjs B-e14`. Salida en `salida/PZA_X__sub<VARIANTE>.mp4`; copiar con el nombre de variante antes del siguiente render (se sobrescribe).
 4. **Revisar** con repetición activada: unión final→inicio, subtítulos que caben, ritmo, nitidez.
 5. **Aprobado** → subir el MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive (nombre propuesto: `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`) → registrar en Airtable (`Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Estado Producción`).
 6. **Commit** solo de scripts y JSON, con rutas explícitas (`git add` archivo por archivo; nunca `node_modules/`, `build/`, `salida/`, `img/`, credenciales).
@@ -190,7 +190,7 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 ## 10. Registro en el sistema
 
 - **Drive:** el MP4 final vive junto a las imágenes de la pieza, en `Content_Pieces/PZA_[tema]/[fecha]/`. Los WAV y `timings.json` son intermedios regenerables: no se suben.
-- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `En Edición` → `Publicado`; el conector crea opciones nuevas con `typecast: true`, pero no renombra la antigua "En Canva o Edición"). PENDIENTE: campo `Ruta JSON` y campo `ID de variante`.
+- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `Assets en Drive` → `Ensamblado` = MP4 renderizado y aprobado → `Publicado`), `Ruta JSON` (ruta del `pieza_X.json` en el repo). PENDIENTE: crear el campo `ID de variante` (texto).
 - **Skill:** `fyr-video-assembler` (`.claude/skills/fyr-video-assembler/SKILL.md`) guía a Claude para escribir el JSON de pieza y entregar los bloques de comandos de este procedimiento. Se comunica con `fyr-content` a través de Airtable y de los archivos del repo, nunca invocándola.
 
 ---
@@ -203,5 +203,5 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 4. Alerta de presupuesto en Google Cloud.
 5. Motor único parametrizado (`--pieza`) en vez de copiar la carpeta por pieza.
 6. Alineación en la nube si se adopta Chirp 3 HD o Gemini-TTS.
-7. Campos de Airtable: `ID de variante`, `Ruta JSON`.
+7. Campo de Airtable `ID de variante` (`Ruta JSON` ya existe).
 8. Cierre visual en loop y subtítulo que desaparece al terminar la palabra: sin probar.

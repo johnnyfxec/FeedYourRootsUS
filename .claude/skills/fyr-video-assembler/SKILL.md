@@ -36,7 +36,7 @@ Ruta: `production/scripts/video/pza-[tema]/pieza_[tema].json` (copiar la carpeta
 ### Paso 3 — Cierre en loop
 Aplicar el Protocolo §4. El CTA va antes de la línea final y separado por `//` (`link in bio.//`), sin conectores como "So…".
 - **B (pregunta):** la última frase es una pregunta cuya respuesta son las primeras palabras del video. La pregunta **no debe contener la respuesta**.
-- **A (frase cortada):** la última frase queda sin terminar, sin punto final, y la primera frase del video la completa; render con `FYR_TAIL_LAST=0.15`.
+- **A (frase cortada):** la última frase queda sin terminar, sin punto final, y la primera frase del video la completa; render con `FYR_TAIL_LAST=0.05`.
 - Verificar leyendo en voz alta: última frase + primera frase del video deben sonar como una sola idea. Si no, reescribir el cierre antes de entregar.
 - Para comparar A y B: preparar dos versiones del texto del slide final y avisar que cada cierre necesita su propio `tts.mjs` porque cambia el audio del último slide.
 
@@ -48,7 +48,7 @@ Dar bloques cortos y pegables, uno por acción, en este orden (Protocolo §9):
     node tts.mjs
     node render.mjs B-e14
 
-Indicar siempre: qué imágenes bajar de Drive y con qué nombres; que cada slide debe imprimir `marks` en `tts.mjs` (si dice `fallback-proporcional`, detenerse: esa voz no dio marcas); que `salida/` se sobrescribe y hay que renombrar el MP4 antes del siguiente render; para el cierre A, `FYR_TAIL_LAST=0.15 node render.mjs B-e14`.
+Indicar siempre: qué imágenes bajar de Drive y con qué nombres; que cada slide debe imprimir `marks` en `tts.mjs` (si dice `fallback-proporcional`, detenerse: esa voz no dio marcas); que `salida/` se sobrescribe y hay que renombrar el MP4 antes del siguiente render; para el cierre A, `FYR_TAIL_LAST=0.05 node render.mjs B-e14`.
 - Si hay que parchear archivos en la PC, seguir la regla CRLF del Protocolo §9 (Python con `newline=''`, verificar cada conteo antes de escribir, sin `!` en heredocs). Si el parche es largo, preferir editar el archivo en el repo (rama de Claude) y pedir `git pull`.
 - Nunca pedir ni escribir credenciales de Google; solo comprobar `echo $GOOGLE_APPLICATION_CREDENTIALS`.
 
@@ -56,7 +56,7 @@ Indicar siempre: qué imágenes bajar de Drive y con qué nombres; que cada slid
 Pedir que revise con repetición activada: unión final→inicio, subtítulos que caben (palabras largas), ritmo de pausas, nitidez. Registrar su veredicto; si cambia una regla VALIDADO o resuelve un EN PRUEBA, **editar la sección correspondiente del Protocolo en su sitio** (no anexar al final) y actualizar el `CHANGELOG.md`.
 
 ### Paso 6 — Registro
-Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`; en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Estado Producción = En Edición` → `Publicado` al subir. Los WAV y `timings.json` no se suben. Los campos `ID de variante` y `Ruta JSON` aún no existen: Johnny los crea a mano; mientras tanto, anotar la variante en Notas. Marcar el tema como `Usado` en `Themes` solo cuando la pieza se publique.
+Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`; en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Ruta JSON`, `ID de variante` y `Estado Producción = Ensamblado` (MP4 aprobado y en Drive); `Publicado` solo cuando sale a la red. Los WAV y `timings.json` no se suben. Si el campo `ID de variante` aún no existe, anotar la variante al inicio de `Copy Completo`. Marcar el tema como `Usado` en `Themes` solo cuando la pieza se publique.
 
 ## Reglas no negociables
 1. No decidir ni modificar hook, CTA, fase o promesa del brief. Solo aplicar marcas de pausa/énfasis y ajustar el cierre bajo las reglas del §4; si el cierre cambia el sentido, avisar.

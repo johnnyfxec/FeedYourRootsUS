@@ -37,7 +37,7 @@ Crea `build/audio/slide_N.wav` y `build/timings.json`. Cada slide debe decir `ma
 ## 4. Render
 
     node render.mjs B-e14                      # cierre B (pregunta), el que trae el JSON
-    FYR_TAIL_LAST=0.15 node render.mjs B-e14   # cierre A (frase cortada): ver nota abajo
+    FYR_TAIL_LAST=0.05 node render.mjs B-e14   # cierre A (frase cortada): ver nota abajo
     node render.mjs B-e14 B-e14-gold           # varias variantes seguidas
 
 Salida: `salida/PZA_4.2__sub<VARIANTE>.mp4`. Cada render sobrescribe el anterior: **renombra o copia el MP4 antes de renderizar otra versión**. Con `--dry` solo escribe el JSON de Clipkit.
