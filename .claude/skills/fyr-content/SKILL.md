@@ -40,7 +40,7 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Campo | fieldId | Tipo |
 |---|---|---|
 | ID Pieza (primary) | `fld1g5OjdT2BlFdmr` | texto (formato `PZA_[tema]`, ej. `PZA_3.1` — mismo identificador que la carpeta de Drive) |
-| Tipo de Pieza | `fld7zgQouWTYgQdJ3` | singleSelect (Carrusel/Video/Imagen única) |
+| Tipo de Pieza | `fld7zgQouWTYgQdJ3` | singleSelect (Carrusel/Video) |
 | Fecha de Generación | `fldqWpBbCOSaD2gE7` | date |
 | Número de Slides | `fldu0xeW00aYT29So` | number |
 | Duración | `fldmv5v2wcnu0zxZ3` | number (segundos, solo video) |
@@ -56,7 +56,7 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
 Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~206 registros con link Drive verificado.
 
-**Campos pendientes de crear a mano en `Content_Pieces`** (el conector no crea campos): `ID de variante` y `Ruta JSON` (ver `knowledge/FYR_Protocolo_Edicion_Video.md` Secciones 8 y 10).
+**Campos de video en `Content_Pieces`:** `Ruta JSON` (`flduZXIO9iQ89U6Kt`, texto) ya existe; `ID de variante` (texto) se crea con el conector (`create_field`) o a mano si aún no está (ver `knowledge/FYR_Protocolo_Edicion_Video.md` Secciones 8 y 10).
 
 **Regla:** para singleSelect/multipleSelects escribir el nombre de la opción como string y usar `typecast: true` cuando la opción pueda no existir aún (crea la opción automáticamente).
 

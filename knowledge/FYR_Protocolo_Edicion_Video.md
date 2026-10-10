@@ -88,7 +88,7 @@ La última frase del video se diseña para que, al reiniciarse la reproducción,
 
 | Tipo | Qué es | Ejemplo (PZA_4.2) | Estado |
 |---|---|---|---|
-| **B — Pregunta** | La última frase es una pregunta cuya respuesta son las primeras palabras del video. | "…Family guide, link in bio.// **How young is too young for the garden?**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
+| **B — Pregunta** | La última frase es una pregunta cuya respuesta son las primeras palabras del video. | "…Family guide, link in bio.// **Wait, how early can a kid really start gardening?**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
 | **A — Frase cortada** | La última frase queda sin terminar y el inicio la completa. Sin puntuación final; cola de silencio mínima (`FYR_TAIL_LAST=0.05`). | "…Family guide, link in bio.// **Because the truth is**" → reinicia: "Even a three-year-old can do five things in the garden." | EN PRUEBA |
 
 **Regla aprendida (10-oct-2026):** la pregunta **no debe repetir la respuesta**. La primera versión ("who says a *three-year-old* is too small…?") ya contenía "three-year-old"; al reiniciar no había hueco que llenar y la pregunta sonaba pegada. La pregunta abre el hueco; el inicio del video lo llena.
