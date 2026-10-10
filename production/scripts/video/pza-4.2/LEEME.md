@@ -1,15 +1,21 @@
-# PZA_4.2 — primera prueba de video (manual, en la PC)
+# PZA_4.2 — video de piloto (manual, en la PC)
 
-Voz (Google TTS) + subtítulos palabra por palabra + render (Clipkit local). Dos variantes de subtítulo para comparar.
+Voz (Google Cloud TTS) + subtítulos palabra por palabra + render local (Clipkit).
+La política completa vive en `knowledge/FYR_Protocolo_Edicion_Video.md`; este archivo es solo el recordatorio de comandos de esta carpeta.
 
-## 0. Dónde poner la carpeta
-Copia `pza-4.2` DENTRO de la carpeta de la PC que ya tiene `node_modules` con
-`@clipkit/renderer` y `@google-cloud/text-to-speech` (en cualquier nivel por debajo; Node los encuentra solo).
-Abre PowerShell dentro de `pza-4.2`. Comprueba que las credenciales siguen puestas:
+Estado: voz `en-US-Neural2-J` (pitch -4, velocidad 0.92) y subtítulo `B-e14` validados. Cierre A vs B en prueba.
 
-    echo $env:GOOGLE_APPLICATION_CREDENTIALS
+## 0. Preparar (Git Bash en VSCodium)
+Desde la raíz del repo:
 
-## 1. Las 6 imágenes → carpeta `img/` con ESTOS nombres
+    cd production/scripts/video/pza-4.2
+    git pull
+    npm install                       # solo la primera vez
+    echo $GOOGLE_APPLICATION_CREDENTIALS   # debe imprimir la ruta del JSON (fuera del repo)
+
+Si `git pull` se queja de cambios locales en `lib.mjs` o `pieza_4.2.json`, son los parches hechos a mano en la PC: ya están incorporados en el repo. Descártalos con `git checkout -- lib.mjs pieza_4.2.json` y vuelve a hacer `git pull`.
+
+## 1. Imágenes → carpeta `img/` con ESTOS nombres
 | Archivo destino | Asset | Drive |
 |---|---|---|
 | img/01_portada.png | TPL-video-cover-framed.png | https://drive.google.com/file/d/1HEzwHQVBWNG0x9qaEweQTW7RO5NzXqBn/view |
@@ -19,37 +25,33 @@ Abre PowerShell dentro de `pza-4.2`. Comprueba que las credenciales siguen puest
 | img/05_tomate.png | STOCK-hands-picking-cherry-tomato_9x16_v1.png | https://drive.google.com/file/d/1UjTalomj04p5b6_0vHfJ7FHmUPQbgmTA/view |
 | img/06_canasta.png | STOCK-child-harvest-basket-doorway_9x16_v1.png | https://drive.google.com/file/d/152m9l2XICJo7WSiL_5wHv9v0vFq_74cC/view |
 
-## 2. Fuente de los subtítulos (opcional pero recomendado)
-Copia `DMSans-Bold.ttf` a `fonts/`. Para encontrarla en el repo clonado:
+## 2. Fuente de los subtítulos
+`fonts/DMSans.ttf` (fuente variable DM Sans, se usa en Bold). El repo la trae en `production/fonts/DMSans.ttf`; cópiala a `fonts/` si falta. Sin ella el render usa la fuente por defecto y avisa.
 
-    Get-ChildItem -Recurse -Filter "DMSans*Bold*.ttf" E:\RUTA-DEL-REPO | Select-Object -First 3 FullName
+## 3. Voz (una sola vez por guion)
 
-Sin ella, el render usa la fuente por defecto y avisa.
-
-## 3. Elegir la voz (importante: solo sirven las que devuelven marcas de palabra)
-    node tts.mjs --probe
-
-Imprime una tabla: cada voz con "OK" devuelve el tiempo de cada palabra. Deja WAV de muestra en `build/probe/` para escucharlos.
-Por defecto el guion usa `en-US-Neural2-F`; para cambiarla: `node tts.mjs --voice en-US-Neural2-H` (o edita `voz.name` en `pieza_4.2.json`).
-
-## 4. Generar la voz de los 6 slides
     node tts.mjs
 
-Crea `build/audio/slide_N.wav` y `build/timings.json`. Si algún slide dice "fallback-proporcional", esa voz no dio marcas: prueba otra.
+Crea `build/audio/slide_N.wav` y `build/timings.json`. Cada slide debe decir `marks`; si dice `fallback-proporcional`, esa voz no devolvió marcas de palabra y los subtítulos saldrían desfasados. Cambiar de voz: edita `voz.name` en `pieza_4.2.json` o usa `node tts.mjs --voice en-US-Neural2-J`.
 
-## 5. Renderizar
-    node render.mjs                 # A y B-e14
-    node render.mjs B-e18 B-e10-nm  # otras variantes
+## 4. Render
 
-Los videos salen en `salida/PZA_4.2__sub<VARIANTE>.mp4`. Con `--dry` solo escribe el JSON de Clipkit sin renderizar.
+    node render.mjs B-e14                      # cierre B (pregunta), el que trae el JSON
+    FYR_TAIL_LAST=0.15 node render.mjs B-e14   # cierre A (frase cortada): ver nota abajo
+    node render.mjs B-e14 B-e14-gold           # varias variantes seguidas
 
-### Variantes
-- **A** — subtítulo nativo de Clipkit: grupos de palabras, la palabra activa se resalta en dorado.
-- **B** — una palabra a la vez; las palabras con `*énfasis*` salen más grandes y doradas.
-- Modificadores: `-e14` tamaño del énfasis (1.0 / 1.4 / 1.8 → `-e10`, `-e14`, `-e18`) · `-nm` sin movimiento de cámara · `-up` MAYÚSCULAS.
-- Reglas de la pieza: slide 1 (portada) sin subtítulos; subtítulos al centro del video (52 % de alto); sin numerales; crossfade de 0.25 s entre slides; zoom lento 1.00→1.07 en los slides 2–6.
+Salida: `salida/PZA_4.2__sub<VARIANTE>.mp4`. Cada render sobrescribe el anterior: **renombra o copia el MP4 antes de renderizar otra versión**. Con `--dry` solo escribe el JSON de Clipkit.
 
-## Qué traerme de vuelta
-1. La tabla de `--probe` (copiada).
-2. El resultado de `node tts.mjs` (líneas por slide).
-3. Los MP4 (o una captura de pantalla de cada variante) y qué ves bien o mal: legibilidad sobre las ilustraciones claras, tamaño del énfasis, ritmo, la pausa antes de la pregunta final.
+Para el cierre A, además de la variable de entorno cambia el final de la última línea de `texto_narrado` (slide 6) por: `link in bio.// Because the truth is` (sin punto final) y vuelve a correr `node tts.mjs`.
+
+## 5. Variantes de subtítulo
+- **B** — una palabra a la vez; `*énfasis*` sale más grande. Es la base (`B-e14`).
+- **A** — caption nativo de Clipkit por grupos de palabras (deprioritizado).
+- Modificadores: `-e10` / `-e14` / `-e18` tamaño del énfasis · `-nm` sin zoom · `-up` MAYÚSCULAS · `-gold` énfasis dorado.
+- Reglas fijas: portada sin subtítulos; subtítulos al centro (52 % de alto); sin numerales en pantalla; crossfade 0.25 s; zoom 1.00→1.07 en slides 2–6.
+
+## 6. Qué no se commitea
+`node_modules/`, `build/`, `salida/`, `img/*.png`, `fonts/*.ttf`, credenciales. Commit con rutas explícitas (`git add archivo`), nunca `git add .`.
+
+## 7. Qué revisar en el video
+Con repetición activada: la unión del final con el inicio (¿la pregunta/frase cortada engancha?), que ningún subtítulo se salga del cuadro, el ritmo de las pausas, y nitidez de las imágenes.

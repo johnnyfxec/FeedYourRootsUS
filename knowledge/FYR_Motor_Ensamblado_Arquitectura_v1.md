@@ -1,6 +1,7 @@
 # FYR — Arquitectura del Motor de Ensamblado (assemble.py)
-**Versión 1.1 — 30 de agosto 2026**
+**Versión 1.2 — 10 de octubre 2026**
 **Propósito:** especificación completa de los 6 dominios que debe resolver el motor de ensamblado local (Pillow, sin Canva) para producir slides finales sin margen de error. Este documento se lee ANTES de escribir o modificar `assemble.py` — es el contrato que el código debe cumplir, no una sugerencia.
+**Alcance (v1.2):** este motor produce slides ESTÁTICOS (carrusel e imagen única, y la portada/slides fijos que un video pueda reutilizar). El video —voz narrada, subtítulos palabra por palabra, zoom y render— tiene su propio pipeline en `FYR_Protocolo_Edicion_Video.md`; no pasa por `assemble.py`.
 
 ---
 
@@ -29,7 +30,9 @@ Esta clasificación es la que faltaba — sin ella, el script intentaría aplica
 | Zona segura — límite duro (nunca cruzar) | top: 12.5% (169px) / bottom: 83.3% (1125px) | top: 12.5% (240px) / bottom: 83.3% (1600px) |
 | Margen práctico de diseño (estándar real, Plantilla A) | top: 15.2% (205px) / bottom: 86.5% (1168px) | top: 15.2% (292px) / bottom: 86.5% (1661px) |
 
-**Regla:** todo contenido esencial (texto, rostro, elemento que comunica el hook) vive dentro del margen práctico. La zona entre el margen práctico y el límite duro es aire de seguridad adicional, no zona de contenido activo.
+**Regla:** todo contenido esencial (texto, rostro, elemento que comunica el hook) de un slide estático o de una PORTADA vive dentro del margen práctico. La zona entre el margen práctico y el límite duro es aire de seguridad adicional, no zona de contenido activo.
+
+**Excepción para video 9:16 (decisión de Johnny, 10-oct-2026):** las zonas seguras aplican solo a la portada (slide 1 / thumbnail). Los slides 2–N de un video son imagen a pantalla completa y los subtítulos se colocan en el centro (52 % del alto), fuera de esta regla; el texto horneado dentro de una imagen es decorativo.
 
 ---
 

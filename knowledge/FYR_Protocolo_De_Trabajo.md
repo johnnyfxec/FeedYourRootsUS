@@ -18,18 +18,32 @@ Esto aplica sin excepción a: `FYR_Asset_Governance_Policy.md`, `SKILL.md`, cual
 
 ---
 
-## Los dos entornos — no confundirlos
+## Los tres entornos — no confundirlos
 
 | Entorno | Qué es | Cómo se accede |
 |---|---|---|
 | **Termux (tablet Android)** | El clon real del repo, donde Johnny teclea comandos a mano | App Termux directa |
 | **Claude Code (dentro de la app)** | Otra sesión de Claude, con su propio clon del mismo repo, corre la skill `fyr-content` | Tab/sesión de Claude Code en la app |
+| **PC con Windows (VSCodium + Git Bash)** | Tercer clon del repo, donde corre el pipeline de video (Node, Google Cloud TTS, Clipkit). Es el único entorno con el equipo y las credenciales para producir video | VSCodium con terminal Git Bash (NO PowerShell) |
 
-Son dos clones independientes del mismo repo de GitHub. Un cambio en uno **no aparece automáticamente** en el otro — hay que `git push` desde donde se editó y `git pull` desde donde se quiere ver el cambio.
+Son clones independientes del mismo repo de GitHub. Un cambio en uno **no aparece automáticamente** en los otros — hay que `git push` desde donde se editó y `git pull` desde donde se quiere ver el cambio. Flujo habitual del video: la tablet (Termux) o una sesión de Claude edita scripts/JSON → push → `git pull` en la PC. Los scripts y JSON viajan por repo; las imágenes, el audio y el video viajan por Drive.
 
-Claude (esta sesión de chat) **no tiene acceso directo a ninguno de los dos** — no puede ejecutar comandos en el Termux de Johnny ni en su Claude Code. Solo puede: (a) darle a Johnny el comando exacto para que él lo corra, o (b) generar contenido nuevo para que Johnny lo baje y lo suba manualmente.
+Claude (sesión de chat) **no tiene acceso directo a Termux, a la PC ni al Claude Code de Johnny** — no puede ejecutar comandos en ellos. Solo puede: (a) darle a Johnny el comando exacto para que él lo corra, o (b) generar contenido nuevo para que Johnny lo baje y lo suba manualmente. Excepción: una sesión de Claude en la nube con el repo adjuntado puede clonarlo, editar `knowledge/` y las skills, y subir una rama `claude/<nombre>` para que Johnny la revise y la integre; nunca toca `main` por su cuenta ni ejecuta nada en la PC o en Termux.
 
 **Cuidado con alias de shell que redefinen comandos estándar de Unix.** Si un comando básico (`touch`, `ls`, etc.) empieza a comportarse de forma inesperada (por ejemplo, abre Claude Code solo, o cambia de directorio solo), verificar primero con `type nombre_comando` antes de asumir que es un bug del script — puede ser un alias personal en `.bashrc`/`.bash_profile` pisando el comando real.
+
+### Particularidades del entorno PC (Windows, Git Bash en VSCodium)
+
+Claude las tiene presentes siempre que Johnny diga que está en la PC o que el trabajo sea de video:
+
+- **Shell:** Git Bash dentro de VSCodium — mismo protocolo que Termux (bash, heredocs, `git add` con rutas explícitas), pero con rutas de Windows: el repo está en `E:\Mis-Repositorios\FeedYourRootsUS`, que en Git Bash es `/e/Mis-Repositorios/FeedYourRootsUS`. Nunca dar comandos de PowerShell.
+- **Python:** el comando es `python` (3.14), no `python3`. Node 24 y npm 11. Para abrir una carpeta en el Explorador: `explorer.exe "$(cygpath -w "$PWD/carpeta")"`.
+- **Saltos de línea CRLF:** el checkout de Windows puede tener CRLF. Todo parche en Python lee y escribe con `newline=''`, normaliza a `\n` para editar y restaura CRLF al guardar. (Un parche que asume LF puede fallar su `assert` en un archivo CRLF; el patrón con `newline=''` y reemplazos de una sola línea es el que funcionó en la PC.)
+- **Parches de varios reemplazos:** verificar TODOS los conteos antes de escribir cualquier archivo; si alguno falla, imprimir cuál y cuántas coincidencias hubo, y no escribir nada. Preferir reemplazos de una sola línea.
+- **Credenciales:** `GOOGLE_APPLICATION_CREDENTIALS` apunta a un JSON fuera del repo. Nunca se commitea ni se pega en el chat.
+- **Identidad de git:** configurada con `git config --global user.name` / `user.email` (sin eso, `git commit` falla con "Author identity unknown").
+- **Equipo débil (i3, 8 GB):** no correr modelos locales pesados; todo lo costoso va a la nube (TTS) y el render se hace en local porque sí cabe.
+- **Qué no se commitea de una carpeta de video:** `node_modules/`, `build/`, `salida/`, `img/`, `fonts/*.ttf` (ya en su `.gitignore`).
 
 ---
 

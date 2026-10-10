@@ -113,7 +113,7 @@ Este es el punto de integración con `fyr-content` (o el nombre de la skill prod
 
 El cambio vive del lado de la skill productora (documentado ahí, no aquí): en su paso de selección de tema, debe consultar `Trend_Signals` filtrando `Estado = Aprobada` y `Fecha_Expiracion >= hoy`, y si encuentra alguna, ofrecer producir la pieza montada sobre esa señal (usando su `Hook_CRS_Equivalente`, `Formato_Sugerido` y `Brief_Adaptacion` como punto de partida) antes de caer al flujo normal de selección.
 
-Cuando la productora efectivamente use una señal, debe escribir el `PZA-###` resultante de vuelta en `Content_Pieces_Generada` de esa fila — así el ciclo queda trazable de punta a punta. Si la skill productora no soporta esto todavía, no es bloqueante: la tabla `Trend_Signals` sigue siendo útil como banco de inspiración leído manualmente.
+Cuando la productora efectivamente use una señal, debe escribir el `PZA_[tema]` resultante de vuelta en `Content_Pieces_Generada` de esa fila — así el ciclo queda trazable de punta a punta. Si la skill productora no soporta esto todavía, no es bloqueante: la tabla `Trend_Signals` sigue siendo útil como banco de inspiración leído manualmente.
 
 ---
 

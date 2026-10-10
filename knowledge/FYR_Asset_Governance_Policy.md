@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 2.3 — 15 de septiembre 2026**
+**Versión 2.4 — 10 de octubre 2026**
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
@@ -59,14 +59,17 @@ FYR/
 │   │   ├── IG_Story/
 │   │   ├── Pinterest_Pins/
 │   │   ├── Video_Cover_Templates/
-│   │   └── Content_Pieces/          (carruseles/videos completos generados desde la tabla Themes — ver Sección 6)
+│   │   └── Content_Pieces/          (carruseles y videos completos generados desde la tabla Themes — ver Sección 6;
+│   │                                cada `PZA_[tema]/[fecha]/` guarda las imágenes de la pieza Y el MP4 final aprobado;
+│   │                                los WAV y timings.json del video son intermedios regenerables, no se suben)
 │   ├── Ad_Creatives/
 │   │   ├── Meta/
 │   │   ├── Hooks/
 │   │   └── Lifestyle/
 │   ├── Web_Site/
 │   │   └── Blog_Journal_Headers/
-│   └── Video_Production/            (carpeta de trabajo activo, no banco de recursos)
+│   └── Video_Production/            (carpeta de trabajo activo, no banco de recursos. El pipeline de video corre en la PC,
+│                                    ver knowledge/FYR_Protocolo_Edicion_Video.md; el producto final va a Content_Pieces/)
 ├── 06_Narrative_Stock/               (escenas 9:16 sin overlay, fuente de b-roll para cualquier canal)
 └── 07_Influencer_Outreach/           (solo la lista fuente; el registro de comunicación vive en Airtable)
 ```
@@ -93,7 +96,7 @@ FYR/
 | `STOCK-` | Narrative Stock |
 | `COVER-` | Portadas de producto |
 | `FYR_EXTRA_` | Asset aprobado sin categoría asignada al momento de crearlo |
-| `FYR_PZA_[tema]` | Piezas completas de la Malla de Temas (carrusel/video, un archivo por slide) |
+| `FYR_PZA_[tema]` | Piezas completas de la Malla de Temas (carrusel/video, un archivo por slide). Video final: `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4` (la variante es el ID de subtítulo/cierre/voz, ver Protocolo de Edición de Video) |
 
 **Regla de versión:** un archivo solo sube de número de versión (`v2`, `v3`...) **después** de que la versión anterior ya fue subida a Drive y confirmada. Nunca versionar en el nombre antes de tener la anterior archivada — evita huecos de versión sin sentido.
 
@@ -129,6 +132,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 | Simetría en composiciones circulares | Elementos se concentran en un lado (ej. moras solo a la derecha) | Exigir explícitamente que ambas mitades contengan la mezcla completa de elementos |
 | Texto no solicitado | Aparecen letras/números en objetos sin pedirlo | Añadir "no legible text, no readable numbers" si el objeto no necesita texto para su identidad |
 | Patrones no tileable | Costura visible al repetir en mosaico | Pedir fondo perfectamente plano sin textura; **verificar con mosaico 2x2/3x3 antes de aprobar**, nunca asumir |
+| Resolución menor al canvas del video | Gemini entrega las escenas 9:16 en 768×1376 px; el video es 1080×1920, así que el render las reescala ~1.4× (aceptable en el piloto PZA_4.2, pero resta nitidez) | Pedir/exportar a ≥1080×1920 cuando se pueda; verificar el tamaño real antes de aprobar (el render avisa si no es 9:16) |
 | "Logo" con exceso de detalle vectorial | Sale como ícono de app genérico, sin conexión a la marca | Para piezas de marca "logo", usar el bloque de estilo completo (acuarela, no línea vectorial limpia) salvo que se pida explícitamente minimalismo |
 
 ---
@@ -183,7 +187,8 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 ## 9. Qué NO está automatizado todavía (honestidad operativa)
 
 - Generación de imagen en Gemini/Nano Banana — sigue siendo un paso manual de Johnny.
-- Ensamblaje de carrusel en Canva — Canva MCP puede ayudar, pero requiere plantilla base con placeholders ya definida. Mejora futura: configurar Bulk Create para exportar directo a la carpeta `PZA_[tema]/[fecha]/` que ya existe al momento de generar, cerrando el ciclo sin subida manual intermedia.
+- Ensamblaje de carrusel — lo hace `assemble.py` en local (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`); no hay Canva en el flujo. Lo manual es traer los PNG a `assets_local/`, correr el motor y subir el resultado a la carpeta de fecha en Drive.
+- Ensamblaje de video — pipeline manual en la PC (voz con Google Cloud TTS + render con Clipkit local), documentado en `FYR_Protocolo_Edicion_Video.md`. Validado de punta a punta con PZA_4.2; el motor aún es una copia de carpeta por pieza (falta el motor único) y sube a Drive y registra en Airtable a mano.
 - Publicación/programación en redes sociales — no hay conector de publicación directa disponible; sigue siendo manual.
 - Producción de copy/guión — puede generarse por Claude a partir de la Malla de 60 Temas + este documento, pero requiere revisión humana antes de publicar.
 - Producción recurrente por cadencia (semanal/quincenal) — depende de una futura skill de análisis de performance que le indique a `fyr-content` qué ángulos priorizar; hasta entonces, cada corrida la inicia el usuario manualmente.

@@ -9,6 +9,25 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-10
+
+Piloto de video PZA_4.2 (voz + subtitulos + render local). Se escribio la politica de video y se corrigio en su sitio lo que habia quedado desactualizado.
+
+- **FYR_Protocolo_Edicion_Video.md (v1.0, NUEVO)** -- politica de video: pipeline, anatomia del slide-beat, marcas de narracion y tabla de pausas, cierre en loop A/B, voz (Neural2-J, pitch -4, velocidad 0.92) con costos y alternativas, subtitulos B-e14, constantes de linea de tiempo, variantes, procedimiento Git Bash, registro en Drive/Airtable, pendientes. Cada regla lleva estado VALIDADO / EN PRUEBA / PENDIENTE.
+- **.claude/skills/fyr-video-assembler/SKILL.md (v1, NUEVO)** -- skill de ejecucion de video: brief aprobado -> pieza_X.json + comandos para la PC. No decide contenido; se comunica con fyr-content solo via Airtable/repo.
+- **FYR_Asset_Governance_Policy.md (v2.4)** -- Content_Pieces admite el MP4 final (WAV/timings no se suben); naming del MP4; nueva fila de resolucion menor al canvas del video (768x1376 -> 1080x1920); la mencion de Canva en la seccion de herramientas se reemplazo por assemble.py y el pipeline de video.
+- **FYR_Motor_Ensamblado_Arquitectura_v1.md (v1.2)** -- el alcance queda limitado a slides estaticos; el video tiene pipeline propio. Zonas seguras solo aplican a la portada del video; subtitulos al centro.
+- **FYR_Principios_De_Composicion.md** -- Fase 4 (video) marcada INICIADA con el resultado del piloto: unidad = slide-beat, duracion fijada por la voz.
+- **FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md (v1.1)** -- Malla de 61 temas; referencia de seccion corregida; nueva capa de ensamblado (fyr-video-assembler, assemble.py); seccion 7 reescrita como "escrito, sin probar" con el id real `PZA_[tema]`; regla de skills de ejecucion.
+- **FYR_Protocolo_De_Trabajo.md** -- tercer entorno (PC Windows/Git Bash), flujo push/pull + Drive, excepcion para sesiones en la nube (solo rama), y subseccion de particularidades de la PC (CRLF, parches, identidad git, credenciales fuera del repo).
+- **FYR_Malla_60_Temas_Virales_v2.md** -- linea de Sistema con el stack real (Canva no se usa; KIE.ai/Blotato no implementados), nota de portada de video, logo -> simbolo C14, nota video vs carrusel (sin costo de animacion), checklist actualizado.
+- **Sistema_Maestro_CRS_v2.md** -- mecanismo de loop refinado y nueva subseccion "El loop de replay (cierre circular)"; nota en el Paso 6.
+- **.claude/skills/fyr-content/SKILL.md** -- salida pasa de CSV de Canva a config JSON (carrusel: assemble.py; video: pipeline de video), bloque de video en el Paso 3, estado de produccion `En Edicion`, fuentes de conocimiento nuevas, regla no negociable para video.
+- **trend-scout (SKILL.md y schema_trend_signals.md)** -- el id de pieza `PZA-###` pasa a `PZA_[tema]`, que es el formato real.
+- **FYR_Layout_Specs_v1.md** -- se quita la mencion a Canva en la nota de estilo.
+- **production/scripts/video/pza-4.2/** -- `lib.mjs` lee `FYR_TAIL_LAST` del entorno (cierre A); `pieza_4.2.json` con cierre B ("How young is too young for the garden?"); `LEEME.md` reescrito para Git Bash, voz J y el flujo actual.
+- **Pendiente de confirmar por Johnny:** (1) veredicto cierre A vs B, (2) que `En Edicion` reemplace al estado invalido "Publicado en Drive", (3) renombrar a mano la opcion antigua "En Canva o Edicion" en Airtable, (4) crear los campos `ID de variante` y `Ruta JSON`, (5) alerta de presupuesto en Google Cloud. La skill fyr-content de la cuenta de Claude.ai esta mas vieja que la del repo: hay que reemplazarla con la version del repo.
+
 ## 2026-09-16
 
 - **favicon.ico** -- publicado en la raiz del repo (era el ultimo pendiente

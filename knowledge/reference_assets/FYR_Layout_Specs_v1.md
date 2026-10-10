@@ -20,7 +20,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | Imagen de fondo a pedir en Gemini | Exactamente 963×1232px | Exactamente 938×1788px |
 | Padding entre madera y escena | 0px — la escena toca la madera directamente, sin aire | 0px |
 
-**Nota de estilo:** la imagen de fondo puede o no incluir su propia vid decorativa integrada — ambas variantes son válidas (ver Sección 6, Regla de variedad). No usar el marco de ReportLab/Canva ENCIMA de una imagen que ya trae su propio marco pintado — es doble-marco, error confirmado en iteración previa.
+**Nota de estilo:** la imagen de fondo puede o no incluir su propia vid decorativa integrada — ambas variantes son válidas (ver Sección 6, Regla de variedad). No usar el marco de ReportLab (assemble.py) ENCIMA de una imagen que ya trae su propio marco pintado — es doble-marco, error confirmado en iteración previa.
 
 ---
 

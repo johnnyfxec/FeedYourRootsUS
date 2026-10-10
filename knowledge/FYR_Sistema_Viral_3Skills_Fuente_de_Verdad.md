@@ -1,18 +1,20 @@
 # FYR — Sistema Viral de 3 Skills — Fuente de Verdad
-**Versión 1.0 — 24 de agosto 2026**
+**Versión 1.1 — 10 de octubre 2026**
 **Propósito:** que cualquier sesión de Claude (chat o Claude Code) entienda la arquitectura completa del sistema de producción+tendencias+performance sin tener que reconstruir el razonamiento desde cero. Este documento se edita in-place cuando algo del sistema cambia — no se le agregan entradas nuevas al final tipo changelog. Si una sección queda obsoleta, se reescribe esa sección.
 
 ---
 
 ## 1. Visión — qué problema resuelve este sistema
 
-`fyr-content` (la skill productora, ya existente) sabía producir piezas siguiendo el Sistema Maestro CRS y la Malla de 60 Temas, pero producía **a ciegas de lo que está pasando afuera** — sin señal de qué formatos, sonidos o ángulos están funcionando en la plataforma en este momento.
+`fyr-content` (la skill productora, ya existente) sabía producir piezas siguiendo el Sistema Maestro CRS y la Malla de Temas (61 temas en Airtable), pero producía **a ciegas de lo que está pasando afuera** — sin señal de qué formatos, sonidos o ángulos están funcionando en la plataforma en este momento.
 
 El sistema completo tiene 3 skills que se reparten el trabajo:
 
 1. **`trend-scout`** (construida en esta sesión) — caza señales virales externas y las traduce al lenguaje propio de la marca (Hook CRS + Fase de Embudo), dejándolas listas para producir.
-2. **`fyr-content`** (ya existente, requiere un ajuste menor documentado en §5) — produce piezas, ahora con la opción de montarse sobre una señal de tendencia aprobada en vez de partir siempre de cero.
+2. **`fyr-content`** (existente; el ajuste de conexión con `trend-scout` ya está escrito en su Paso 0, ver §7) — produce piezas, con la opción de montarse sobre una señal de tendencia aprobada en vez de partir siempre de cero.
 3. **`performance-lens`** (NO construida todavía — diseño reservado en §6) — mide qué piezas publicadas convirtieron mejor y retroalimenta tanto a `trend-scout` (qué tipo de señal vale la pena perseguir) como a `fyr-content` (qué patrones repetir).
+
+**Capa de ensamblado (ejecución, no decisión):** desde el piloto de video PZA_4.2 (10-oct-2026) existe `fyr-video-assembler`, que convierte un brief ya aprobado por `fyr-content` en un MP4 9:16 (voz con Google Cloud TTS, subtítulos palabra por palabra, render con Clipkit local; ver `FYR_Protocolo_Edicion_Video.md`). Los carruseles los ensambla `assemble.py` (ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`). Esta capa no decide qué se produce ni con qué hook: ejecuta lo aprobado y reporta qué variante salió, que es lo que `performance-lens` necesitará para comparar.
 
 **La ambición de fondo, no solo el mecanismo:** cuando `performance-lens` acumule suficientes datos, el sistema debe poder identificar un **formato firma** — una estructura propia que supera consistentemente el rendimiento de las tendencias externas montadas. Ese formato firma, ejecutado con constancia (candidato natural: la serie diaria "365 Days of Homestead"), es el mecanismo real por el cual una marca deja de perseguir tendencias y empieza a crear las suyas. El sistema no promete esto automáticamente — da la infraestructura de datos para que se pueda decidir con evidencia en vez de con intuición.
 
@@ -20,7 +22,7 @@ El sistema completo tiene 3 skills que se reparten el trabajo:
 
 ---
 
-## 2. Por qué las 3 skills nunca se invocan entre sí
+## 2. Por qué las skills nunca se invocan entre sí
 
 Decisión de arquitectura deliberada: **las skills se comunican exclusivamente a través de Airtable, nunca directamente.**
 
@@ -29,6 +31,7 @@ Razón: si `trend-scout` invocara a `fyr-content` directamente (o viceversa), el
 - `trend-scout` puede correr sola, sin que `fyr-content` esté siquiera instalada, y sigue siendo útil como banco de inspiración leído manualmente.
 - `fyr-content` sigue funcionando exactamente igual que hoy si `trend-scout` nunca corrió esa semana — el chequeo de tendencias aprobadas es un paso opcional al inicio, no una dependencia dura.
 - `performance-lens`, cuando exista, lee de ambas tablas sin que ninguna de las otras dos sepa que existe.
+- `fyr-video-assembler` toma lo que `fyr-content` dejó (fila en `Content_Pieces`, brief y JSON de pieza en el repo) y devuelve el MP4 y su variante; nunca invoca a `fyr-content` ni a las demás.
 
 Esto también es lo que hace la portabilidad real: cada skill es independiente, el único contrato compartido es el schema de las tablas de Airtable.
 
@@ -168,17 +171,18 @@ No existe todavía como archivo. Este es el contrato de diseño que debe respeta
 - Fuente de datos primaria: Instagram Graph API vía MCP (meta-mcp), que requiere cuenta Business/Creator + Meta Developer App — ninguna de las dos cosas está confirmada como ya configurada por Johnny.
 - Para TikTok orgánico propio, la API es más hostil — el plan pragmático es fallback a export CSV manual de TikTok Studio, parseado por la skill.
 - Cadencia sugerida: medición a las 72h post-publicación y de nuevo a los 7 días.
+- **Comparar por variante (nuevo, 10-oct-2026):** cada video lleva un ID de variante (estilo de subtítulo, tipo de cierre A/B, voz; ver `FYR_Protocolo_Edicion_Video.md` Sección 8). `performance-lens` debe cruzar retención y replays contra ese ID para decidir qué variable gana. Requiere un campo "ID de variante" en `Content_Pieces` (aún no existe; el conector de Airtable no crea campos, se crea a mano).
 - **No construir hasta tener ~10 piezas publicadas con datos reales** — antes de eso no hay señal suficiente que minar, y construir la skill antes sería trabajo especulativo sin forma de validarse.
 
 ---
 
-## 7. El módulo de conexión pendiente en `fyr-content`
+## 7. El módulo de conexión en `fyr-content` — escrito, sin probar en una corrida real
 
-`trend-scout/SKILL.md` §5 documenta el lado de la conexión que le corresponde a `trend-scout` (dejar señales en Estado=Aprobada, nunca invocar nada). **El lado correspondiente en `fyr-content` no ha sido verificado ni modificado en esta sesión** — sigue pendiente confirmar si ya existe o si debe agregarse.
+`trend-scout/SKILL.md` §5 documenta el lado de la conexión que le corresponde a `trend-scout` (dejar señales en Estado=Aprobada, nunca invocar nada). **El lado correspondiente en `fyr-content` ya está escrito** (`.claude/skills/fyr-content/SKILL.md`, Paso 0, verificado leyendo el repo el 10-oct-2026). Falta probarlo en una corrida real con una señal aprobada y vigente.
 
-Lo que debe pasar en `fyr-content/SKILL.md`, en su paso de selección de tema (antes de la cola normal): consultar `Trend_Signals` filtrando `Estado=Aprobada` y `Fecha_Expiracion >= hoy`; si hay resultados, ofrecer producir la pieza montada sobre esa señal (usando su Hook_CRS_Equivalente, Formato_Sugerido y Brief_Adaptacion como punto de partida) antes de caer al flujo normal. Al usar una señal, `fyr-content` debe escribir el `PZA-###` resultante de vuelta en `Content_Piece_Generada` de esa fila de `Trend_Signals`.
+Lo que hace `fyr-content/SKILL.md` en su Paso 0, antes de la cola normal: consultar `Trend_Signals` filtrando `Estado=Aprobada` y `Fecha_Expiracion >= hoy`; si hay resultados, ofrecer producir la pieza montada sobre esa señal (usando su Hook_CRS_Equivalente, Formato_Sugerido y Brief_Adaptacion como punto de partida) antes de caer al flujo normal. Al usar una señal, `fyr-content` escribe el `PZA_[tema]` resultante (mismo identificador que la carpeta de Drive, p. ej. `PZA_3.1`) de vuelta en `Content_Piece_Generada` de esa fila de `Trend_Signals`.
 
-Como `fyr-content/SKILL.md` no tiene subcarpetas `references/` ni `scripts/` (confirmado por inspección real del repo — solo tiene el archivo `SKILL.md` suelto), cualquier edición a esto se hace en ese único archivo, siguiendo el patrón grep → Python heredoc con assert → grep que dicta `FYR_Protocolo_De_Trabajo.md` — nunca regenerando el archivo completo.
+`fyr-content/SKILL.md` no tiene subcarpetas `references/` ni `scripts/` (solo el archivo `SKILL.md`), así que cualquier edición a esto se hace en ese único archivo, siguiendo el patrón grep → Python heredoc con assert → grep que dicta `FYR_Protocolo_De_Trabajo.md`.
 
 ---
 
@@ -193,4 +197,5 @@ Consolidado de lo que gobierna a las 3 skills, no solo a una:
 - Fail loudly: tabla no encontrada, config faltante, fuente sin datos → detenerse y reportarlo, nunca simular éxito parcial.
 - Media descargada para deconstrucción de video se borra al cerrar la sesión de análisis, salvo pedido explícito de conservarla.
 - Todo archivo que ya vive en el repo de Termux se edita ahí por comando (grep → heredoc con assert → grep) — nunca se regenera completo desde el chat. Única excepción: primera creación de un archivo que no existía.
+- Una skill de ejecución (`fyr-video-assembler`) nunca decide contenido: ejecuta el brief aprobado y reporta qué variante produjo.
 - Este documento (`FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md`) se edita in-place cuando algo del sistema cambia — nunca se le agregan entradas al final tipo bitácora.

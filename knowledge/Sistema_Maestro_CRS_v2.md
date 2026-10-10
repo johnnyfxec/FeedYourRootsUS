@@ -142,7 +142,7 @@ Las personas navegan en piloto automático. El cerebro necesita procesar algo qu
 1. Abrir un loop en los primeros 3 segundos
 2. Mantenerlo abierto el mayor tiempo posible
 3. Cuando lo cierres, abrir otro inmediatamente
-4. La respuesta final va al último segundo del video
+4. La respuesta final va al final del video (en video narrado de FYR, el último segundo vuelve a abrir un loop de replay: ver "El loop de replay" más abajo)
 
 **La cadena de loops en un video de 30–60 segundos:**
 ```
@@ -152,7 +152,17 @@ Las personas navegan en piloto automático. El cerebro necesita procesar algo qu
 [Loop 1 semi-cerrado] → Primera pista de respuesta
 [Loop 2 cerrado + Loop 3 abierto] → Reencuadre
 [Loops 1, 2, 3 cerrados] → Respuesta completa + CTA
+[Loop de replay abierto] → Última frase = pregunta o frase cortada cuya respuesta/continuación es el INICIO del video (solo video; ver abajo)
 ```
+
+### El loop de replay (cierre circular) — video narrado, validado en piloto, sin medición todavía
+
+En un video que se reproduce en bucle, la última frase puede dejar un hueco que las primeras palabras del video llenan al reiniciar, de modo que la pieza se lea como un círculo y el espectador la vea otra vez sin darse cuenta. Decisión de Johnny (10-oct-2026): es el cierre por defecto de los videos FYR y se alterna entre dos formas, para medir cuál retiene más:
+
+- **B — Pregunta:** la última frase es una pregunta cuya respuesta son las primeras palabras del video.
+- **A — Frase cortada:** la última frase queda sin terminar y las primeras palabras del video la completan.
+
+Reglas aprendidas en el piloto: (1) la pregunta NO debe contener la respuesta (si repite las palabras del inicio, el hueco desaparece); (2) el CTA único va ANTES del loop de replay, separado por una pausa, nunca pegado con un conector tipo "So…"; (3) en la forma A la cola de silencio es mínima para que la unión no se note. El detalle de ejecución (marcas de pausa, cola, ejemplos) vive en `FYR_Protocolo_Edicion_Video.md` Sección 4.
 
 ### El Question Test — herramienta de validación
 
@@ -216,7 +226,7 @@ Cuenta la historia o proceso. Compara la idea vieja con la superior. Cierra el p
 Entrega el valor en pedazos. Cambio de ritmo cada 5 segundos. Indica en el guion cuándo cambiar de plano, qué texto mostrar, qué objeto usar. Cierra todos los loops abiertos progresivamente.
 
 **Paso 6 — Cierre de autoridad y CTA (últimos 5 segundos)**
-Respuesta final completa. Frase ancla de la Teoría Madre. Un único CTA basado en la transformación prometida.
+Respuesta final completa. Frase ancla de la Teoría Madre. Un único CTA basado en la transformación prometida. En video narrado de FYR, el último beat después del CTA es el loop de replay (Parte 3).
 
 ---
 

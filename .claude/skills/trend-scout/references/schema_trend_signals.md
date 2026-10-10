@@ -24,7 +24,7 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 | Video_Referencia_URL | URL | Link al video líder deconstruido (si se hizo deconstrucción). |
 | Estado | singleSelect | Detectada / Aprobada / Usada / Expirada / Descartada |
 | Tema_Vinculado | Texto o Link | Número de tema en `Themes` (ej. "3.1") si la señal calza con un tema existente. Vacío si no. |
-| Content_Piece_Generada | Texto o Link | ID `PZA-###` de la pieza que terminó usando esta señal. Se llena cuando `fyr-content` produce algo montado sobre esta tendencia. |
+| Content_Piece_Generada | Texto o Link | ID `PZA_[tema]` de la pieza que terminó usando esta señal. Se llena cuando `fyr-content` produce algo montado sobre esta tendencia. |
 | Fecha_Aprobacion | Fecha | Cuándo el usuario aprobó pasar la señal de Detectada a Aprobada. |
 | Fecha_Expiracion | Fecha | Fecha_Deteccion + Ventana_Vida_Estimada, calculada al aprobar. Pasada esta fecha sin usarse, la skill sugiere marcar como Expirada. |
 | Resultado_Post_Uso | singleSelect | Alto / Medio / Bajo / Sin datos — mismo vocabulario que `Content_Pieces.Performance`, para que `performance-lens` (futura skill 3) pueda cruzar ambas tablas sin traducción. |
@@ -34,4 +34,4 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 
 - Para singleSelect/multipleSelects: escribir el nombre exacto de la opción como string, usar `typecast: true` si la opción puede no existir aún.
 - `Pilar_Relacionado` y `Hook_CRS_Equivalente` deben calzar carácter por carácter con las opciones ya usadas en `Themes` — si no calzan, Airtable crea una opción duplicada con variación mínima y el cruce entre tablas se rompe silenciosamente. Verificar contra `Themes` antes de escribir, nunca asumir el nombre exacto de memoria.
-- `Signal_ID`: antes de asignar uno nuevo, consultar el último `TR-####` existente — igual que la regla ya usada para `PZA-###` en `fyr-content`.
+- `Signal_ID`: antes de asignar uno nuevo, consultar el último `TR-####` existente — igual que la regla ya usada para `PZA_[tema]` en `fyr-content`.

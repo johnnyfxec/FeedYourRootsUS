@@ -77,7 +77,7 @@ export function parseVariant(id) {
 // ---------- Source de Clipkit ----------
 const HEAD = 0.15;   // silencio antes de la voz en cada slide
 const TAIL = 0.65;   // silencio después de la voz
-const TAIL_LAST = 0.90;
+const TAIL_LAST = parseFloat(process.env.FYR_TAIL_LAST || '0.90');  // cierre A: FYR_TAIL_LAST=0.15
 const XFADE = 0.25;  // crossfade entre slides
 
 export function buildSource({ cfg, timings, variant, base, fontOk }) {

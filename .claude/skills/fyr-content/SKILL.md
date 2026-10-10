@@ -1,6 +1,6 @@
 ---
 name: fyr-content
-description: Motor de producción de contenido FYR. Genera briefs de carrusel/video desde la Malla de 61 temas en Airtable, aplicando el Sistema CRS (fases de embudo, 20 hooks verbales, loops abiertos) y la voz del Brand Bible. Output triple — brief .md legible, fila CSV para Canva Bulk Create, registro en Airtable. Usar cuando el usuario pida "genera el siguiente", "dame el brief del tema X.Y", "produce N piezas" o "kit de afiliado para [creador]".
+description: Motor de producción de contenido FYR. Genera briefs de carrusel/video desde la Malla de 61 temas en Airtable, aplicando el Sistema CRS (fases de embudo, 20 hooks verbales, loops abiertos) y la voz del Brand Bible. Output triple — brief .md legible, config JSON de pieza (carrusel: assemble.py; video: pipeline de video), registro en Airtable. Usar cuando el usuario pida "genera el siguiente", "dame el brief del tema X.Y", "produce N piezas" o "kit de afiliado para [creador]".
 ---
 
 # FYR Content Engine
@@ -46,7 +46,7 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Duración | `fldmv5v2wcnu0zxZ3` | number (segundos, solo video) |
 | Copy Completo | `fldYXJcdumHdu9du6` | multilineText |
 | Ruta .md | `fldSvPv8f3z58iUQS` | texto |
-| Estado Producción | `fldqEyriByKYZ0t3n` | singleSelect (Brief Generado/En Canva o Edición/Publicado) |
+| Estado Producción | `fldqEyriByKYZ0t3n` | singleSelect (Brief Generado/En Edición/Publicado). La opción antigua "En Canva o Edición" sigue existiendo en Airtable hasta renombrarla a mano; usar "En Edición" (`typecast: true` la crea) |
 | Performance | `fldGxHIuckHi9yp4P` | singleSelect (Alto/Medio/Bajo/Sin datos) |
 | Tema Relacionado | `fldgHOLLy8s3tr3Dh` | link → Themes (single) |
 | Assets Usados | `fldT4ifnqw6Fz8a3v` | link → Assets (múltiple) |
@@ -55,6 +55,8 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
 Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~206 registros con link Drive verificado.
+
+**Campos pendientes de crear a mano en `Content_Pieces`** (el conector no crea campos): `ID de variante` y `Ruta JSON` (ver `knowledge/FYR_Protocolo_Edicion_Video.md` Secciones 8 y 10).
 
 **Regla:** para singleSelect/multipleSelects escribir el nombre de la opción como string y usar `typecast: true` cuando la opción pueda no existir aún (crea la opción automáticamente).
 
@@ -73,6 +75,8 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | `knowledge/FYR_Asset_Governance_Policy.md` (v2.3+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, estructura `01_Brand_Assets/C01-C13` (incluye C12_Frames y C13_Layout_Elements), y principio de duplicados semánticos en Themes |
 | `knowledge/reference_assets/FYR_Layout_Specs_v1.md` | Medidas exactas (bbox, ventanas de contenido) de los 12 layouts en 4:5 y 9:16, con ruta de Drive de cada asset — consultar SIEMPRE antes de generar un prompt de imagen que use un layout con marco/asset fijo |
 | `knowledge/FYR_Brand_Mark_Spec_v1.md` | Simbolo oficial de marca (frasco+arbol): espacio de proteccion, tamano minimo, variantes de color, lockups aprobados, usos prohibidos, proporcion fija 1:1.405 — consultar SIEMPRE antes de usar/reproducir el simbolo o el wordmark en cualquier pieza |
+| `knowledge/FYR_Motor_Ensamblado_Arquitectura_v1.md` | Contrato de `assemble.py` (carruseles/slides estáticos): tipos de layout, tipografía, schema del config JSON — leer antes de escribir el config de un carrusel |
+| `knowledge/FYR_Protocolo_Edicion_Video.md` | Pipeline de video (voz TTS, subtítulos palabra por palabra, pausas, cierre en loop A/B, contrato del JSON de pieza, procedimiento en la PC) — leer SIEMPRE cuando `Medio = Video`, antes del Paso 3 |
 | `knowledge/FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` | Arquitectura del sistema completo de 3 skills (trend-scout, fyr-content, performance-lens), como se comunican vía Airtable, y el schema real de `Trend_Signals` — leer antes de tocar cualquier logica relacionada a tendencias o performance |
 
 **Adaptación obligatoria del CRS:** el sistema fue escrito para el avatar de trading/libertad financiera. Al aplicarlo, traducir SIEMPRE al avatar Morgan (28-42, patio suburbano, busca soberanía alimentaria): el dolor no es "depender de un sueldo", es "depender del supermercado / no saber qué come su familia / sentir que la autosuficiencia es para gente con 5 acres". La ciencia (loops, fases, hooks) se conserva; el contenido se traduce.
@@ -134,6 +138,12 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - **Regla de loop visual (obligatoria en el cierre):** el prompt de imagen del slide de cierre debe citar textualmente un elemento especifico del prompt de portada (objeto, color dominante, o composicion) e instruir que se repita transformado — mismo objeto, estado distinto. Esto invita a redeslizar desde el inicio, aumentando el watch-time/replay. Ejemplo: portada = "caja de zapatos desordenada"; cierre = "la misma caja, ahora organizada y cerrada con lazo".
 - Decidir por slide si lleva asset de fondo o solo texto sobre fondo de marca (Parchment #F5ECD7): el criterio es si la imagen añade tensión/credibilidad al loop. Nunca imagen decorativa por rellenar.
 - Voz del Brand Bible: cálida, directa, sin banned words. Todo el copy final en **inglés** (mercado US), títulos de portada en el formato ya definido en la Malla.
+- **Si `Medio = Video`** (leer `knowledge/FYR_Protocolo_Edicion_Video.md` completo antes de escribir): la unidad es el slide-beat (imagen 9:16 + una línea narrada). Reglas del piloto PZA_4.2:
+  - Slide 1 = portada (`TPL-video-cover-framed.png`, estática, sin subtítulos); slides 2–N = imagen `full_bleed` con la línea narrada en `texto_narrado`. El Paso 2 (afinidad Hook→Layout) NO aplica al cuerpo del video: todos son `full_bleed` solo imagen; el texto lo ponen los subtítulos.
+  - Cuenta regresiva narrada ("Number five: …"), **sin numerales en pantalla**.
+  - Marcas en `texto_narrado`: `*palabra*` = énfasis (subtítulo más grande), `//` al final de una palabra = pausa extra, `…` = pausa larga. Longitud de referencia ~525 caracteres (~35 s, 6 slides).
+  - **Cierre en loop de replay por defecto, alternando A y B:** B = pregunta cuya respuesta son las primeras palabras del video; A = frase cortada que el inicio completa. La pregunta NO puede contener las palabras de la respuesta. El CTA único va antes, separado con `//`, sin conectores tipo "So…". Registrar el tipo de cierre en el brief (es una variable a medir).
+  - Las imágenes narrativas deben ser 9:16; verificar el tamaño real (Gemini suele entregar 768×1376, ver Policy v2.4 Sección 5).
 
 ### Paso 4 — Selección de assets
 Dos búsquedas distintas en `Assets`, según qué necesita el slide:
@@ -142,20 +152,19 @@ Dos búsquedas distintas en `Assets`, según qué necesita el slide:
 
 Si ningún asset calza para un slide clave, incluir en el brief un prompt de generación nuevo (bloque de estilo del Brand Bible + regla de diversidad) marcado como `[GENERAR EN GEMINI]` — no bloquear la pieza por eso.
 
-### Paso 5 — Outputs y flujo temporal (5 sub-pasos, en este orden — NUNCA saltarse ni fusionar)
+### Paso 5 — Outputs y flujo temporal (6 sub-pasos, en este orden — NUNCA saltarse ni fusionar)
 
 1. **Brief** → `production/briefs/FYR_Brief_[Número]_[slug].md`: tema, fase, hook (nombre + Question Test), tabla slide-por-slide (texto exacto | layout asignado segun Paso 2/3 | asset o fondo | nota de intencion), CTA. El numero de slides y el layout de cada uno ya vienen decididos por las reglas de los Pasos 2 y 3 — el brief los documenta, no los reinventa. El campo CTA puede quedar vacio o decir "ninguno (F1)" cuando la Fase Embudo asignada al tema es F1, segun la gradacion del Paso 3. El brief YA indica, por slide, si el asset existe en el banco o necesita generarse (`[GENERAR EN GEMINI]`) — esa evaluacion se hace aqui, no despues.
-2. **Fila CSV** → append a `production/canva_bulk_queue.csv`. Crear con header si no existe. Schema fijo:
-   ```
-   pieza_id,tema,hook_titulo,hook_sub,s2_txt,s3_txt,s4_txt,s5_txt,s6_txt,cta_txt,img1,img2,img3,img4,img5,img6,img7
-   ```
-   Columnas de slides no usados = cadena vacía. `img*` = nombre de archivo exacto del asset. Escapar comas con comillas dobles estándar CSV.
+2. **Config JSON de la pieza** (reemplaza al CSV de Canva, retirado). Claude escribe solo qué layout, qué texto y qué imagen —nunca coordenadas ni tiempos—:
+   - **Carrusel / imagen:** `PZA_[tema]_config.json`, schema de `FYR_Motor_Ensamblado_Arquitectura_v1.md` Sección 6, junto al brief en `production/briefs/` (esa carpeta no va a Git). Lo consume `assemble.py`.
+   - **Video:** `pieza_[tema].json`, contrato de `FYR_Protocolo_Edicion_Video.md` Sección 2, en `production/scripts/video/pza-[tema]/`. Lo consume el pipeline de video en la PC (skill `fyr-video-assembler`).
+   Si el brief cambia en la pausa del sub-paso 3, el JSON se parchea con el brief; nunca queda desfasado.
 3. **PAUSA — Aprobación del usuario.** El brief puede cambiar aquí (el usuario edita texto, pide otro hook, etc.) — si cambia, se hace patch quirúrgico del `.md`, nunca regenerar desde cero. Solo se avanza al paso 4 cuando el usuario confirma explícitamente que el brief está listo para producirse.
 4. **Creación de carpeta (Drive MCP, automática al aprobar).** Verificar primero si `FYR/05_Marketing_Assets/Social_Media/Content_Pieces/PZA_[tema]/` ya existe (ese tema pudo producirse antes en otra fecha). Si no existe, crear ambos niveles; si existe, crear solo la subcarpeta `[fecha-YYYY-MM-DD]/` de hoy dentro. Esto ocurre sin importar si la pieza necesita generar imágenes nuevas o reutiliza 100% assets existentes — el criterio es "la pieza está lista para ensamblarse", no "ya terminé de generar en Gemini".
 5. **Generación manual + espera.** Si el brief marcó slides pendientes, el usuario genera en Gemini usando los prompts del brief (bloque de estilo del Brand Bible + regla de diversidad) y sube los archivos a la carpeta de fecha ya creada, nombrados según convención: `FYR_PZA_[tema]_S[n]_[slug]_[aspecto]_v[version].png`. La skill NO continúa hasta que el usuario confirma que ya subió.
-6. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA_[tema]`, ej. `PZA_3.1` — mismo nombre que la carpeta de Drive, nunca un consecutivo genérico), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = Publicado en Drive`, `Hook Usado`, `Audiencia`. Luego actualizar el tema: `Estado = Usado`, `Fecha de uso = ahora`.
+6. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA_[tema]`, ej. `PZA_3.1` — mismo nombre que la carpeta de Drive, nunca un consecutivo genérico), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = En Edición` (assets en Drive, falta ensamblar/renderizar; pasa a `Publicado` solo cuando la pieza se publica en la red), `Hook Usado`, `Audiencia`, y para video `Tipo de Pieza = Video` y el tipo de cierre (A/B) anotado al inicio de `Copy Completo`. Luego actualizar el tema: `Estado = Usado`, `Fecha de uso = ahora`.
 
-**Verificación final de cada pieza:** brief existe en disco + fila CSV parseable + carpeta de Drive con archivos + registro Airtable con links poblados. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
+**Verificación final de cada pieza:** brief existe en disco + config JSON válido (carrusel: `config_loader.py` lo acepta; video: es JSON válido y cada `asset` existe en `Assets`) + carpeta de Drive con archivos + registro Airtable con links poblados. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
 
 ---
 
@@ -178,3 +187,4 @@ Cuando el usuario pida un "kit para [creador]": mismo flujo, con estos cambios:
 - **Plan antes de ejecutar:** en modo batch ("produce 5 piezas"), mostrar la lista de temas seleccionados y esperar OK antes de generar. Pieza única: generar directo (la aprobación ocurre al revisar el brief).
 - **Fail loudly:** ID no encontrado, archivo faltante, conteo que no cuadra → detenerse y reportar. Nunca aplicar un cambio silenciosamente incorrecto.
 - **Un paso a la vez:** nunca pedir al usuario múltiples acciones manuales en un solo mensaje.
+- **Video:** un video de FYR cierra en loop de replay (A/B alternados) y nunca muestra numerales en una cuenta regresiva; el detalle y su estado de validación viven en `knowledge/FYR_Protocolo_Edicion_Video.md`.

@@ -1,6 +1,6 @@
 # Feed Your Roots US — Malla Programática de 60 Temas Virales (v2)
 
-**Sistema:** Claude `/generate` skill + KIE.ai (video) + Canva (plantillas) + Gemini (imágenes) + Blotato (publicación)
+**Sistema (actualizado 10-oct-2026):** skills `fyr-content` (briefs) y `fyr-video-assembler` (video) + Gemini (imágenes) + `assemble.py` local (carruseles, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`) + pipeline de video local (voz Google Cloud TTS + render Clipkit, ver `FYR_Protocolo_Edicion_Video.md`) + publicación manual. El stack original de esta Malla (`/generate` + KIE.ai para clips de video IA + Canva para plantillas + Blotato para publicar) no es el flujo real: Canva ya no se usa en ninguna parte; KIE.ai y Blotato siguen como ideas no implementadas.
 **Versión anterior:** v1 (temas y prompts de imagen). Esta v2 añade: sistema de plantillas visuales validado, tipografía final, columna de Medio (Video/Carrusel), y título+subtítulo de portada por cada uno de los 60 temas.
 
 ---
@@ -8,6 +8,7 @@
 ## 🎨 Sistema de plantillas de marca (validado)
 
 ### Plantilla A — Portada tipo "capítulo de libro" (frame de apertura, 1.5-2s)
+*Hoy se produce con el layout `marco_grande_cuadrado` (9:16) / `marco_grande_portada` (4:5) de `assemble.py`; en video es el slide 1 estático y sin subtítulos (`TPL-video-cover-framed.png`).*
 - Canvas 1080×1920px, fondo parchment (#F5ECD7) con textura de papel envejecido, edge to edge
 - Marco de imagen: **1:1** (cuadrado), imagen ilustrada dentro con marco de madera fina y envejecida (ver prompt de marco más abajo)
 - Debajo del marco: un solo divisor de enredadera/hojas en forest green
@@ -18,10 +19,10 @@
 
 ### Plantilla B — Cierre / sello de marca (frame final, 1-2s)
 - Franja parchment semi-transparente en la parte inferior
-- Sello circular con el **logo real de FYR** (brote + "FYR" en Satisfy script)
+- Sello circular con el símbolo oficial de marca (C14, frasco con árbol; reglas en `FYR_Brand_Mark_Spec_v1.md`). El "brote + FYR en Satisfy" original quedó reemplazado. En el piloto de video PZA_4.2 no se usó sello de cierre: el cierre es narrado (CTA + frase en loop)
 - Nombre del recurso mostrado en DM Sans, junto al sello
 
-### Prompt reutilizable — Marco de madera envejecida (para aislar y reutilizar en Canva)
+### Prompt reutilizable — Marco de madera envejecida (para aislar y reutilizar como asset de layout)
 > A thin, delicate old wooden picture frame, viewed straight-on/flat (front-facing, no perspective angle), isolated on a solid flat white background for easy background removal. Vertical square 1:1 inner proportions, thin width (not chunky), aged weathered wood with visible grain, small natural cracks, warm brown tone (#5C3A1E) with honey-brown highlights. Simple, slightly rounded corners, minimal and rustic, not ornate. Inside completely empty/hollow. Soft even studio lighting, sharp focus on wood texture. Watercolor and ink illustration style, hand-painted look. High resolution, clean edges for isolation.
 
 ### Zonas seguras de plataforma (TikTok/Instagram, canvas 1080×1920)
@@ -47,7 +48,7 @@ No todos los temas requieren animación. Se asigna **Medio** por afinidad de for
 | POV | Video | la inmersión en primera persona pierde fuerza sin movimiento |
 | Storytime | Video | la narrativa se beneficia de sentirse "vivida", no solo leída |
 
-**Nota estratégica:** el carrusel no está penalizado por el algoritmo, pero tiene techo de alcance viral más bajo que el video de gran escala; a cambio, suele generar más guardados/compartidos en contenido educativo. Mientras no haya presupuesto de animación, priorizar carrusel en Countdown/Antes-Después, y reservar el video (Qwen gratis, clips de 5s) para 1-2 piezas semanales en POV/Storytime donde el gancho depende del movimiento.
+**Nota estratégica:** el carrusel no está penalizado por el algoritmo, pero tiene techo de alcance viral más bajo que el video de gran escala; a cambio, suele generar más guardados/compartidos en contenido educativo. Esto describía el video como clips animados por IA (Qwen/KIE.ai, 5 s por clip, con costo). Con el pipeline de imágenes fijas + zoom + voz narrada (piloto PZA_4.2, un tema Countdown producido como video, 10-oct-2026) el video no gasta animación: su costo es la voz (dentro del tier gratuito de Google) y el render local. Los defaults de la tabla de arriba quedan como criterio creativo, ya no como restricción de costo; la decisión de cambiarlos depende de medir retención carrusel vs video con datos reales.
 
 ---
 
@@ -585,11 +586,11 @@ Todos los personajes humanos (niños, padres, adultos) deben representar tonos d
 3. Sin texto no intencional en la imagen (salvo gpt-image-2 a propósito)
 4. Personaje narrador SIEMPRE en POV — nunca rostro frontal; familiares secundarios permitidos de cuerpo/rostro completo
 5. Diversidad de piel/etnia rotada entre temas del catálogo — nunca por defecto blanco/rubio
-6. Countdown/Antes-Después → Carrusel por defecto (sin gasto de animación); POV/Storytime → Video
+6. Countdown/Antes-Después → Carrusel por defecto; POV/Storytime → Video (el video de imágenes fijas + voz no gasta animación; un Countdown puede salir como video, ver el piloto PZA_4.2)
 7. Prompt de animación (cuando aplique): una sola micro-acción, cámara sutil ("barely drifting"), línea obligatoria "no distortion / no extra fingers / no facial warping", línea "preserve the watercolor and ink illustration texture"
-8. Confirmar costo cotizado por el skill `/generate` antes de aprobar animación
-9. Cuenta social "calentada" (actividad manual diaria) antes de conectar Blotato en automático
+8. Si se usa animación IA (clips): confirmar costo cotizado por el skill `/generate` antes de aprobar. No aplica al video de imágenes fijas + voz
+9. Cuenta social "calentada" (actividad manual diaria) antes de automatizar la publicación (hoy es manual; Blotato sigue sin conectar)
 
 ---
 
-**Resumen numérico:** 60 temas · 11 pilares · 30 POV / 10 Antes-Después / 10 Countdown / 10 Storytime · ~30 Video / ~30 Carrusel · Costo estimado de generación de video (solo la porción en Video, sin descartes): ~$22–24 USD a $0.75–0.80/clip. La porción en Carrusel no requiere gasto de animación.
+**Resumen numérico:** 60 temas · 11 pilares · 30 POV / 10 Antes-Después / 10 Countdown / 10 Storytime · ~30 Video / ~30 Carrusel · Costo estimado de generación de video (solo la porción en Video, sin descartes): ~$22–24 USD a $0.75–0.80/clip. La porción en Carrusel no requiere gasto de animación. (Esa cifra es para clips IA; el video de imágenes fijas + voz cuesta ≈ $0 mientras la voz esté en el tier gratuito de Google.)
