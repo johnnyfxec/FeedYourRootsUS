@@ -190,7 +190,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 - Ensamblaje de carrusel — lo hace `assemble.py` en local (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`); no hay Canva en el flujo. Lo manual es traer los PNG a `assets_local/`, correr el motor y subir el resultado a la carpeta de fecha en Drive.
 - Ensamblaje de video — pipeline manual en la PC (voz con Google Cloud TTS + render con Clipkit local), documentado en `FYR_Protocolo_Edicion_Video.md`. Validado de punta a punta con PZA_4.2; el motor aún es una copia de carpeta por pieza (falta el motor único) y sube a Drive y registra en Airtable a mano.
 - Publicación/programación en redes sociales — no hay conector de publicación directa disponible; sigue siendo manual.
-- Producción de copy/guión — puede generarse por Claude a partir de la Malla de 60 Temas + este documento, pero requiere revisión humana antes de publicar.
+- Producción de copy/guión — puede generarse por Claude a partir del banco de temas (Malla de 61 + temas nuevos de los PDFs) + este documento, pero requiere revisión humana antes de publicar.
 - Producción recurrente por cadencia (semanal/quincenal) — depende de una futura skill de análisis de performance que le indique a `fyr-content` qué ángulos priorizar; hasta entonces, cada corrida la inicia el usuario manualmente.
 
 ---

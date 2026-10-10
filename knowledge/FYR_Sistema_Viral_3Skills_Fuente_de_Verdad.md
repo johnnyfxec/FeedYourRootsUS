@@ -6,7 +6,7 @@
 
 ## 1. Visión — qué problema resuelve este sistema
 
-`fyr-content` (la skill productora, ya existente) sabía producir piezas siguiendo el Sistema Maestro CRS y la Malla de Temas (61 temas en Airtable), pero producía **a ciegas de lo que está pasando afuera** — sin señal de qué formatos, sonidos o ángulos están funcionando en la plataforma en este momento.
+`fyr-content` (la skill productora, ya existente) sabía producir piezas siguiendo el Sistema Maestro CRS y el banco de temas (Malla de 61 temas semilla + temas nuevos de los PDFs; Airtable registra los que se producen), pero producía **a ciegas de lo que está pasando afuera** — sin señal de qué formatos, sonidos o ángulos están funcionando en la plataforma en este momento.
 
 El sistema completo tiene 3 skills que se reparten el trabajo:
 

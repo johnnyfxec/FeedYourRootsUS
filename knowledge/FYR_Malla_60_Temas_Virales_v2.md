@@ -1,4 +1,4 @@
-# Feed Your Roots US — Malla Programática de 60 Temas Virales (v2)
+# Feed Your Roots US — Malla Programática de 61 Temas Virales (v2) — banco semilla
 
 **Sistema (actualizado 10-oct-2026):** skills `fyr-content` (briefs) y `fyr-video-assembler` (video) + Gemini (imágenes) + `assemble.py` local (carruseles, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`) + pipeline de video local (voz Google Cloud TTS + render Clipkit, ver `FYR_Protocolo_Edicion_Video.md`) + publicación manual. El stack original de esta Malla (`/generate` + KIE.ai para clips de video IA + Canva para plantillas + Blotato para publicar) no es el flujo real: Canva ya no se usa en ninguna parte; KIE.ai y Blotato siguen como ideas no implementadas.
 **Versión anterior:** v1 (temas y prompts de imagen). Esta v2 añade: sistema de plantillas visuales validado, tipografía final, columna de Medio (Video/Carrusel), y título+subtítulo de portada por cada uno de los 60 temas.
@@ -68,10 +68,10 @@ Todos los personajes humanos (niños, padres, adultos) deben representar tonos d
 
 ## Cómo está organizada esta malla
 
-60 temas repartidos en **11 pilares**, uno por cada recurso ya producido de FYR.
+61 temas repartidos en **11 pilares**, uno por cada recurso ya producido de FYR (P5 tiene 4, P11 tiene 8). **Esta malla es el banco semilla, no una lista cerrada ni una carga en Airtable:** un tema entra a la tabla `Themes` cuando se produce, y los temas nuevos se extraen de los PDFs de cada pilar (ver `fyr-content`, sección 3). El archivo conserva "60" en el nombre por historia.
 
-**Distribución de formato (60 total):** POV 30 · Antes/Después 10 · Countdown 10 · Storytime 10
-**Distribución de medio resultante:** ~30 Video · ~30 Carrusel (aprox., ver detalle por tema)
+**Distribución de formato (61 total, contada del archivo):** POV 22 · Antes/Después 14 · Countdown 12 · Storytime 13
+**Distribución de medio resultante (contada):** 34 Video · 27 Carrusel
 
 **Estructura de cada tema:**
 - **Gancho / título interno** (referencia de trabajo)
@@ -593,4 +593,4 @@ Todos los personajes humanos (niños, padres, adultos) deben representar tonos d
 
 ---
 
-**Resumen numérico:** 60 temas · 11 pilares · 30 POV / 10 Antes-Después / 10 Countdown / 10 Storytime · ~30 Video / ~30 Carrusel · Costo estimado de generación de video (solo la porción en Video, sin descartes): ~$22–24 USD a $0.75–0.80/clip. La porción en Carrusel no requiere gasto de animación. (Esa cifra es para clips IA; el video de imágenes fijas + voz cuesta ≈ $0 mientras la voz esté en el tier gratuito de Google.)
+**Resumen numérico:** 61 temas · 11 pilares · 22 POV / 14 Antes-Después / 12 Countdown / 13 Storytime · 34 Video / 27 Carrusel · Costo estimado de generación de video (solo la porción en Video, sin descartes): ~$22–24 USD a $0.75–0.80/clip. La porción en Carrusel no requiere gasto de animación. (Esa cifra es para clips IA; el video de imágenes fijas + voz cuesta ≈ $0 mientras la voz esté en el tier gratuito de Google.)

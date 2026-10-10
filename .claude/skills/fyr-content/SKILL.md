@@ -1,6 +1,6 @@
 ---
 name: fyr-content
-description: Motor de producción de contenido FYR. Genera briefs de carrusel/video desde la Malla de 61 temas en Airtable, aplicando el Sistema CRS (fases de embudo, 20 hooks verbales, loops abiertos) y la voz del Brand Bible. Output triple — brief .md legible, config JSON de pieza (carrusel: assemble.py; video: pipeline de video), registro en Airtable. Usar cuando el usuario pida "genera el siguiente", "dame el brief del tema X.Y", "produce N piezas" o "kit de afiliado para [creador]".
+description: Motor de producción de contenido FYR. Genera briefs de carrusel/video desde el banco de temas (Malla semilla de 61 + temas nuevos extraídos de los PDFs; Airtable registra los que se producen), aplicando el Sistema CRS (fases de embudo, 20 hooks verbales, loops abiertos) y la voz del Brand Bible. Output triple — brief .md legible, config JSON de pieza (carrusel: assemble.py; video: pipeline de video), registro en Airtable. Usar cuando el usuario pida "genera el siguiente", "dame el brief del tema X.Y", "produce N piezas" o "kit de afiliado para [creador]".
 ---
 
 # FYR Content Engine
@@ -70,7 +70,7 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 
 | Archivo | Uso |
 |---|---|
-| `knowledge/FYR_Malla_60_Temas_Virales_v2.md` | Fuente de los 61 temas (solo para migración inicial; después Airtable manda) |
+| `knowledge/FYR_Malla_60_Temas_Virales_v2.md` | Banco semilla de 61 temas (no está cargado en Airtable; un tema entra a `Themes` al producirse). Marcar aquí el estado de un tema NO es necesario: manda `Themes` |
 | `knowledge/Sistema_Maestro_CRS_v2.md` | Fases de embudo, arquitectura de loops, Question Test, framework 6 pasos |
 | `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso |
 | `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad, excepcion de rostros en escenas narrativas (v2) |
@@ -85,29 +85,30 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 
 ---
 
-## 3. Primer run — Migración de los 61 temas
+## 3. Banco de temas y alta de temas
 
-Si `Themes` está vacía (verificar con una búsqueda antes de asumir):
+**Dos lugares, dos funciones (no confundirlos):**
+- **Banco de temas** = la Malla (`knowledge/FYR_Malla_60_Temas_Virales_v2.md`, 61 temas semilla `X.Y`) + los temas nuevos que se extraigan de los PDFs. Es donde se *elige* qué producir. NO está cargado en Airtable y no se carga en bloque.
+- **Tabla `Themes`** = solo los temas que ya se han producido (o están en producción). Es el registro: estado, fecha, hook, piezas. Un tema entra a `Themes` en el momento de producirlo (Paso 5.6), nunca antes.
 
-1. Parsear la Malla. Cada tema es un bloque `### X.Y — "Título"` con bullets: Dolor/deseo, CTA visual, Formato, Medio, Título portada, Subtítulo, Prompt. **Son 61 temas, no 60** (P5 tiene 4, P11 tiene 8) — verificar el conteo tras parsear y fallar si no da 61.
-2. Durante el parseo, asignar a cada tema:
-   - **Fase Embudo**, según el ángulo de dolor: incomodar sin que sepan del producto → F1; mostrar alternativa → F2; destruir objeción → F3; resultado/demostración del recurso → F4. Al terminar, verificar que la mezcla global aproxime 40/27/20/13 y ajustar los casos límite.
-   - **Hook Asignado**, cruzando Fase + Formato con la tabla de compatibilidad del CRS (Parte 2). Nota v2 del sistema: el hook Mito (11) es el de mayor conversión para avatares con creencias arraigadas — Morgan cree que "autosuficiencia = mucho terreno y dinero"; usarlo generosamente en F2/F3.
-3. Crear registros en lotes de ≤50 vía MCP con `typecast: true`, `Estado = Pendiente`.
-4. Verificar: contar registros creados == 61 antes de declarar éxito. Mostrar resumen de distribución (temas por fase, por hook) para aprobación del usuario.
+**Temas nuevos desde los PDFs (la fuente de contenido es ilimitada).** Cada parte de un recurso (sección, tabla, lista, error común, caso del PDF) puede convertirse en un tema que impulse recordación o ventas:
+1. Leer el PDF del pilar en el Proyecto (los 10 recursos de la carpeta de producto; el Core Bundle y los demás bundles están en la lista de archivos del Proyecto) y elegir un fragmento concreto: una cifra, un error, una tabla, un procedimiento.
+2. Convertirlo en tema con la misma estructura de la Malla: Dolor/deseo (traducido al avatar Morgan), CTA visual (el recurso), Formato, Medio, Título de portada + Subtítulo, Prompt de imagen.
+3. **Numeración:** el tema pertenece al pilar del PDF y toma el siguiente número libre de ese pilar, mirando AMBOS lugares (la Malla y `Themes`). Ejemplo: P4 llega hasta 4.5 en la Malla, el tema nuevo es 4.6. Nunca reutilizar un número.
+4. **Duplicado semántico:** antes de crearlo, comparar su dolor/deseo contra los temas de la Malla del mismo pilar y contra `Themes`; si ya está cubierto en otras palabras, usar el existente.
+5. Asignar **Fase Embudo** (dolor sin mencionar el producto → F1; mostrar alternativa → F2; destruir objeción → F3; resultado/demostración del recurso → F4; verificar que la mezcla mensual se acerque a 40/27/20/13) y **Hook Asignado** (Fase + Formato con la tabla de compatibilidad del CRS, Parte 2; el hook Mito (11) es el de mayor conversión para creencias arraigadas como "autosuficiencia = mucho terreno y dinero").
+6. Mostrar el tema nuevo al usuario y esperar su OK antes de continuar al Paso 1.
 
-La migración corre UNA vez. En runs posteriores, Airtable es la única fuente de verdad de los temas.
-
----
+**Alta en `Themes` (Paso 5.6):** si el tema no existe en `Themes`, crearlo con todos sus campos (Número, Pilar, Dolor/Deseo, Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Fase Embudo, Hook Asignado, CTA Sugerido, Plataforma) y `typecast: true`; si ya existe, actualizarlo. Verificar antes de crear que el Número no exista ya (fail loudly si hay duplicado).
 
 ## 4. Flujo de producción por pieza
 
 ### Paso 0 — Selección de tema
 **Chequeo previo, siempre primero (opcional, nunca bloqueante):** consultar `Trend_Signals` (tabla `tblxdaRsgEy8CHvV9`) filtrando `Estado=Aprobada` y `Fecha_Expiracion >= hoy`. Si hay resultados, ofrecer al usuario producir la pieza montada sobre esa señal — usando su `Hook_CRS_Equivalente`, `Formato_Sugerido` y `Brief_Adaptacion` como punto de partida del Paso 1 en vez de partir de cero. Si el usuario acepta, al completar el Paso 5 escribir el `PZA_[tema]` resultante de vuelta en `Content_Piece_Generada` de esa fila. Si no hay señales aprobadas vigentes, o el usuario declina, continuar normal con los 3 caminos de siempre:
-- Usuario pide tema específico (`X.Y`) que ya existe en `Themes` → usarlo directo, sin búsqueda.
-- Usuario pide "el siguiente" → **cola de arranque** (primeras 8 piezas): selección deliberadamente diversa, un pilar distinto cada vez y cubriendo las 4 fases, para tener señal real de qué convierte antes de escalar. Después de 8 piezas: priorizar `Prioridad = Alta` + `Estado = Pendiente`, manteniendo la mezcla de fases del mes cerca de 40/27/20/13.
-- Usuario describe un ángulo/tema libremente, SIN número de tema exacto → **búsqueda semántica obligatoria, siempre, sin excepción**: leer `Dolor/Deseo` + `Título Portada` de todo `Themes` y evaluar conceptualmente (no por texto exacto) si algún tema existente ya cubre ese mismo dolor del avatar en palabras distintas. Si hay coincidencia real → usar el tema existente, avisar al usuario cuál es y por qué. Si no hay coincidencia → crear el tema nuevo con el mismo criterio de Fase Embudo + Hook Asignado del proceso de migración (Sección 3), y recién ahí continuar el flujo.
-- Nunca seleccionar un tema `Usado` sin confirmación explícita.
+- Usuario pide tema específico (`X.Y`) → buscar primero en `Themes`; si no está, tomarlo de la Malla (banco semilla) tal cual. Si el número no existe en ninguno de los dos, decirlo y detenerse. Nunca seleccionar uno ya `Usado` sin confirmación explícita.
+- Usuario pide "el siguiente" → elegir del banco (Malla + temas nuevos) los temas que NO estén en `Themes` como `Usado`. **Cola de arranque** (primeras 8 piezas): selección deliberadamente diversa, un pilar distinto cada vez y cubriendo las 4 fases, para tener señal real de qué convierte antes de escalar. Después de 8 piezas: priorizar por performance de lo ya publicado (`Performance`) y por la mezcla de fases del mes cerca de 40/27/20/13.
+- Usuario pide un tema nuevo "desde el PDF de [pilar]" o describe un ángulo libremente, SIN número → **búsqueda semántica obligatoria, siempre, sin excepción**: comparar su dolor/deseo contra los temas de la Malla del mismo pilar y contra `Dolor/Deseo` + `Título Portada` de todo `Themes`, evaluando conceptualmente (no por texto exacto). Coincidencia real → usar el existente y avisar cuál y por qué. Sin coincidencia → crear el tema nuevo siguiendo la Sección 3 (numeración, Fase, Hook) y esperar el OK del usuario antes de continuar.
+- El estado de un tema lo decide `Themes`, no la Malla: un tema de la Malla que no está en `Themes` está disponible.
 
 ### Paso 1 — Question Test (bloqueante)
 Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su cabeza será: ______"*. Si no sale una pregunta específica, el hook no está listo — iterar antes de escribir nada más.
@@ -164,7 +165,7 @@ Si ningún asset calza para un slide clave, incluir en el brief un prompt de gen
 3. **PAUSA — Aprobación del usuario.** El brief puede cambiar aquí (el usuario edita texto, pide otro hook, etc.) — si cambia, se hace patch quirúrgico del `.md`, nunca regenerar desde cero. Solo se avanza al paso 4 cuando el usuario confirma explícitamente que el brief está listo para producirse.
 4. **Creación de carpeta (Drive MCP, automática al aprobar).** Verificar primero si `FYR/05_Marketing_Assets/Social_Media/Content_Pieces/PZA_[tema]/` ya existe (ese tema pudo producirse antes en otra fecha). Si no existe, crear ambos niveles; si existe, crear solo la subcarpeta `[fecha-YYYY-MM-DD]/` de hoy dentro. Esto ocurre sin importar si la pieza necesita generar imágenes nuevas o reutiliza 100% assets existentes — el criterio es "la pieza está lista para ensamblarse", no "ya terminé de generar en Gemini".
 5. **Generación manual + espera.** Si el brief marcó slides pendientes, el usuario genera en Gemini usando los prompts del brief (bloque de estilo del Brand Bible + regla de diversidad) y sube los archivos a la carpeta de fecha ya creada, nombrados según convención: `FYR_PZA_[tema]_S[n]_[slug]_[aspecto]_v[version].png`. La skill NO continúa hasta que el usuario confirma que ya subió.
-6. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA_[tema]`, ej. `PZA_3.1` — mismo nombre que la carpeta de Drive, nunca un consecutivo genérico), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = Assets en Drive` (brief listo y assets en Drive, falta ensamblar/renderizar; pasa a `Ensamblado` cuando el carrusel o el MP4 está terminado y aprobado, y a `Publicado` solo cuando se publica en la red), `Hook Usado`, `Audiencia`, y para video `Tipo de Pieza = Video` y el tipo de cierre (A/B) anotado al inicio de `Copy Completo`. Luego actualizar el tema: `Estado = Usado`, `Fecha de uso = ahora`.
+6. **Registro Airtable** → crear fila en `Content_Pieces` (ID `PZA_[tema]`, ej. `PZA_3.1` — mismo nombre que la carpeta de Drive, nunca un consecutivo genérico), linkear `Tema Relacionado` y `Assets Usados` con record IDs reales, `Estado Producción = Assets en Drive` (brief listo y assets en Drive, falta ensamblar/renderizar; pasa a `Ensamblado` cuando el carrusel o el MP4 está terminado y aprobado, y a `Publicado` solo cuando se publica en la red), `Hook Usado`, `Audiencia`, y para video `Tipo de Pieza = Video` y el tipo de cierre (A/B) anotado al inicio de `Copy Completo`. Luego dar de alta o actualizar el tema en `Themes` (Sección 3): `Estado = Usado`, `Fecha de uso = ahora`, con `Hook Asignado` y `Fase Embudo`.
 
 **Verificación final de cada pieza:** brief existe en disco + config JSON válido (carrusel: `config_loader.py` lo acepta; video: es JSON válido y cada `asset` existe en `Assets`) + carpeta de Drive con archivos + registro Airtable con links poblados. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
 
