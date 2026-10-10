@@ -9,16 +9,21 @@ export const BRAND = {
 
 // ---------- Guion -> tokens ----------
 // Marcas del guion: *palabra* = énfasis (se quita antes del TTS).
+export const PAUSE = { sentence: 380, colon: 200, comma: 100, ellipsis: 500, extra: 450 };
 export function tokenize(text) {
   return text.trim().split(/\s+/).map((raw, i) => {
     let t = raw;
     let emphasis = false;
     if (t.includes('*')) { emphasis = true; t = t.replace(/\*/g, ''); }
     let pause = 0;
-    if (/(…|\.\.\.)$/.test(t)) { pause = 300; t = t.replace(/(…|\.\.\.)$/, ','); }
-    else if (/[.?!]$/.test(t)) pause = 120;
-    else if (/:$/.test(t)) pause = 80;
+    let extra = 0;
+    if (/\/\/$/.test(t)) { extra = PAUSE.extra; t = t.replace(/\/\/$/, ''); }
+    if (/(…|\.\.\.)$/.test(t)) { pause = PAUSE.ellipsis; t = t.replace(/(…|\.\.\.)$/, ','); }
+    else if (/[.?!]$/.test(t)) pause = PAUSE.sentence;
+    else if (/:$/.test(t)) pause = PAUSE.colon;
+    else if (/,$/.test(t)) pause = PAUSE.comma;
     const display = t.replace(/[.,:;]+$/, '');
+    pause += extra;
     return { i, speak: t, display, emphasis, pause };
   });
 }
@@ -55,12 +60,15 @@ export function wavInfo(buf) {
 // Ejemplos: "A", "B-e14", "B-e18-up", "B-e10-nm"
 export function parseVariant(id) {
   const [style, ...mods] = id.split('-');
-  const v = { id, style, emphasis: 1.4, motion: true, upper: false };
+  const v = { id, style, emphasis: 1.4, motion: true, upper: false, gold: false, outline: false, dim: false };
   if (!['A', 'B'].includes(style)) throw new Error(`Variante desconocida: ${id}`);
   for (const m of mods) {
     if (/^e\d+$/.test(m)) v.emphasis = parseInt(m.slice(1), 10) / 10;
     else if (m === 'nm') v.motion = false;
     else if (m === 'up') v.upper = true;
+    else if (m === 'gold') v.gold = true;
+    else if (m === 'so') v.outline = true;
+    else if (m === 'dim') v.dim = true;
     else throw new Error(`Modificador desconocido "${m}" en ${id}`);
   }
   return v;
@@ -68,8 +76,8 @@ export function parseVariant(id) {
 
 // ---------- Source de Clipkit ----------
 const HEAD = 0.15;   // silencio antes de la voz en cada slide
-const TAIL = 0.40;   // silencio después de la voz
-const TAIL_LAST = 0.50;
+const TAIL = 0.65;   // silencio después de la voz
+const TAIL_LAST = 0.90;
 const XFADE = 0.25;  // crossfade entre slides
 
 export function buildSource({ cfg, timings, variant, base, fontOk }) {
@@ -107,6 +115,7 @@ export function buildSource({ cfg, timings, variant, base, fontOk }) {
       duration: +(s.dur + (s.last ? 0 : XFADE)).toFixed(3),
     };
     if (idx > 0) el.animations = [{ type: 'fade-in', duration: XFADE, easing: 'ease-out' }];
+    if (v.dim && idx > 0) el.brightness = 0.82;
     if (v.motion && s.movimiento !== false) {
       el.keyframe_animations = [{
         property: 'scale',
@@ -150,9 +159,11 @@ export function buildSource({ cfg, timings, variant, base, fontOk }) {
     text_align: 'center',
     font_family: fontFamily,
     font_weight: fam ? fam.weight : '700',
-    stroke_color: BRAND.brown,
-    stroke_width: 12,
-    text_shadow: { color: '#000000', offset_x: 0, offset_y: 6, blur: 10, opacity: 0.45 },
+    ...(v.outline ? { stroke_color: BRAND.brown, stroke_width: 12 } : {}),
+    text_shadow: [
+      { color: '#000000', offset_x: 0, offset_y: 4, blur: 4, opacity: 0.55 },
+      { color: '#000000', offset_x: 0, offset_y: 8, blur: 22, opacity: 0.55 },
+    ],
   };
 
   if (v.style === 'A') {
@@ -185,8 +196,8 @@ export function buildSource({ cfg, timings, variant, base, fontOk }) {
         duration: +Math.max(0.12, w.end - w.start).toFixed(3),
         width: 960,
         text: w.text,
-        font_size: Math.round(BASE_SIZE * (w.emphasis ? v.emphasis : 1)),
-        fill_color: w.emphasis ? BRAND.gold : BRAND.white,
+        font_size: Math.min(Math.round(BASE_SIZE * (w.emphasis ? v.emphasis : 1)), Math.floor(900 / (Math.max(1, w.text.length) * (v.upper ? 0.66 : 0.58)))),
+        fill_color: w.emphasis && v.gold ? BRAND.gold : BRAND.white,
         // (los presets de animación no corren con stroke; se usan keyframes)
         keyframe_animations: [{
           property: 'scale',
