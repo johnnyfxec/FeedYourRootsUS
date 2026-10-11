@@ -13,7 +13,7 @@ No se genera "a lo loco". Antes de pedir una imagen nueva se revisa el banco; lo
 | Clase | Cantidad | Cómo se usa |
 |---|---|---|
 | **Escenas narrativas** (`06_Narrative_Stock`) | 21 | Imagen de slide directa. 5 usadas en PZA_4.2, **16 libres**: 10 en 9:16, 5 en 4:5, 1 en 1:1 |
-| **Ilustraciones botánicas de fondo transparente** (`03_Seed_Library/WObg` L01–L101 + `02_Decorative_Elements` E01–E36) | 136 (101 + 35) | Piezas de construcción: necesitan un layout propio (ver §5). Base de la serie |
+| **Ilustraciones botánicas de fondo transparente** (`03_Seed_Library/WObg` L01–L101 + `02_Decorative_Elements` E01–E36) | 136 (101 + 35) | Entran directo a la **portada 9:16** (ventana 1:1 de `marco_grande_cuadrado`); como imagen secundaria necesitan el layout `ficha_planta` (ver §5). Base de la serie |
 | Portadas de producto, social, marca, marcos, anuncios, web | ~84 | CTA visual del recurso, portadas de video, marcos de layout |
 
 Solo 6 assets tienen una pieza enlazada (los de PZA_4.2). El enlace `Assets Usados` de `Content_Pieces` es la memoria de uso: cada pieza nueva lo llena y de ahí salen "veces usado" y "último uso".
@@ -62,7 +62,9 @@ Escena sin tema en la Malla: `industrial-warehouse-distribution` (dependencia de
 - **CTA:** al Seed Library Kit (Starter Bundle) cuando corresponda; no en todas las piezas.
 - **Calendario:** ordenar las plantas por temporada de siembra en EE. UU. para que la planta de la semana sea la que toca sembrar.
 - **Recordación:** es una serie con nombre, formato fijo y ritmo semanal; eso es lo que la audiencia aprende a esperar.
-- **Requisito técnico:** layout nuevo `ficha_planta` (ilustración transparente centrada sobre pergamino, con título y texto). Verificar antes el tamaño y proporción reales de las ilustraciones.
+- **Dónde entran las ilustraciones (Johnny, 11-oct-2026):** en la portada 9:16 de los videos (ventana 1:1) y, la otra mitad de las veces, como imagen complementaria dentro de la pieza. Esto último necesita el layout nuevo `ficha_planta` (ilustración transparente centrada sobre pergamino, con título y texto).
+- **Ajuste de código antes de usarlas en portada:** `_load_scene` convierte las escenas a RGB y eso pierde la transparencia (el fondo saldría negro o blanco), así que hay que componerlas sobre pergamino #F5ECD7. En la portada 4:5 la ventana es 4:5 y una ilustración 1:1 se recortaría ~20 % de los lados; allí conviene mostrarla completa sobre pergamino. Verificar el tamaño real de los PNG (Airtable los registra como 1:1).
+- **Memoria de uso en Airtable:** campos `Veces usado`, `Último uso` y `En descanso` en `Assets`, creados por Johnny el 11-oct-2026 y escritos por Claude al registrar cada pieza.
 - **Registro:** tabla nueva en Airtable con las 101 plantas (semana, estado, piezas), llevada por Claude.
 - **Se mide como cualquier variable:** primero un piloto de una planta en los dos formatos, antes de comprometer las 52 semanas.
 
@@ -82,8 +84,8 @@ PZA_4.2: producida por completo en 9:16, solo pendiente de publicar. En Airtable
 ## 7. Orden de ejecución acordado
 
 1. **Registro y cobertura:** este documento, CHANGELOG, Proyecto. *(hecho)*
-2. **Memoria de uso:** campos de uso en `Assets` y llenado a partir de `Assets Usados`.
-3. **`fyr-content`:** reglas de §3.1 y §3.2 en el Paso 0 y el Paso 4; enlace a este documento. Tarjeta de skill única al final de la fase.
+2. **Memoria de uso:** campos de uso en `Assets` creados y llenados para PZA_4.2. *(hecho)*
+3. **`fyr-content`:** reglas de §3.1, §3.2 y §3.3 en los Pasos 0, 4 y 5.6; enlace a este documento. *(hecho en el repo; la tarjeta de skill única se envía al final de la fase)*
 4. **Corrida 1.2 + 1.1:** briefs, config/JSON, ensamblado (carrusel en la PC, video en Actions) y registro en Airtable por paso. Mide el tiempo real del carrusel.
 5. **Publicación:** `fyr-publisher` con YouTube primero; salen 4.2, 1.1 y 1.2. Orden sugerido de salida: 1.1 (quiénes somos), 4.2, 1.2; una publicación diaria las primeras dos semanas.
 6. **Serie botánica:** layout `ficha_planta` (en paralelo mientras Johnny genera y revisa imágenes del punto 4), piloto de una planta en dos formatos, tabla de plantas y calendario por temporada.
