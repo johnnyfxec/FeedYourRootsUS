@@ -32,7 +32,7 @@ LOCKUP_VERTICAL_PATH = os.path.join(REPO_ROOT, "assets", "brand", "lockups-verti
 MARK_H = 91          # px -- alto del icono (spec: minimo 32 px)
 MARK_GAP = 38        # px de aire entre el contenido y el icono (>= X = 15.6% de MARK_H)
 LOCKUP_W = 620       # px -- ancho del lockup vertical en lockup_cierre
-VENTANA_IMG_MAX = 2 / 3   # tope de la zona de imagen de ventana_texto (900 px en 4:5, 1280 en 9:16)
+VENTANA_IMG_MAX = {"4:5": 2 / 3, "9:16": 3 / 4}   # tope de la zona de imagen de ventana_texto (900 px en 4:5; 1440 en 9:16, deja el 25% inferior al texto)
 VENTANA_PAD = 16     # px de aire arriba/abajo de la franja de texto de ventana_texto
 POSICIONES_TEXTO = ("centro", "tercio_superior")
 
@@ -148,7 +148,8 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     SOLIDA (sin transparencia, sin imagen detras) debajo. Decision de Johnny,
     13-sep-2026: reemplaza el full_bleed-con-overlay original (ver
     Arquitectura Seccion 2.5). Ajuste del 11-oct-2026: la zona de imagen
-    llega hasta 2/3 del alto (900 px en 4:5, 1280 en 9:16), y el texto va
+    llega hasta 2/3 del alto en 4:5 (900 px) y hasta 3/4 en 9:16 (1440 px,
+    el 25% inferior queda para el texto), y el texto va
     centrado verticalmente en la franja entre la imagen y el icono (4:5) o
     el borde inferior usable (9:16, sin icono)."""
     imagen_escena = slide.get("imagen_escena")
@@ -167,12 +168,12 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
 
     # Proporcion derivada (decision de Johnny, 13-sep-2026): la altura de la
     # imagen sale del ratio real (ancho del canvas / ratio), con tope de 2/3
-    # del alto del canvas. Si la imagen es panoramica queda mas baja y el
-    # texto gana espacio.
+    # del alto del canvas (2/3 en 4:5, 3/4 en 9:16). Si la imagen es panoramica queda
+    # mas baja y el texto gana espacio.
     scene = _load_scene(imagen_escena, assets_dir)
     img_ratio = scene.width / scene.height
     altura_ideal = canvas_w / img_ratio
-    imagen_h = round(min(altura_ideal, canvas_h * VENTANA_IMG_MAX))
+    imagen_h = round(min(altura_ideal, canvas_h * VENTANA_IMG_MAX[aspecto]))
 
     scene_fit, off_x, off_y = _contain_fit(scene, canvas_w, imagen_h)
     canvas.paste(scene_fit, (off_x, off_y))

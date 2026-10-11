@@ -50,10 +50,10 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") hasta los dos tercios superiores del canvas (tope de 900px de alto en 4:5, 1280px en 9:16; la altura real sale de la proporción de la imagen) |
+| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") hasta los dos tercios superiores del canvas en 4:5 (tope de 900px de alto) y hasta los tres cuartos superiores en 9:16 (tope de 1440px; el 25% inferior queda para el texto); la altura real sale de la proporción de la imagen |
 | Espacio sobrante | Relleno en parchment sólido (#F5ECD7) si la proporción no llena exacto los dos tercios |
 | Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) debajo de la imagen; texto centrado verticalmente entre la imagen y el icono C14 (4:5) o el borde inferior usable (9:16, sin icono) |
-| Corrección 11-oct-2026 | La especificación decía "720px" en 4:5, que no equivale a 2/3 del alto (900px); se corrige a 900px a pedido de Johnny |
+| Corrección 11-oct-2026 | La especificación decía "720px" en 4:5, que no equivale a 2/3 del alto (900px); se corrige a 900px a pedido de Johnny. En 9:16 el tope pasa de 1280px (2/3) a 1440px (3/4) porque sobraba espacio vacío |
 
 ---
 
