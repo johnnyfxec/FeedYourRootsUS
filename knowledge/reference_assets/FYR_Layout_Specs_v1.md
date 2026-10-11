@@ -34,7 +34,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | Cualquier proporción — el compositor la contiene completa (modo "contain", nunca recorta) dentro del canvas (1080×1350 en 4:5, 1080×1920 en 9:16) |
+| Imagen a pedir en Gemini | **La proporción del canvas: 4:5 en carrusel, 9:16 en video** (Gemini solo entrega 4:5, 9:16 y 3:4). Así llena el canvas sin margen alguno. Si llegara otra proporción, el compositor la contiene completa (modo "contain", nunca recorta) y sobra parchment |
 | Espacio sobrante | Si la proporción de la imagen no llena el canvas exacto, el espacio libre se rellena en parchment sólido (#F5ECD7), nunca se recorta la imagen para forzar el encaje |
 | Texto | Nunca lleva — campo `texto_overlay` no aceptado, error de validación si se incluye |
 
@@ -50,9 +50,9 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") hasta los dos tercios superiores del canvas en 4:5 (tope de 900px de alto) y hasta los tres cuartos superiores en 9:16 (tope de 1440px; el 25% inferior queda para el texto); la altura real sale de la proporción de la imagen |
+| Imagen a pedir en Gemini | **9:16 → 3:4** (la zona de imagen mide 1080×1440 = 3:4 exacto, llena sin margen). **4:5 → 4:5**: la zona mide 1080×900 (6:5), que no coincide con ninguna proporción de Gemini, así que la imagen 4:5 queda de 720×900 centrada, con 180 px de parchment a cada lado. La altura de la imagen es ancho ÷ proporción, con tope de 2/3 del alto en 4:5 (900 px) y de 3/4 en 9:16 (1440 px) |
 | Espacio sobrante | Relleno en parchment sólido (#F5ECD7) si la proporción no llena exacto los dos tercios |
-| Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) debajo de la imagen; texto centrado verticalmente entre la imagen y el icono C14 (4:5) o el borde inferior usable (9:16, sin icono) |
+| Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) debajo de la imagen; texto centrado verticalmente en todo el espacio que deja la imagen: hasta el icono C14 en 4:5 y hasta el borde del canvas en 9:16 (sin icono). **Advertencia 9:16:** el centro de esa franja (~y=1680) queda bajo el límite duro de 83.3 % (y=1600), zona que la interfaz de reels/TikTok suele tapar |
 | Corrección 11-oct-2026 | La especificación decía "720px" en 4:5, que no equivale a 2/3 del alto (900px); se corrige a 900px a pedido de Johnny. En 9:16 el tope pasa de 1280px (2/3) a 1440px (3/4) porque sobraba espacio vacío |
 
 ---
@@ -80,7 +80,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen de fondo a pedir en Gemini | 40-60% del ancho del canvas, sin marco ni vid |
+| Imagen de fondo a pedir en Gemini | **9:16 en ambos aspectos** (Gemini solo entrega 4:5, 9:16 y 3:4); la imagen se recorta al hueco (crop-to-fill, `ancla_recorte`): el hueco al 50 % mide 540×1141 en 4:5 (se recorta ~16 % del ancho de la imagen 9:16) y 540×1369 en 9:16 (~30 %). El sujeto debe ir centrado o declarar `ancla_recorte` |
 | Posición | Lateral (izquierda o derecha), texto ocupa el lado opuesto, centrado en altura respecto a la imagen |
 
 ---
@@ -235,6 +235,22 @@ Atraviesa el canvas de esquina a esquina en ambos aspectos.
 | Imagen de fondo a pedir en Gemini | Exactamente 370×378px, recortada/generada cuadrada | Exactamente 413×420px |
 
 **Nota:** la ventana es intencionalmente casi 1:1 (formato Polaroid clásico) — la imagen que se inserte ahí debe generarse o recortarse a proporción cuadrada, no al aspect ratio del canvas completo.
+
+---
+
+## Proporciones de imagen a pedir a Gemini (11-oct-2026)
+
+Gemini solo entrega **4:5, 9:16 y 3:4**. La proporción a pedir se elige según el hueco que la imagen va a ocupar en el slide:
+
+| Layout | Hueco de la imagen | Pedir | Resultado |
+|---|---|---|---|
+| Full-bleed 4:5 | 1080×1350 | 4:5 | llena exacto, sin margen |
+| Full-bleed 9:16 | 1080×1920 | 9:16 | llena exacto, sin margen |
+| Ventana+texto 4:5 | 1080×900 (6:5) | 4:5 | 720×900 centrada, 180 px de parchment por lado (ninguna proporción de Gemini llena 6:5) |
+| Ventana+texto 9:16 | 1080×1440 (3:4) | 3:4 | llena exacto, sin margen |
+| Texto+lateral 4:5 (50 %) | 540×1141 | 9:16 | recorte lateral ~16 % |
+| Texto+lateral 9:16 (50 %) | 540×1369 | 9:16 | recorte lateral ~30 % |
+| Marcos y layouts de asset fijo | ventana medida de cada asset (secciones 1, 5, 6, 7, 12, 13) | la medida de la ventana | sin cambios |
 
 ---
 

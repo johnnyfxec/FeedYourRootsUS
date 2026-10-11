@@ -151,7 +151,7 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     llega hasta 2/3 del alto en 4:5 (900 px) y hasta 3/4 en 9:16 (1440 px,
     el 25% inferior queda para el texto), y el texto va
     centrado verticalmente en la franja entre la imagen y el icono (4:5) o
-    el borde inferior usable (9:16, sin icono)."""
+    el borde inferior del canvas (9:16, sin icono)."""
     imagen_escena = slide.get("imagen_escena")
     if not imagen_escena:
         raise CompositorError("ventana_texto requiere 'imagen_escena' en el slide")
@@ -179,6 +179,13 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     canvas.paste(scene_fit, (off_x, off_y))
 
     _, zona_bottom = _zona_contenido(canvas, aspecto)
+    if aspecto == "9:16":
+        # Decision de Johnny (11-oct-2026): el texto se centra en TODO el
+        # espacio que deja la imagen (hasta el borde del canvas), para que
+        # no quede vacio debajo. Ojo: ese centro (~y=1680) cae dentro de la
+        # zona que la interfaz de reels/TikTok suele tapar (limite duro 83.3%
+        # = y 1600).
+        zona_bottom = canvas_h
     franja_top = off_y + scene_fit.height + VENTANA_PAD
     franja_h = round(zona_bottom - VENTANA_PAD - franja_top)
 
