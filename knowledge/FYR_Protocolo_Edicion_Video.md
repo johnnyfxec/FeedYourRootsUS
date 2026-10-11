@@ -95,6 +95,8 @@ La última frase del video se diseña para que, al reiniciarse la reproducción,
 
 **Cierre visual** (regla de loop visual de `SKILL.md`, Paso 3): el último slide puede repetir transformado un elemento de la portada. NO probado en video todavía.
 
+**Marca en video (decisión de Johnny, 11-oct-2026):** el video 9:16 no lleva icono en ningún slide (la interfaz de las plataformas lo tapa en cualquier posición). El **lockup vertical** (`lockup_cierre` del motor de ensamblado: `assets/brand/lockups-vertical/FYR_C14_lockup-vertical_1x1_v1.png`, centrado) es un recurso **opcional**: se usa solo cuando el guion nombra la marca y hace falta que el espectador la reconozca. Por defecto NO sustituye la última imagen del loop: el cierre en loop pierde fuerza si el último slide no conecta con la imagen que se ve. Si se prueba, va como variante (una variable a la vez). EN PRUEBA.
+
 **Veredicto del piloto (10-oct-2026):** a Johnny le gustaron ambos cierres, así que se mantiene la alternancia A/B (no se descarta ninguno). Dos ajustes pedidos: (1) la **espera entre el final y el reinicio se recorta a la mitad** (ver `TAIL_LAST` en §7); (2) la **pregunta B debe sonar más orgánica**: registro hablado y casual, con un arranque conversacional corto (tipo "Wait, …" / "Ever wonder …"), no una pregunta de manual. Se renderiza de nuevo y se juzga por oído; el ganador final se mide después con datos reales de publicación (retención y replays).
 
 ---

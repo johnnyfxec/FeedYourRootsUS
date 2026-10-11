@@ -10,7 +10,7 @@ from PIL import Image
 
 from config_loader import load_config
 from layout_classifier import classify, get_compositor, get_accent_applier, LayoutError
-from layout_specs import CANVAS, PARCHMENT
+from layout_specs import CANVAS, PARCHMENT, LATERAL_PORTADA_4X5
 from compositors.tipo_a import CompositorError as ErrorA
 from compositors.tipo_b import CompositorError as ErrorB
 from compositors.tipo_c import CompositorError as ErrorC
@@ -27,6 +27,28 @@ CompositorErrors = (ErrorA, ErrorB, ErrorC, ErrorBase, AccentError, LayoutError)
 def _hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip("#")
     return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _check_portada_lateral(canvas, aspecto, layout):
+    """Advertencia si la portada 4:5 tiene contenido (pixeles distintos del
+    parchment) dentro de la franja lateral que la cuadricula de Instagram
+    recorta (3:4). Solo portadas 4:5 (marco_grande_portada)."""
+    if aspecto != "4:5" or layout != "marco_grande_portada":
+        return []
+    from PIL import ImageChops
+    w, h = canvas.size
+    fondo = Image.new("RGB", (w, h), _hex_to_rgb(PARCHMENT))
+    diff = ImageChops.difference(canvas.convert("RGB"), fondo).convert("L").point(lambda v: 255 if v > 12 else 0)
+    warnings = []
+    for nombre, limite in (("duro", LATERAL_PORTADA_4X5["duro"]), ("objetivo", LATERAL_PORTADA_4X5["objetivo"])):
+        izq = diff.crop((0, 0, limite, h)).getbbox()
+        der = diff.crop((w - limite, 0, w, h)).getbbox()
+        if izq or der:
+            lado = "izquierdo y derecho" if izq and der else ("izquierdo" if izq else "derecho")
+            msg = f"portada 4:5 con contenido a menos de {limite}px del borde {lado} (margen lateral {nombre} de la cuadricula de Instagram)"
+            warnings.append(("RECORTE: " if nombre == "duro" else "") + msg)
+            break
+    return warnings
 
 
 def assemble_slide(slide, aspecto, assets_dir):
@@ -47,6 +69,8 @@ def assemble_slide(slide, aspecto, assets_dir):
         applier = get_accent_applier(acento)
         accent_result = applier(canvas, acento, aspecto, assets_dir)
         warnings.extend(accent_result.get("warnings", []))
+
+    warnings.extend(_check_portada_lateral(canvas, aspecto, layout))
 
     return canvas, warnings
 

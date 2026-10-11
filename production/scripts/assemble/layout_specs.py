@@ -19,6 +19,16 @@ SAFE_PRACTICAL = {"top": 0.152, "bottom": 0.865}
 SAFE_MINIMAL_4X5 = {"top": 0.03, "bottom": 0.97}
 
 
+# Recorte de la cuadrilla de perfil de Instagram (11-oct-2026): una portada
+# 4:5 (1080x1350) se muestra en 3:4 (1080x1440) y pierde ~34 px por lado
+# (33.75), sin recorte vertical. Todo lo clave de la PORTADA 4:5 (titulo,
+# marco, logo) debe quedar a >= LATERAL_PORTADA_4X5["objetivo"] del borde.
+# No aplica a slides secundarias (la cuadricula solo muestra la portada).
+# La cuadricula de reels (3:4 sobre 9:16) recorta 240 px arriba y abajo, que
+# coincide con SAFE_HARD (12.5%) -- ya cubierto por la zona segura de 9:16.
+LATERAL_PORTADA_4X5 = {"duro": 34, "objetivo": 48}
+
+
 def usable_zone(aspecto):
     """Devuelve (margen_top_px, margen_bottom_px, alto_util_px) segun el
     aspecto. 4:5 usa SAFE_MINIMAL_4X5 (casi el canvas completo); 9:16 usa
@@ -183,6 +193,7 @@ LAYOUT_TYPES = {
     "ventana_texto": "BASE",
     "solo_texto": "BASE",
     "texto_lateral": "BASE",
+    "lockup_cierre": "BASE",
 }
 
 # Anchos medidos para marco_grande_portada (Slide 1/cierre en 4:5, sin

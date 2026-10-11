@@ -16,6 +16,7 @@ REQUIRED_BY_LAYOUT = {
     "ventana_texto":     ["imagen_escena", "texto_overlay"],
     "solo_texto":        ["texto_cuerpo"],
     "texto_lateral":     ["imagen_escena", "texto_cuerpo"],
+    "lockup_cierre":     [],
 }
 
 VALID_ACCENTS = {"cordel_guia", "migas_progreso", None}

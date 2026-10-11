@@ -50,9 +50,10 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") en los dos tercios superiores del canvas (720px de alto en 4:5, 1280px en 9:16) |
+| Imagen a pedir en Gemini | Cualquier proporción — se contiene completa (modo "contain") hasta los dos tercios superiores del canvas (tope de 900px de alto en 4:5, 1280px en 9:16; la altura real sale de la proporción de la imagen) |
 | Espacio sobrante | Relleno en parchment sólido (#F5ECD7) si la proporción no llena exacto los dos tercios |
-| Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) en el tercio inferior del canvas |
+| Franja de texto | Fondo parchment SÓLIDO (sin transparencia, sin imagen detrás) debajo de la imagen; texto centrado verticalmente entre la imagen y el icono C14 (4:5) o el borde inferior usable (9:16, sin icono) |
+| Corrección 11-oct-2026 | La especificación decía "720px" en 4:5, que no equivale a 2/3 del alto (900px); se corrige a 900px a pedido de Johnny |
 
 ---
 
@@ -67,6 +68,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | Fondo | Parchment sólido (#F5ECD7), sin imagen |
 | Texto | Centrado, tipografía grande, jerarquía título+subtítulo |
 | Acento (opcional) | Hoja o semilla suelta del banco, 1-2 elementos, nunca decoración densa |
+| Posición del texto | Centrado en la zona de contenido (default) o, variante, centrado sobre la línea del primer tercio del canvas (`posicion_texto: "tercio_superior"`) |
 
 ---
 
@@ -79,7 +81,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | | Especificación |
 |---|---|
 | Imagen de fondo a pedir en Gemini | 40-60% del ancho del canvas, sin marco ni vid |
-| Posición | Lateral (izquierda o derecha), texto ocupa el lado opuesto |
+| Posición | Lateral (izquierda o derecha), texto ocupa el lado opuesto, centrado en altura respecto a la imagen |
 
 ---
 
