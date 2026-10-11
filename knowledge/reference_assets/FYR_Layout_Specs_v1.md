@@ -69,6 +69,8 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | Texto | Centrado, tipografía grande, jerarquía título+subtítulo |
 | Acento (opcional) | Hoja o semilla suelta del banco, 1-2 elementos, nunca decoración densa |
 | Posición del texto | Centrado en la zona de contenido (default) o, variante, centrado sobre la línea del primer tercio del canvas (`posicion_texto: "tercio_superior"`) |
+| Con acento `migas_progreso` | La franja de migas ocupa el 45%-56% del alto, así que el texto se centra en la zona que queda **encima** de la franja (40 px de aire) |
+| Con acento `cordel_guia` | El cordel cruza el canvas en diagonal y no se esquiva: se dibuja **debajo** del texto y del icono, para que nunca lo tape |
 
 ---
 

@@ -58,14 +58,24 @@ def assemble_slide(slide, aspecto, assets_dir):
 
     layout = slide.get("layout")
     compositor = get_compositor(layout)
+    acento = slide.get("acento")
+
+    # Solo texto + cordel: el cordel cruza el canvas en diagonal y el texto va
+    # centrado, asi que el cordel se dibuja ANTES (debajo del texto y del
+    # icono) para no taparlo. Resto de combinaciones: el acento va encima.
+    warnings = []
+    acento_debajo = layout == "solo_texto" and acento == "cordel_guia"
+    if acento_debajo:
+        applier = get_accent_applier(acento)
+        warnings.extend(applier(canvas, acento, aspecto, assets_dir).get("warnings", []))
+
     result = compositor(canvas, slide, aspecto, assets_dir)
-    warnings = list(result.get("warnings", []))
+    warnings.extend(result.get("warnings", []))
 
     if "canvas" in result:
         canvas = result["canvas"]
 
-    acento = slide.get("acento")
-    if acento:
+    if acento and not acento_debajo:
         applier = get_accent_applier(acento)
         accent_result = applier(canvas, acento, aspecto, assets_dir)
         warnings.extend(accent_result.get("warnings", []))

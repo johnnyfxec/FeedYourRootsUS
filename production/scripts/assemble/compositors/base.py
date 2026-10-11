@@ -6,7 +6,7 @@
 import os
 from PIL import Image, ImageDraw
 
-from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone
+from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, BBOX, usable_zone
 from text_renderer import crop_to_fill, render_text_block
 
 
@@ -35,6 +35,7 @@ LOCKUP_W = 620       # px -- ancho del lockup vertical en lockup_cierre
 VENTANA_IMG_MAX = {"4:5": 2 / 3, "9:16": 3 / 4}   # tope de la zona de imagen de ventana_texto (900 px en 4:5; 1440 en 9:16, deja el 25% inferior al texto)
 VENTANA_PAD = 16     # px de aire arriba/abajo de la franja de texto de ventana_texto
 POSICIONES_TEXTO = ("centro", "tercio_superior")
+ACENTO_GAP = 40      # px de aire entre el texto y la franja de migas_progreso
 
 _BRAND_MARK_SRC = None
 _LOCKUP_SRC = None
@@ -214,6 +215,13 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
     canvas_w = CANVAS[aspecto]["w"]
     canvas_h = CANVAS[aspecto]["h"]
     zona_top, zona_bottom = _zona_contenido(canvas, aspecto)
+
+    # migas_progreso es una franja horizontal fija a media altura (45%-56%):
+    # con el texto centrado chocaria, asi que el texto se centra en la zona
+    # que queda ENCIMA de la franja. (cordel_guia no se esquiva: main.py lo
+    # dibuja debajo del texto.)
+    if slide.get("acento") == "migas_progreso":
+        zona_bottom = min(zona_bottom, BBOX["migas_progreso"][aspecto]["y0"] - ACENTO_GAP)
 
     if posicion == "centro":
         box_y, box_h = zona_top, zona_bottom - zona_top
