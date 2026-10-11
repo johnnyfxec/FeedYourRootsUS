@@ -1,0 +1,65 @@
+{
+  "pieza_id": "PZA_1.1",
+  "medio": "Video",
+  "aspecto": "9:16",
+  "canvas": { "w": 1080, "h": 1920 },
+  "tema": "1.1",
+  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
+  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "slides": [
+    {
+      "n": 1,
+      "layout": "full_bleed",
+      "asset": "FYR_PZA_1.1_S1_lapiz-papel_1x1_v1.png",
+      "imagen": "img/01_portada.png",
+      "portada": {
+        "layout": "marco_grande_cuadrado",
+        "texto_titulo": "I STARTED WITH HALF\nAN ACRE AND A PENCIL",
+        "texto_subtitulo": "Every homestead\nbegins on paper."
+      },
+      "subtitulos": false,
+      "movimiento": false,
+      "texto_narrado": "*Half an acre* and a pencil. That's all I started with."
+    },
+    {
+      "n": 2,
+      "layout": "full_bleed",
+      "asset": "STOCK-patio-abandonado-notas_9x16_v1.png",
+      "drive_id": "1LVpz5DljBJ454TctSDlblyckU0XL_iTI",
+      "imagen": "img/02_patio-abandonado.png",
+      "texto_narrado": "No farm. No five acres. Just a tired, patchy backyard and a *plan* on paper."
+    },
+    {
+      "n": 3,
+      "layout": "full_bleed",
+      "asset": "STOCK-open-hand-single-seed_9x16_v1.png",
+      "drive_id": "1-jfHzuqz1n1Tg6WGWIMCCKAQ6rR9ltwY",
+      "imagen": "img/03_semilla.png",
+      "texto_narrado": "One season. One seed at a time. The pencil made it *small* enough to start."
+    },
+    {
+      "n": 4,
+      "layout": "full_bleed",
+      "asset": "STOCK-bare-feet-soil_9x16_v1.png",
+      "drive_id": "18KtDHoGuCTGYll72rRyCV9vyyetYENRO",
+      "imagen": "img/04_pies-tierra.png",
+      "texto_narrado": "Standing in my own soil changed what I thought was *possible*."
+    },
+    {
+      "n": 5,
+      "layout": "full_bleed",
+      "asset": "STOCK-patio-prospero-notas_9x16_v1.png",
+      "drive_id": "185jjE7amQdCPLktIUyUYH4QTDUXOauMj",
+      "imagen": "img/05_patio-prospero.png",
+      "texto_narrado": "Same yard. Same half acre. It was never the land that was *missing*."
+    },
+    {
+      "n": 6,
+      "layout": "full_bleed",
+      "asset": "STOCK-kitchen-table-harvest_9x16_v1.png",
+      "drive_id": "1LHW5OVFar5DLg90Nd72iJQRLSNMA1ebC",
+      "imagen": "img/06_mesa-cocina.png",
+      "texto_narrado": "Now dinner starts at my own table.// Wait, what did my whole homestead start with?"
+    }
+  ]
+}

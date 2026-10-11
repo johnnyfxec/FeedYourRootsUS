@@ -87,6 +87,18 @@ jobs:
           PJ=$(ls pieza_*.json | head -1)
           NODE_PATH=../_ci/node_modules node ../_ci/fetch_assets.mjs "$PJ"
 
+      - name: Portada (ensamblador)
+        shell: bash
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        run: |
+          PJ=$(ls pieza_*.json | head -1)
+          if grep -q '"portada"' "$PJ"; then
+            python3 -m pip install --quiet pillow
+            python3 ../_ci/make_cover.py "$PJ"
+          else
+            echo "(esta pieza no compone portada)"
+          fi
+
       - name: Voz (Google TTS)
         shell: bash
         working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
