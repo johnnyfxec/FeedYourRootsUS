@@ -54,7 +54,7 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Hook Usado | `fldmaZNxsUpRxBGmC` | singleSelect ("01"…"20") |
 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
-Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~206 registros con link Drive verificado.
+Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~240 registros con link Drive verificado.
 
 **Regla de propiedad de Airtable:** Claude hace TODAS las escrituras (crear, actualizar, borrar registros y campos) en el paso que corresponde de cada skill; Johnny no edita Airtable a mano.
 
@@ -135,7 +135,7 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 ### Paso 3 — Cuerpo (numero de slides segun Fase Embudo, cadena de loops)
 - **Numero de slides por Fase** (reemplaza el rango generico anterior): F1 Baja conciencia = 4-5 slides (incomodar es rapido, alargar diluye el golpe); F2 Media conciencia = 5-6 (necesita espacio para mostrar la alternativa sin apurar); F3 Alta conciencia = 6-7 (destruir objecion requiere mas desarrollo argumental, es la fase mas larga); F4 Autoridad = 4-5 (el resultado habla solo, exceso de slides diluye el impacto).
 - Slide 1: hook (loop 1 abierto). Slides intermedios: agitación y valor en pedazos, abrir loop nuevo antes de cerrar el anterior.
-- **Ultimo slide (cierre, sin plantilla fija):** cierre de todos los loops + CTA unico, graduado segun Fase (F1 implicito/sin mencionar Bundle, F2 suave nombrando el recurso gratuito, F3 directo nombrando el Bundle que resuelve la objecion, F4 de autoridad invitando a replicar el resultado). El layout del cierre se elige libremente entre los 12 layouts activos (ver catalogo completo arriba en Paso 2) segun que sirva mejor a esa resolucion especifica — nunca un layout de marca fijo tipo catalogo.
+- **Ultimo slide (cierre, sin plantilla fija):** cierre de todos los loops + CTA unico, graduado segun Fase (F1 implicito/sin mencionar Bundle, F2 suave nombrando el recurso gratuito, F3 directo nombrando el Bundle que resuelve la objecion, F4 de autoridad invitando a replicar el resultado). El layout del cierre se elige libremente entre los layouts de cuerpo vigentes (ver Paso 2) segun que sirva mejor a esa resolucion especifica — nunca un layout de marca fijo tipo catalogo.
 - **Regla de loop visual (obligatoria en el cierre):** el prompt de imagen del slide de cierre debe citar textualmente un elemento especifico del prompt de portada (objeto, color dominante, o composicion) e instruir que se repita transformado — mismo objeto, estado distinto. Esto invita a redeslizar desde el inicio, aumentando el watch-time/replay. Ejemplo: portada = "caja de zapatos desordenada"; cierre = "la misma caja, ahora organizada y cerrada con lazo".
 - Decidir por slide si lleva asset de fondo o solo texto sobre fondo de marca (Parchment #F5ECD7): el criterio es si la imagen añade tensión/credibilidad al loop. Nunca imagen decorativa por rellenar.
 - Voz del Brand Bible: cálida, directa, sin banned words. Todo el copy final en **inglés** (mercado US), títulos de portada en el formato ya definido en la Malla.

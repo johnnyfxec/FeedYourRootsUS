@@ -40,7 +40,7 @@ FYR/
 │   │                          marco_grande y marco_grande_portada; FYR_ASSET_marco-cuadrado_9x16_v1.png
 │   │                          -- marco cuadrado CON vid y hoja decorativa ya integrados, solo 9:16,
 │   │                          exclusivo de marco_grande_cuadrado)
-│   └── C13_Layout_Elements/    (assets de los 12 layouts de Content_Pieces — ver knowledge/reference_assets/FYR_Layout_Specs_v1.md)
+│   └── C13_Layout_Elements/    (assets de los layouts vigentes de Content_Pieces — ver knowledge/reference_assets/FYR_Layout_Specs_v1.md)
 │       └── Style_References/   (referencias de estilo NO reutilizables; sin uso desde el 11-oct-2026)
 ├── 02_Decorative_Elements/          (E01-E36+, clip-art suelto 1:1, fondo transparente)
 ├── 03_Seed_Library/
