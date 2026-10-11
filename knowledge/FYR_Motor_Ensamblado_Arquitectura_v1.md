@@ -1,24 +1,20 @@
 # FYR — Arquitectura del Motor de Ensamblado (assemble.py)
-**Versión 1.2 — 10 de octubre 2026**
+**Versión 1.3 — 11 de octubre 2026**
 **Propósito:** especificación completa de los 6 dominios que debe resolver el motor de ensamblado local (Pillow, sin Canva) para producir slides finales sin margen de error. Este documento se lee ANTES de escribir o modificar `assemble.py` — es el contrato que el código debe cumplir, no una sugerencia.
 **Alcance (v1.2):** este motor produce slides ESTÁTICOS (carrusel e imagen única, y la portada/slides fijos que un video pueda reutilizar). El video —voz narrada, subtítulos palabra por palabra, zoom y render— tiene su propio pipeline en `FYR_Protocolo_Edicion_Video.md`; no pasa por `assemble.py`.
 
 ---
 
-## 0. El hallazgo que reorganiza todo: los 12 layouts NO se comportan igual
+## 0. Los layouts vigentes y cómo se comportan
 
-Intentar tratar los 12 layouts con una sola lógica de "imagen + texto" es la raíz de los huecos que fueron apareciendo uno por uno. La realidad es que hay **4 comportamientos distintos**, y cada layout pertenece a exactamente uno:
+**Poda del 11-oct-2026 (decisión de Johnny):** quedan SOLO los layouts aprobados en el mockup final. Se eliminaron del código y de todos los documentos etiqueta colgante, nota-kraft en esquina, ventana polaroid, palabra-acuarela, tachado/corrección y los acentos cordel guía y migas de progreso (no embellecían las composiciones y no valía el trabajo de hacerlos funcionar). Con ellos desaparecen los Tipos B, C y D y el campo `acento`. Los archivos de Drive de esos layouts quedan sin uso (no se borran).
+
+Los layouts vigentes se comportan de dos maneras:
 
 | Tipo | Comportamiento | Layouts |
 |---|---|---|
-| **A — Contenedor Escalable** | El asset (marco) se REDIMENSIONA dinámicamente según el % imagen/texto del slide (Sección 3, tabla de proporción). Imagen detrás, marco encima, texto debajo del marco en el espacio restante. | Marco grande, Doble marco superpuesto (×2 ventanas) |
-| **B — Contenedor Fijo** | El asset (etiqueta, nota) se usa a escala fija (~90-100% de su tamaño medido), posicionado en su bbox ya medido. El texto vive DENTRO del cuerpo del asset, no debajo. No usa la tabla de proporción — su tamaño no depende de cuánto texto lleve el slide. | Etiqueta colgante, Nota-kraft en esquina, Ventana Polaroid |
-| **C — Generado Completo** | Gemini ya entregó el slide completo (texto + fondo horneados juntos, usando el archivo de referencia de estilo). El script NO compone nada — solo verifica tamaño/zona segura y coloca el PNG tal cual. | Palabra-acuarela, Tachado/corrección |
-| **D — Acento Superpuesto** | No es un layout independiente — es una decoración que se agrega ENCIMA de un layout Tipo A o de Full-bleed ya resuelto. Nunca aparece solo. | Cordel guía, Migas de progreso |
-
-Los 3 layouts "base" que no están en la tabla de arriba (Full-bleed, Solo texto+acento, Texto+imagen lateral) son variantes propias sin asset fijo — se documentan en la Sección 2.5 con su propia regla de composición.
-
-Esta clasificación es la que faltaba — sin ella, el script intentaría aplicar "redimensionar según %" a una etiqueta colgante (que debe mantenerse fija) o esperaría texto separado en un Tipo C (que ya no lo necesita).
+| **A — Contenedor Escalable** | El asset (marco) se REDIMENSIONA dinámicamente según el % imagen/texto del slide (Sección 3, tabla de proporción), o se coloca fijo si es portada. Imagen detrás, marco encima, texto debajo del marco en el espacio restante. | Marco grande, Doble marco superpuesto (×2 ventanas), portada 4:5 (`marco_grande_portada`), portada 9:16 (`marco_grande_cuadrado`) |
+| **BASE — Sin asset fijo** | Se compone directo sobre parchment: imagen de escena y/o texto, y el icono o lockup de marca. | Full-bleed, Ventana+texto, Solo texto, Texto+lateral, Lockup de cierre (Sección 2.5) |
 
 ---
 
@@ -38,7 +34,7 @@ Esta clasificación es la que faltaba — sin ella, el script intentaría aplica
 
 ---
 
-## 2. Dominio: Geometría por layout — las 4 categorías en detalle
+## 2. Dominio: Geometría por layout
 
 ### 2.1 — Tipo A: Contenedor Escalable (Marco grande, Doble marco)
 
@@ -70,43 +66,17 @@ texto_y_inicio = frame_y + (alto_original_del_asset_marco * frame_scale) + 20px_
 
 **Doble marco:** DESACTUALIZADO el algoritmo de arriba para este caso — los 2 marcos del asset real están ROTADOS (-8.5° y +11° aprox, no alineados a ejes), medidos con `medidor_esquinas.html` sobre las 4 esquinas reales de cada ventana. Cada imagen de escena se recorta (crop-to-fill) al tamaño de su ventana SIN rotar, luego esa imagen recortada se rota al ángulo real medido, y se pega centrada en el punto medio real de la ventana (`cx`, `cy`) — no se calcula con `frame_scale` simple. Ver `ROTATED_WINDOWS` en `layout_specs.py`.
 
+**Texto bajo el marco (11-oct-2026):** en `marco_grande` y `doble_marco` el texto va en el campo `texto_pie`, con el rol **subtítulo** (Lora negrita cursiva, 47 px), centrado en el espacio que deja el marco; el rol título (dorado con borde) es exclusivo de las portadas, para no restarle peso. En `doble_marco` el pie es opcional y va en la franja libre sobre los marcos (en 4:5 entre y=14 y el borde de contenido del asset menos 10 px; antes la caja medía 10 px de alto y el título siempre salía truncado).
+
 **marco_grande_portada (4:5, sin subtítulo):** variante de portada que NO escala por `porcentaje_imagen`/altura como marco_grande — escala por ANCHO FIJO (808px medido), replicando el mismo ancho absoluto que ocupa el marco en la portada 9:16 (mismo ancho de canvas, 1080px en ambos formatos — decisión de consistencia de marca: 4:5 vertical / 9:16 cuadrado como default de toda portada). Solo lleva título, nunca subtítulo. El bloque de texto usa un ancho propio medido (898px), no el mismo ancho del marco.
 
 **marco_grande_cuadrado (9:16, con subtítulo):** portada de reel/video. El asset es un lienzo COMPLETO (1080×1920, no solo el marco) con la vid decorativa y la hoja ya integrados en su posición final de diseño — se pega FIJO en (0,0), sin ningún escalado dinámico. La ventana interior (cuadrada, ~722×728px) recibe la imagen de escena. Título y subtítulo se posicionan con coordenadas Y ABSOLUTAS medidas directamente sobre el mockup real (no calculadas de forma encadenada desde el título) — ver la nota de la Sección 3 sobre `editor_posicion_texto.html` y el hallazgo del bug de centrado más abajo.
 
-### 2.2 — Tipo B: Contenedor Fijo (Etiqueta, Nota, Polaroid)
+### 2.2 a 2.4 — Eliminadas (11-oct-2026)
 
-Usa el asset a escala fija — no depende del % imagen/texto del slide (estos layouts casi siempre combinan con un Full-bleed de fondo, así que "imagen" ya está resuelta por el fondo, no por el asset).
+Tipo B (etiqueta, nota, polaroid), Tipo C (palabra-acuarela, tachado) y Tipo D (cordel, migas) se eliminaron; ver Sección 0. Se conserva la numeración 2.5 porque otros documentos la citan.
 
-| Layout | Escala de uso | Zona de texto (dentro del cuerpo del asset, % relativo al bbox del asset) |
-|---|---|---|
-| Etiqueta colgante | 100% (tamaño nativo del asset) | 85% del ancho, 85% del alto del rectángulo medido (`ROTATED_WINDOWS`) — valor MEDIDO, no estimado. El rectángulo medido con `medidor_esquinas.html` ya excluye el ojal/cordel (la medición empezó justo debajo de esa zona), es 100% zona segura de texto. |
-| Nota-kraft esquina | 100% | 85% del ancho, 85% del alto (mismo criterio que etiqueta colgante) |
-| Ventana Polaroid | 100% | La ventana interior YA medida en Layout_Specs recibe la IMAGEN (no texto) — el texto de este layout (si existe) va como caption debajo del Polaroid, centrado, en el 10% inferior del canvas |
-
-**Rotación real:** etiqueta colgante y nota-kraft están ROTADAS en el asset real (~11-12°, medido con `medidor_esquinas.html`) — el texto se renderiza en un lienzo aparte y se rota al mismo ángulo antes de pegarse (`render_text_block_rotated` en `text_renderer.py`), igual principio que el doble marco de la Sección 2.1. Ventana Polaroid y marco_grande, en cambio, se confirmaron SIN rotación real (ángulo medido ~0°, dentro del margen de error de medición manual).
-
-**Regla de posición del asset en canvas:** se coloca en la posición relativa donde fue medido originalmente (bbox de Layout_Specs, convertido a % del canvas) — no se re-centra ni se mueve, porque su composición interna (sombra, ángulo) ya fue diseñada para esa posición.
-
-### 2.3 — Tipo C: Generado Completo (Palabra-acuarela, Tachado)
-
-Sin composición. El script:
-1. Verifica que el PNG recibido mida exactamente el canvas objetivo (1080×1350 o 1080×1920) — si no, es un error de generación, fail loudly, no intentar corregir con estiramiento.
-2. Coloca el PNG completo como el slide final, sin más capas encima.
-3. Excepción: si el brief pide un elemento Tipo D (acento) combinado, ese sí se agrega encima (ver 2.4).
-
-### 2.4 — Tipo D: Acento Superpuesto (Cordel, Migas)
-
-Se agregan como capa final, encima de cualquier slide ya resuelto (Tipo A, B, C, o Full-bleed).
-
-| Acento | Posición | Escala |
-|---|---|---|
-| Cordel guía | Esquina a esquina (bbox ya medido, atraviesa el canvas) | 100% del canvas, sin reescalar — ya está diseñado a tamaño completo |
-| Migas de progreso | Franja horizontal centro-baja (bbox ya medido) | 100%, posición fija relativa |
-
-**Regla:** el JSON de un slide puede declarar `"acento": "cordel_guia"` opcionalmente además de su `layout` principal — nunca un acento sin layout base.
-
-### 2.5 — Layouts sin asset fijo (Full-bleed, Ventana+texto, Solo texto+acento, Texto+lateral)
+### 2.5 — Layouts sin asset fijo (Full-bleed, Ventana+texto, Solo texto, Texto+lateral, Lockup de cierre)
 
 **Corrección 13-sep-2026 (decisión de Johnny):** la especificación original de Full-bleed (imagen al 100% del canvas + overlay semi-transparente encima) siempre dejaba imagen real visible detrás del texto, sin importar el contenido de la imagen -- confirmado con evidencia visual real en PZA_1.2 Slide 2. Full-bleed se corrige a SOLO imagen, sin texto nunca; el caso con texto se separa en el layout nuevo Ventana+texto.
 
@@ -114,11 +84,11 @@ Se agregan como capa final, encima de cualquier slide ya resuelto (Tipo A, B, C,
 |---|---|
 | **Full-bleed** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) dentro del canvas completo, centrada, con el espacio sobrante en parchment sólido → NUNCA lleva texto (campo `texto_overlay` no aceptado, error de validación si se incluye) |
 | **Ventana+texto** | Imagen de escena se contiene completa (modo "contain", NUNCA crop), centrada, con el espacio sobrante en parchment sólido. Altura = ancho del canvas ÷ proporción real de la imagen, con tope de **2/3 del alto en 4:5** (900 px) y de **3/4 en 9:16** (1440 px; el 25% inferior queda para el texto, decisión de Johnny 11-oct-2026) → franja de texto SÓLIDA debajo, con el texto **centrado verticalmente** entre la imagen y el icono (4:5) o el borde inferior del canvas (9:16; su centro, ~y=1680, queda en la zona que la interfaz de reels suele tapar, riesgo aceptado por Johnny el 11-oct-2026) |
-| **Solo texto+acento** | Fondo parchment sólido → texto **centrado** en la zona de contenido (sobre el icono en 4:5; zona usable completa en 9:16). Variante `posicion_texto: "tercio_superior"` centra el bloque sobre la línea del primer tercio del canvas (variedad). Acento botánico opcional (pequeño, no listado en Layout_Specs porque usa el banco de 130+ ilustraciones sueltas, no un asset de layout fijo) |
-| **Texto+lateral** | Fondo parchment sólido → imagen de escena sin marco, 40-60% del ancho, en el lado declarado por el brief (izquierda/derecha) → texto en el lado opuesto, alineado hacia el borde exterior (no hacia el centro) y **centrado verticalmente respecto a la imagen** (misma altura de caja que la imagen). En 4:5 imagen y texto ceden la franja del icono |
+| **Solo texto** | Fondo parchment sólido → texto **centrado** en la zona de contenido (sobre el icono en 4:5; zona usable completa en 9:16). Variante `posicion_texto: "tercio_superior"` centra el bloque sobre la línea del primer tercio del canvas (variedad). |
+| **Texto+lateral** | Fondo parchment sólido → imagen de escena **9:16 completa a 540×960 px, sin recorte** (la proporción que se pide a Gemini tal cual), pegada al borde del canvas del lado declarado por el brief (izquierda/derecha) y centrada verticalmente en la zona de contenido (en 4:5, sobre el icono) → texto en el lado opuesto, alineado hacia el borde exterior (no hacia el centro), con la misma altura de caja que la imagen y **centrado en altura respecto a ella** |
 | **Lockup de cierre** | Fondo parchment sólido → lockup vertical C14 (símbolo + wordmark, `assets/brand/lockups-vertical/FYR_C14_lockup-vertical_1x1_v1.png`, 620 px de ancho) centrado en la zona usable. Sin texto ni imagen. En 4:5 es la **última slide del carrusel**; en 9:16 es un recurso **opcional** para el momento del guion en que se nombra la marca (no sustituye por defecto la imagen con la línea de cierre del loop) |
 
-**Marca de identidad C14 en los layouts base (decisión de Johnny, 11-oct-2026, reemplaza la versión de esquina del 10-oct).** El **icono** (91 px de alto, Root Black) va **solo en carruseles 4:5**, en slides **secundarias** (nunca portada), **abajo al centro**, anclado al margen inferior mínimo (`usable_zone`). Lo llevan automáticamente, sin campo que lo active, `ventana_texto`, `solo_texto` y `texto_lateral`; el resto del contenido se ajusta a la zona inmediatamente superior (38 px de aire sobre el icono). **No** lo llevan: las portadas, `full_bleed` (es SOLO imagen y ocupa el 4:5 completo), los layouts de asset fijo (marco_grande, doble_marco, etiqueta, nota, polaroid, palabra_acuarela, tachado) y **ningún slide 9:16** (la interfaz de las plataformas lo taparía en todas partes). En video la marca aparece solo con `lockup_cierre`, cuando el guion requiere nombrarla. El ancho sale de la proporción real del símbolo (~1:1.405), nunca se estira (Brand Mark Spec, Sección 06). Las fuentes son `assets/brand/icons/FYR_C14_logo-frasco-1024px_1x1_v1.png` y `assets/brand/lockups-vertical/FYR_C14_lockup-vertical_1x1_v1.png`, resueltas desde la raíz del repo y **no** desde `assets_dir`: son identidad de marca versionada en git, mientras que `production/assets_local/` es la caché local de escenas y marcos de Drive. El campo `marca_cierre` queda eliminado (nunca llegó a `main`).
+**Marca de identidad C14 en los layouts base (decisión de Johnny, 11-oct-2026, reemplaza la versión de esquina del 10-oct).** El **icono** (91 px de alto, Root Black) va **solo en carruseles 4:5**, en slides **secundarias** (nunca portada), **abajo al centro**, anclado al margen inferior mínimo (`usable_zone`). Lo llevan automáticamente, sin campo que lo active, `ventana_texto`, `solo_texto` y `texto_lateral`; el resto del contenido se ajusta a la zona inmediatamente superior (38 px de aire sobre el icono). **No** lo llevan: las portadas, `full_bleed` (es SOLO imagen y ocupa el 4:5 completo), los layouts de asset fijo (marco_grande, doble_marco) y **ningún slide 9:16** (la interfaz de las plataformas lo taparía en todas partes). En video la marca aparece solo con `lockup_cierre`, cuando el guion requiere nombrarla. El ancho sale de la proporción real del símbolo (~1:1.405), nunca se estira (Brand Mark Spec, Sección 06). Las fuentes son `assets/brand/icons/FYR_C14_logo-frasco-1024px_1x1_v1.png` y `assets/brand/lockups-vertical/FYR_C14_lockup-vertical_1x1_v1.png`, resueltas desde la raíz del repo y **no** desde `assets_dir`: son identidad de marca versionada en git, mientras que `production/assets_local/` es la caché local de escenas y marcos de Drive. El campo `marca_cierre` queda eliminado (nunca llegó a `main`).
 
 ---
 
@@ -129,10 +99,9 @@ Ningún texto se renderiza con tamaño "a ojo" — cada ROL tiene fuente, tamañ
 | Rol | Fuente | Tamaño base (4:5) | Color | line_spacing | Uso |
 |---|---|---|---|---|---|
 | Título de portada/cierre | SourceSerifPro-Regular.ttf | 93px (medido, cap-height=61px) | `#E8B84B` (Gold) con contorno `#5C3A1E` 5px (medido) | 0.743 (medido con editor_posicion_texto.html) | marco_grande_portada (4:5), marco_grande_cuadrado (9:16) |
-| Subtítulo | Lora-BoldItalic.ttf | 47px (medido, cap-height=35.7px) | `#1A1A1A` (negro, no Brown) | 0.777 (medido) | Debajo del título, solo en marco_grande_cuadrado (9:16) — marco_grande_portada en 4:5 no lleva subtítulo |
-| Texto de cuerpo (slides intermedios) | Lora.ttf, weight Regular | 36-44px (ver regla de ajuste abajo) | `#5C3A1E` o `#D4732A` (Terra) según énfasis del brief | 1.2 (default) | Full-bleed, Solo texto, Texto+lateral, etiqueta_colgante, nota_esquina, ventana_polaroid (caption) |
+| Subtítulo | Lora-BoldItalic.ttf | 47px (medido, cap-height=35.7px) | `#1A1A1A` (negro, no Brown) | 0.777 (medido) | Debajo del título en marco_grande_cuadrado (9:16) — marco_grande_portada en 4:5 no lleva subtítulo. También es el rol del **pie de texto** (`texto_pie`) de marco_grande y doble_marco (11-oct-2026): el título dorado con borde queda reservado a las portadas para no restarle peso |
+| Texto de cuerpo (slides intermedios) | Lora.ttf, weight Regular | 36-44px (ver regla de ajuste abajo) | `#5C3A1E` o `#D4732A` (Terra) según énfasis del brief | 1.2 (default) | Ventana+texto, Solo texto, Texto+lateral |
 | CTA de cierre | DMSans.ttf, weight Bold | 32px | `#5C3A1E` | 1.2 (default) | Última línea del cierre |
-| Palabra dominante (dentro de imagen Tipo C) | — ya horneada por Gemini, el script no la toca | — | — | — | Palabra-acuarela |
 
 **Sobre `line_spacing`:** es un multiplicador de `(ascent+descent)` de la fuente real, no del tamaño de fuente directo (distinto del `line-height` de CSS). Los valores de título y subtítulo se midieron con la herramienta `production/scripts/tools/editor_posicion_texto.html`, cargando el mockup real y ajustando hasta que el texto renderizado calzara con las líneas base reales — no son valores teóricos.
 
@@ -161,7 +130,7 @@ Ningún texto se renderiza con tamaño "a ojo" — cada ROL tiene fuente, tamañ
 
 3. **Caso general** (oración única, sin producto nombrado, sin estructura de remate): cortar en la pausa gramatical más cercana al punto medio visual del texto (coma, conjunción que inicia una cláusula nueva) -- nunca partir un sintagma a media frase, nunca dejar un conector o preposición solo en su línea.
 
-**Verificación antes de fijar el corte:** cada línea propuesta no debe superar ~90% del ancho disponible real del layout (864px en `ventana_texto`, 821px en `solo_texto` -- ambos para aspecto 4:5; `texto_lateral` varía según `porcentaje_imagen`), medido con `draw.textlength()` contra la fuente y tamaño real del rol "cuerpo" (Lora.ttf, 40px) -- no estimado a ojo. Si una línea propuesta se pasa del 90%, se busca otro punto de corte antes de darla por buena.
+**Verificación antes de fijar el corte:** cada línea propuesta no debe superar ~90% del ancho disponible real del layout (864px en `ventana_texto`, 821px en `solo_texto` -- ambos para aspecto 4:5; `texto_lateral` ofrece 410px de ancho de texto, porque la imagen fija de 540px ocupa la mitad), medido con `draw.textlength()` contra la fuente y tamaño real del rol "cuerpo" (Lora.ttf, 40px) -- no estimado a ojo. Si una línea propuesta se pasa del 90%, se busca otro punto de corte antes de darla por buena.
 
 ---
 
@@ -198,16 +167,13 @@ production/scripts/assemble/
                              Python, con el .md como fuente humana de referencia)
   config_loader.py        -- lee y VALIDA el JSON contra el schema (Seccion 6)
   layout_classifier.py    -- dado un nombre de layout, retorna su Tipo
-                             (A/B/C/D/BASE) y su funcion de composicion
+                             (A/BASE) y su funcion de composicion
   compositors/
     tipo_a.py              -- Seccion 2.1 (marco_grande, marco_grande_portada,
                              marco_grande_cuadrado, doble_marco)
-    tipo_b.py              -- Seccion 2.2
-    tipo_c.py              -- Seccion 2.3
-    base.py                -- Seccion 2.5 (full_bleed, solo_texto,
-                             texto_lateral -- no estaba en el arbol original)
-    acentos.py             -- Seccion 2.4
-  text_renderer.py        -- Seccion 3 completa (fuente, overflow, color, rotacion)
+    base.py                -- Seccion 2.5 (full_bleed, ventana_texto, solo_texto,
+                             texto_lateral, lockup_cierre)
+  text_renderer.py        -- Seccion 3 completa (fuente, overflow, color)
   image_fetcher.py        -- VERIFICA que assets/escenas existan localmente,
                              reporta rutas de Drive para lo que falte -- NO
                              descarga por si mismo (Claude Code, con su Drive
@@ -249,35 +215,34 @@ El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout
   "slides": [
     {
       "numero": 1,
-      "layout": "marco_grande",
-      "porcentaje_imagen": 85,
+      "layout": "marco_grande_portada",
       "imagen_escena": "S1_portada.png",
-      "texto_titulo": "MY SEED BOX WAS A DISASTER UNTIL THIS",
-      "texto_subtitulo": "Order changes everything.",
-      "acento": null,
-      "ancla_recorte": "center"
+      "texto_titulo": "MY SEED BOX WAS A DISASTER UNTIL THIS"
     },
     {
       "numero": 2,
-      "layout": "full_bleed",
+      "layout": "marco_grande",
+      "porcentaje_imagen": 75,
       "imagen_escena": "S2_antes.png",
-      "texto_overlay": "Every seed packet just... thrown in.",
-      "acento": null
+      "texto_pie": "Every seed packet just... thrown in.",
+      "ancla_recorte": "center"
     },
     {
       "numero": 3,
       "layout": "doble_marco",
       "imagen_escena_1": "S3a_antes.png",
       "imagen_escena_2": "S3b_despues.png",
-      "texto_titulo": null,
-      "acento": "cordel_guia"
+      "texto_pie": "Before and after"
     },
     {
       "numero": 4,
-      "layout": "palabra_acuarela",
-      "imagen_escena": null,
-      "nota": "GENERADO COMPLETO en Gemini con la palabra real ya horneada, usando FYR_LAYOUT_palabra-acuarela_4x5_v1.png como referencia de estilo.",
-      "imagen_final": "S4_palabra.png"
+      "layout": "solo_texto",
+      "texto_cuerpo": "Order changes everything.",
+      "posicion_texto": "centro"
+    },
+    {
+      "numero": 5,
+      "layout": "lockup_cierre"
     }
   ]
 }
@@ -287,12 +252,14 @@ El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout
 
 | Tipo | Campos requeridos |
 |---|---|
-| A (marco_grande) | `layout`, `porcentaje_imagen`, `imagen_escena`, al menos uno de `texto_titulo`/`texto_subtitulo` |
-| A (doble_marco) | `layout`, `porcentaje_imagen`, `imagen_escena_1`, `imagen_escena_2` |
-| B (etiqueta/nota/polaroid) | `layout`, `imagen_escena` (fondo si aplica), `texto_cuerpo` |
-| C (palabra_acuarela/tachado) | `layout`, `imagen_final` (el PNG ya generado completo) |
-| Full-bleed / Ventana-texto / Solo-texto / Texto-lateral | `layout`, `imagen_escena` (excepto Solo-texto), texto correspondiente; opcional `posicion_texto: "centro"\|"tercio_superior"` (solo Solo-texto) |
+| A (marco_grande_portada, 4:5) | `layout`, `imagen_escena`, `texto_titulo` (sin subtítulo) |
+| A (marco_grande_cuadrado, 9:16) | `layout`, `imagen_escena`, al menos uno de `texto_titulo`/`texto_subtitulo` |
+| A (marco_grande) | `layout`, `porcentaje_imagen`, `imagen_escena`, `texto_pie` (rol subtítulo; `texto_titulo`/`texto_subtitulo` dan error) |
+| A (doble_marco) | `layout`, `imagen_escena_1`, `imagen_escena_2`; opcional `texto_pie` |
+| Full-bleed / Ventana-texto / Solo-texto / Texto-lateral | `layout`, `imagen_escena` (excepto Solo-texto), texto correspondiente; opcional `posicion_texto: "centro"\|"tercio_superior"` (solo Solo-texto); `lado_imagen` en Texto-lateral |
 | Lockup-cierre | `layout` (sin más campos) |
+
+El campo `acento` fue eliminado: un config que lo traiga falla con error claro.
 
 `config_loader.py` valida esta tabla exacta antes de dejar avanzar el proceso — es el "no adivinar" hecho código.
 
@@ -301,15 +268,13 @@ El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout
 ## 7. Lo que este documento NO resuelve todavia (honestidad operativa)
 
 Resuelto desde la v1.0 (ya no son pendientes):
-- Zona de texto de Tipo B: medida con precision real (85%/85%, ver Seccion 2.2), no estimada.
 - Tipografia de titulo/subtitulo: medida con precision de pixel usando editor_posicion_texto.html sobre mockups reales, no estimada de los mockups a ojo.
-- Rotacion de doble_marco, etiqueta_colgante, nota_esquina: medida y resuelta con medidor_esquinas.html.
+- Rotacion de doble_marco: medida y resuelta con medidor_esquinas.html.
 
 Sigue pendiente:
 - El comportamiento de Texto+imagen lateral cuando el brief no especifica izquierda/derecha no esta definido -- asumir alternancia (par=izquierda, impar=derecha) hasta que se decida lo contrario.
-- Tipo C (palabra_acuarela, tachado) y acentos.py (cordel_guia, migas_progreso) tienen codigo completo y probado a nivel de carga de modulo, pero nunca se corrieron con un PNG real de Gemini ni se vieron renderizados de verdad -- falta validacion visual real.
 - doble_marco solo se probo con imagenes de escena sinteticas (color solido), nunca con ilustraciones reales.
-- Texto de cuerpo (Tipo B, full_bleed, solo_texto, texto_lateral) sigue en Lora.ttf Regular, line_spacing default 1.2 -- nunca se midio con la misma precision que titulo/subtitulo. Puede necesitar el mismo tratamiento si se ve mal en produccion real.
+- Texto de cuerpo (ventana_texto, solo_texto, texto_lateral) sigue en Lora.ttf Regular, line_spacing default 1.2 -- nunca se midio con la misma precision que titulo/subtitulo. Puede necesitar el mismo tratamiento si se ve mal en produccion real.
 
 ## 8. Leccion aprendida -- bug de centrado vertical en texto encadenado (25-30 ago 2026)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # main.py -- Orquestador del motor de ensamblado (Seccion 5.2 de la
 # arquitectura). Lee un config JSON de pieza, por cada slide clasifica su
-# layout, llama al compositor correspondiente, aplica acento si corresponde,
+# layout, llama al compositor correspondiente,
 # y exporta el PNG final. Fail loudly segun la tabla de la Seccion 5.3.
 
 import os
@@ -9,19 +9,16 @@ import sys
 from PIL import Image
 
 from config_loader import load_config
-from layout_classifier import classify, get_compositor, get_accent_applier, LayoutError
+from layout_classifier import classify, get_compositor, LayoutError
 from layout_specs import CANVAS, PARCHMENT, LATERAL_PORTADA_4X5
 from compositors.tipo_a import CompositorError as ErrorA
-from compositors.tipo_b import CompositorError as ErrorB
-from compositors.tipo_c import CompositorError as ErrorC
 from compositors.base import CompositorError as ErrorBase
-from compositors.acentos import AccentError
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 DEFAULT_ASSETS_DIR = os.path.join(REPO_ROOT, "production", "assets_local")
 DEFAULT_OUTPUT_DIR = os.path.join(REPO_ROOT, "production", "output")
 
-CompositorErrors = (ErrorA, ErrorB, ErrorC, ErrorBase, AccentError, LayoutError)
+CompositorErrors = (ErrorA, ErrorBase, LayoutError)
 
 
 def _hex_to_rgb(hex_color):
@@ -58,27 +55,11 @@ def assemble_slide(slide, aspecto, assets_dir):
 
     layout = slide.get("layout")
     compositor = get_compositor(layout)
-    acento = slide.get("acento")
-
-    # Solo texto + cordel: el cordel cruza el canvas en diagonal y el texto va
-    # centrado, asi que el cordel se dibuja ANTES (debajo del texto y del
-    # icono) para no taparlo. Resto de combinaciones: el acento va encima.
-    warnings = []
-    acento_debajo = layout == "solo_texto" and acento == "cordel_guia"
-    if acento_debajo:
-        applier = get_accent_applier(acento)
-        warnings.extend(applier(canvas, acento, aspecto, assets_dir).get("warnings", []))
-
     result = compositor(canvas, slide, aspecto, assets_dir)
-    warnings.extend(result.get("warnings", []))
+    warnings = list(result.get("warnings", []))
 
     if "canvas" in result:
         canvas = result["canvas"]
-
-    if acento and not acento_debajo:
-        applier = get_accent_applier(acento)
-        accent_result = applier(canvas, acento, aspecto, assets_dir)
-        warnings.extend(accent_result.get("warnings", []))
 
     warnings.extend(_check_portada_lateral(canvas, aspecto, layout))
 

@@ -6,8 +6,8 @@
 import os
 from PIL import Image, ImageDraw
 
-from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, BBOX, usable_zone
-from text_renderer import crop_to_fill, render_text_block
+from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone
+from text_renderer import render_text_block
 
 
 class CompositorError(Exception):
@@ -35,7 +35,8 @@ LOCKUP_W = 620       # px -- ancho del lockup vertical en lockup_cierre
 VENTANA_IMG_MAX = {"4:5": 2 / 3, "9:16": 3 / 4}   # tope de la zona de imagen de ventana_texto (900 px en 4:5; 1440 en 9:16, deja el 25% inferior al texto)
 VENTANA_PAD = 16     # px de aire arriba/abajo de la franja de texto de ventana_texto
 POSICIONES_TEXTO = ("centro", "tercio_superior")
-ACENTO_GAP = 40      # px de aire entre el texto y la franja de migas_progreso
+LATERAL_IMG_W = 540  # px -- ancho de la imagen de texto_lateral (50% del canvas)
+LATERAL_IMG_H = 960  # px -- alto: proporcion 9:16 exacta, que se pide tal cual a Gemini
 
 _BRAND_MARK_SRC = None
 _LOCKUP_SRC = None
@@ -216,13 +217,6 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
     canvas_h = CANVAS[aspecto]["h"]
     zona_top, zona_bottom = _zona_contenido(canvas, aspecto)
 
-    # migas_progreso es una franja horizontal fija a media altura (45%-56%):
-    # con el texto centrado chocaria, asi que el texto se centra en la zona
-    # que queda ENCIMA de la franja. (cordel_guia no se esquiva: main.py lo
-    # dibuja debajo del texto.)
-    if slide.get("acento") == "migas_progreso":
-        zona_bottom = min(zona_bottom, BBOX["migas_progreso"][aspecto]["y0"] - ACENTO_GAP)
-
     if posicion == "centro":
         box_y, box_h = zona_top, zona_bottom - zona_top
     else:
@@ -239,10 +233,12 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
 
 
 def _compose_texto_lateral(canvas, slide, aspecto, assets_dir):
-    """Imagen a un costado + texto centrado en altura respecto a la imagen
-    (decision de Johnny, 11-oct-2026). En 4:5 ambos ceden la franja del
-    icono (abajo al centro, cruza las dos columnas); en 9:16 ocupan toda la
-    zona usable."""
+    """Imagen a un costado + texto centrado en altura respecto a ella.
+    La imagen es 9:16 y se muestra COMPLETA a 540x960 (sin recorte): es la
+    proporcion que se pide a Gemini tal cual (decision de Johnny, 11-oct-2026).
+    Va pegada al borde del canvas y centrada verticalmente en la zona de
+    contenido (en 4:5, la zona sobre el icono); el texto ocupa el lado opuesto
+    con la misma altura de caja que la imagen."""
     imagen_escena = slide.get("imagen_escena")
     if not imagen_escena:
         raise CompositorError("texto_lateral requiere 'imagen_escena' en el slide")
@@ -255,34 +251,31 @@ def _compose_texto_lateral(canvas, slide, aspecto, assets_dir):
     if lado not in ("izquierda", "derecha"):
         raise CompositorError(f"lado_imagen invalido: {lado} (validos: izquierda, derecha)")
 
-    porcentaje_imagen = slide.get("porcentaje_imagen", 50)
+    warnings = []
+    if "porcentaje_imagen" in slide or "ancla_recorte" in slide:
+        warnings.append("porcentaje_imagen/ancla_recorte ignorados (texto_lateral usa imagen 9:16 fija de 540x960, sin recorte)")
 
     canvas_w = CANVAS[aspecto]["w"]
     zona_top, zona_bottom = _zona_contenido(canvas, aspecto)
-    zona_h = round(zona_bottom - zona_top)
-    img_w = round(canvas_w * (porcentaje_imagen / 100))
-    ancla = slide.get("ancla_recorte", "center")
+    img_y = round((zona_top + zona_bottom - LATERAL_IMG_H) / 2)
 
     scene = _load_scene(imagen_escena, assets_dir)
-    scene_cropped = crop_to_fill(scene, img_w, zona_h, anchor=ancla)
+    scene_fit, off_x, off_y = _contain_fit(scene, LATERAL_IMG_W, LATERAL_IMG_H)
 
     if lado == "izquierda":
         img_x = 0
-        text_x0 = img_w + round(canvas_w * 0.06)
+        text_x0 = LATERAL_IMG_W + round(canvas_w * 0.06)
         text_x1 = canvas_w - round(canvas_w * 0.06)
         align = "left"
     else:
-        img_x = canvas_w - img_w
+        img_x = canvas_w - LATERAL_IMG_W
         text_x0 = round(canvas_w * 0.06)
         text_x1 = img_x - round(canvas_w * 0.06)
         align = "right"
 
-    canvas.paste(scene_cropped, (img_x, round(zona_top)))
+    canvas.paste(scene_fit, (img_x + off_x, img_y + off_y))
 
-    # Caja de texto = misma altura que la imagen, texto centrado en ella.
-    r = render_text_block(canvas, texto, "cuerpo", (text_x0, round(zona_top), text_x1 - text_x0, zona_h), align=align)
-
-    warnings = []
+    r = render_text_block(canvas, texto, "cuerpo", (text_x0, img_y, text_x1 - text_x0, LATERAL_IMG_H), align=align)
     if r["truncated"]:
         warnings.append("texto_cuerpo truncado (BASE, texto_lateral)")
     return {"warnings": warnings}

@@ -1,12 +1,13 @@
 # Compositor Tipo A -- Contenedor Escalable (Seccion 2.1 de la arquitectura).
 # El marco se redimensiona segun % imagen/texto del slide; la ventana interior
-# escala con el mismo factor. Aplica a: marco_grande, doble_marco.
+# escala con el mismo factor. Aplica a: marco_grande, doble_marco (y las
+# portadas marco_grande_portada / marco_grande_cuadrado).
 
 import os
 from PIL import Image, ImageDraw
 
 from layout_specs import (
-    CANVAS, ASSETS, WINDOWS, ROTATED_WINDOWS, PORTADA_WIDTHS, TYPOGRAPHY, usable_zone,
+    CANVAS, ASSETS, WINDOWS, ROTATED_WINDOWS, BBOX, PORTADA_WIDTHS, TYPOGRAPHY, usable_zone,
 )
 from text_renderer import crop_to_fill, render_text_block, render_text_block_top
 
@@ -87,26 +88,17 @@ def _compose_marco_grande(canvas, slide, aspecto, assets_dir, layout_name="marco
         round(canvas_w * 0.84), round(text_zone_height - 20),
     )
 
+    # El texto bajo el marco va en `texto_pie`, rol SUBTITULO (Lora negrita
+    # cursiva): el titulo dorado con borde es exclusivo de las portadas, para
+    # no restarle peso (decision de Johnny, 11-oct-2026). Centrado en el
+    # espacio que deja el marco.
     warnings = []
-    titulo = slide.get("texto_titulo")
-    subtitulo = slide.get("texto_subtitulo")
-    if not titulo and not subtitulo:
-        raise CompositorError(f"{layout_name} requiere texto_titulo o texto_subtitulo")
-
-    cursor_y = texto_box[1]
-    box_w = texto_box[2]  # texto_box[2] YA es el ancho (w), no x1 -- no restar texto_box[0]
-    if titulo:
-        remaining_h = texto_box[3] - (cursor_y - texto_box[1])
-        titulo_h = remaining_h if not subtitulo else remaining_h * 0.6
-        r = render_text_block(canvas, titulo, "titulo", (texto_box[0], round(cursor_y), box_w, round(titulo_h)))
-        if r["truncated"]:
-            warnings.append(f"texto_titulo truncado (Tipo A, {layout_name})")
-        cursor_y += titulo_h
-    if subtitulo:
-        remaining_h = texto_box[3] - (cursor_y - texto_box[1])
-        r = render_text_block(canvas, subtitulo, "subtitulo", (texto_box[0], round(cursor_y), box_w, round(remaining_h)))
-        if r["truncated"]:
-            warnings.append(f"texto_subtitulo truncado (Tipo A, {layout_name})")
+    pie = slide.get("texto_pie")
+    if not pie:
+        raise CompositorError(f"{layout_name} requiere 'texto_pie' en el slide")
+    r = render_text_block(canvas, pie, "subtitulo", texto_box)
+    if r["truncated"]:
+        warnings.append(f"texto_pie truncado (Tipo A, {layout_name})")
 
     return {"warnings": warnings}
 
@@ -148,15 +140,21 @@ def _compose_doble_marco(canvas, slide, aspecto, assets_dir):
     frame_asset = _load_asset("doble_marco", aspecto, assets_dir)
     canvas.alpha_composite(frame_asset, (0, 0))
 
+    # Pie opcional (`texto_pie`, rol subtitulo) en la franja libre sobre los
+    # marcos: desde el margen superior hasta el borde de contenido del asset
+    # (BBOX), con 10 px de aire. Antes la caja se calculaba con la zona
+    # segura de 9:16 y en 4:5 medía 10 px de alto (el titulo siempre salia
+    # truncado).
     warnings = []
-    titulo = slide.get("texto_titulo")
-    if titulo:
+    pie = slide.get("texto_pie")
+    if pie:
         canvas_w = CANVAS[aspecto]["w"]
-        margen_top, _, _ = usable_zone(aspecto)
-        box = (round(canvas_w * 0.08), 20, round(canvas_w * 0.84), round(margen_top - 30))
-        r = render_text_block(canvas, titulo, "titulo", box)
+        top = 14 if aspecto == "4:5" else usable_zone(aspecto)[0]
+        bottom = BBOX["doble_marco"][aspecto]["y0"] - 10
+        box = (round(canvas_w * 0.08), round(top), round(canvas_w * 0.84), round(bottom - top))
+        r = render_text_block(canvas, pie, "subtitulo", box)
         if r["truncated"]:
-            warnings.append("texto_titulo truncado (Tipo A, doble_marco)")
+            warnings.append("texto_pie truncado (Tipo A, doble_marco)")
 
     return {"warnings": warnings}
 

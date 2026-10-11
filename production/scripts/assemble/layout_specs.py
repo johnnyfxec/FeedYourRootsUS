@@ -56,26 +56,6 @@ ASSETS = {
         "4:5": "FYR_LAYOUT_doble-marco_4x5_v1.png",
         "9:16": "FYR_LAYOUT_doble-marco_9x16_v1.png",
     },
-    "etiqueta_colgante": {
-        "4:5": "FYR_LAYOUT_etiqueta-colgante_4x5_v1.png",
-        "9:16": "FYR_LAYOUT_etiqueta-colgante_9x16_v1.png",
-    },
-    "nota_esquina": {
-        "4:5": "FYR_LAYOUT_nota-esquina_4x5_v1.png",
-        "9:16": "FYR_LAYOUT_nota-esquina_9x16_v1.png",
-    },
-    "ventana_polaroid": {
-        "4:5": "FYR_LAYOUT_ventana-polaroid_4x5_v1.png",
-        "9:16": "FYR_LAYOUT_ventana-polaroid_9x16_v1.png",
-    },
-    "cordel_guia": {
-        "4:5": "FYR_LAYOUT_cordel-guia_4x5_v1.png",
-        "9:16": "FYR_LAYOUT_cordel-guia_9x16_v1.png",
-    },
-    "migas_progreso": {
-        "4:5": "FYR_LAYOUT_migas-progreso_4x5_v1.png",
-        "9:16": "FYR_LAYOUT_migas-progreso_9x16_v1.png",
-    },
 }
 
 # Ventanas interiores transparentes (px sobre el asset a escala nativa)
@@ -89,10 +69,6 @@ WINDOWS = {
         # y hoja integrados, lienzo completo 1080x1920). Ventana casi
         # cuadrada (722x727.8), angulo -0.23 (ruido de medicion).
         "9:16": {"x": 179.4, "y": 320.3, "w": 722.0, "h": 727.8, "asset_w": 1080, "asset_h": 1920},
-    },
-    "ventana_polaroid": {
-        "4:5":  {"x": 358, "y": 453, "w": 370, "h": 378},
-        "9:16": {"x": 333, "y": 702, "w": 413, "h": 420},
     },
 }
 
@@ -115,49 +91,14 @@ ROTATED_WINDOWS = {
             "frontal":  {"w": 451.8, "h": 589.3, "angle": 10.93, "cx": 704.0, "cy": 1193.1},
         },
     },
-    # Etiqueta y nota tambien estan rotadas -- medido con medidor_esquinas.html
-    # (dos mediciones independientes en 4:5, promediadas para el angulo final).
-    # El texto debe rotarse al mismo angulo antes de pegarse, igual que las
-    # imagenes de doble_marco.
-    "etiqueta_colgante": {
-        "4:5":  {"w": 275.4, "h": 347.9, "angle": 11.98, "cx": 742.2, "cy": 898.7},
-        "9:16": {"w": 330.9, "h": 411.3, "angle": 10.77, "cx": 762.4, "cy": 1233.3},
-    },
-    "nota_esquina": {
-        "4:5":  {"w": 337.0, "h": 327.7, "angle": 12.08, "cx": 666.6, "cy": 928.0},
-        "9:16": {"w": 412.8, "h": 373.8, "angle": 11.66, "cx": 690.7, "cy": 1257.3},
-    },
 }
 
 # Bounding boxes del contenido opaco (px, escala nativa del asset)
 BBOX = {
-    "etiqueta_colgante": {
-        "4:5":  {"x0": 555, "y0": 160, "x1": 931, "y1": 1141},
-        "9:16": {"x0": 541, "y0": 344, "x1": 987, "y1": 1515},
-    },
-    "nota_esquina": {
-        "4:5":  {"x0": 410, "y0": 581, "x1": 924, "y1": 1189},
-        "9:16": {"x0": 390, "y0": 854, "x1": 986, "y1": 1556},
-    },
     "doble_marco": {
         "4:5":  {"x0": 58, "y0": 86, "x1": 1011, "y1": 1273},
         "9:16": {"x0": 54, "y0": 368, "x1": 1021, "y1": 1556},
     },
-    "migas_progreso": {
-        "4:5":  {"x0": 95, "y0": 608, "x1": 984, "y1": 759},
-        "9:16": {"x0": 74, "y0": 890, "x1": 1002, "y1": 1047},
-    },
-}
-
-# Zonas de texto Tipo B (fraccion relativa al bbox del asset — primer criterio, Seccion 7 del doc)
-# w_frac/h_frac: fraccion del rectangulo ROTATED_WINDOWS asignada al texto.
-# El rectangulo medido con medidor_esquinas.html ya excluye el ojal/cordel
-# (la medicion empezo justo debajo de esa zona) -- es 100% zona segura, asi
-# que la fraccion solo deja el margen estetico minimo (8%), no un margen
-# de seguridad extra contra superposicion que no existe.
-TEXT_ZONES_TYPE_B = {
-    "etiqueta_colgante": {"w_frac": 0.85, "h_frac": 0.85},
-    "nota_esquina": {"w_frac": 0.85, "h_frac": 0.85},
 }
 
 # Tipografia — roles (Seccion 3 de la arquitectura). Tamanos identicos en ambos aspectos.
@@ -182,13 +123,6 @@ LAYOUT_TYPES = {
     "marco_grande_cuadrado": "A",
     "marco_grande_portada": "A",
     "doble_marco": "A",
-    "etiqueta_colgante": "B",
-    "nota_esquina": "B",
-    "ventana_polaroid": "B",
-    "palabra_acuarela": "C",
-    "tachado": "C",
-    "cordel_guia": "D",
-    "migas_progreso": "D",
     "full_bleed": "BASE",
     "ventana_texto": "BASE",
     "solo_texto": "BASE",

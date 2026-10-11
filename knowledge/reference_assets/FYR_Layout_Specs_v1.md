@@ -20,6 +20,8 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | Imagen de fondo a pedir en Gemini | Exactamente 963×1232px | Exactamente 938×1788px |
 | Padding entre madera y escena | 0px — la escena toca la madera directamente, sin aire | 0px |
 
+**Texto bajo el marco (11-oct-2026):** va en `texto_pie`, con el rol subtítulo (Lora negrita cursiva, 47 px, negro), centrado en el espacio que deja el marco. El estilo de título dorado con borde queda reservado a las portadas para no restarle peso.
+
 **Nota de estilo:** la imagen de fondo puede o no incluir su propia vid decorativa integrada — ambas variantes son válidas (ver Sección 6, Regla de variedad). No usar el marco de ReportLab (assemble.py) ENCIMA de una imagen que ya trae su propio marco pintado — es doble-marco, error confirmado en iteración previa.
 
 ---
@@ -57,73 +59,31 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 ---
 
-## 3. Solo texto + acento
+## 3. Solo texto
 
-**Asset:** ninguno obligatorio; opcionalmente 1-2 elementos del banco de 130+ ilustraciones botánicas como acento suelto.
+**Asset:** ninguno.
 **Rol narrativo:** tensión pura, dato numérico, pregunta que sostiene el loop.
 **Activador:** 03 Numérico, 13 Lista, 11 Mito, 05 Error Común.
 
 | | Especificación |
 |---|---|
 | Fondo | Parchment sólido (#F5ECD7), sin imagen |
-| Texto | Centrado, tipografía grande, jerarquía título+subtítulo |
-| Acento (opcional) | Hoja o semilla suelta del banco, 1-2 elementos, nunca decoración densa |
-| Posición del texto | Centrado en la zona de contenido (default) o, variante, centrado sobre la línea del primer tercio del canvas (`posicion_texto: "tercio_superior"`) |
-| Con acento `migas_progreso` | La franja de migas ocupa el 45%-56% del alto, así que el texto se centra en la zona que queda **encima** de la franja (40 px de aire) |
-| Con acento `cordel_guia` | El cordel cruza el canvas en diagonal y no se esquiva: se dibuja **debajo** del texto y del icono, para que nunca lo tape |
-
----
+| Texto | Centrado, rol cuerpo |
+| Posición del texto | Centrado en la zona de contenido (default; en 4:5, la zona sobre el icono) o, variante, centrado sobre la línea del primer tercio del canvas (`posicion_texto: "tercio_superior"`) |
+| Icono C14 | Solo en 4:5, abajo al centro. En 9:16 no lleva |
 
 ## 4. Texto + imagen lateral
 
-**Asset:** ninguno — imagen recortada sin marco.
+**Asset:** ninguno — imagen sin marco, completa, sin recorte.
 **Rol narrativo:** explicación breve con apoyo visual.
 **Activador:** 06 Secreto, 20 Revelación, 12 Curiosidad.
 
 | | Especificación |
 |---|---|
-| Imagen de fondo a pedir en Gemini | **9:16 en ambos aspectos** (Gemini solo entrega 4:5, 9:16 y 3:4); la imagen se recorta al hueco (crop-to-fill, `ancla_recorte`): el hueco al 50 % mide 540×1141 en 4:5 (se recorta ~16 % del ancho de la imagen 9:16) y 540×1369 en 9:16 (~30 %). El sujeto debe ir centrado o declarar `ancla_recorte` |
-| Posición | Lateral (izquierda o derecha), texto ocupa el lado opuesto, centrado en altura respecto a la imagen |
-
----
-
-## 5. Etiqueta colgante
-
-Assets: FYR_LAYOUT_etiqueta-colgante_4x5_v1.png, FYR_LAYOUT_etiqueta-colgante_9x16_v1.png
-Ubicacion en Drive: 01_Brand_Assets/C13_Layout_Elements/
-Rol narrativo: copy corto e intimo, sensacion de nota personal.
-Activador: 04 Storytelling, 06 Secreto.
-
-ACTUALIZADO 30-ago-2026: el rectangulo kraft esta ROTADO en el asset real (no alineado a ejes como se asumia antes). Medido con medidor_esquinas.html (4 esquinas reales).
-
-| | 4:5 (1080x1350) | 9:16 (1080x1920) |
-|---|---|---|
-| Centro del rectangulo (rotado) | cx=742.2, cy=898.7 | cx=762.4, cy=1233.3 |
-| Ancho x Alto (del rectangulo, sin rotar) | 275.4 x 347.9 | 330.9 x 411.3 |
-| Angulo de rotacion | 11.98 grados | 10.77 grados |
-| Zona de texto | 85% del ancho, 85% del alto del rectangulo medido -- ya excluye el ojal/cordel (la medicion empezo justo debajo de esa zona), es 100% zona segura | igual criterio |
-
-El texto se renderiza en un lienzo aparte y se rota al mismo angulo antes de pegarse centrado en (cx, cy) -- ver render_text_block_rotated en text_renderer.py.
-
----
-
-## 6. Nota-kraft en esquina
-
-Assets: FYR_LAYOUT_nota-esquina_4x5_v1.png, FYR_LAYOUT_nota-esquina_9x16_v1.png
-Ubicacion en Drive: 01_Brand_Assets/C13_Layout_Elements/
-Rol narrativo: aside/comentario que no interrumpe la escena principal.
-Activador: 06 Secreto, 20 Revelacion, 12 Curiosidad.
-
-ACTUALIZADO 30-ago-2026: mismo hallazgo que etiqueta colgante -- rotada en el asset real.
-
-| | 4:5 (1080x1350) | 9:16 (1080x1920) |
-|---|---|---|
-| Centro del rectangulo (rotado) | cx=666.6, cy=928.0 | cx=690.7, cy=1257.3 |
-| Ancho x Alto (del rectangulo, sin rotar) | 337.0 x 327.7 | 412.8 x 373.8 |
-| Angulo de rotacion | 12.08 grados | 11.66 grados |
-| Zona de texto | 85% del ancho, 85% del alto del rectangulo medido | igual criterio |
-
----
+| Imagen a pedir en Gemini | **9:16, en 4:5 y en 9:16.** El compositor la muestra completa a **540×960 px** (9:16 exacto): sin recorte ni escala distinta. Pedir la imagen con el sujeto bien visible dentro del encuadre 9:16 |
+| Posición de la imagen | Pegada al borde del canvas del lado indicado (`lado_imagen`: izquierda o derecha) y centrada verticalmente en la zona de contenido (en 4:5, sobre el icono C14) |
+| Texto | En el lado opuesto, 410 px de ancho, alineado hacia el borde exterior y **centrado en altura respecto a la imagen** |
+| Corrección 11-oct-2026 | Antes la imagen se recortaba a 540×1141 (4:5) o 540×1369 (9:16) y el recorte (16 % a 30 % del ancho) podía cortar lo que la imagen quería comunicar; `porcentaje_imagen` y `ancla_recorte` ya no aplican aquí |
 
 ## 7. Doble marco superpuesto
 
@@ -139,6 +99,8 @@ ACTUALIZADO 30-ago-2026: pendiente resuelto -- ambas ventanas medidas por separa
 | Ancho x Alto | 434.8 x 584.4 | 448.0 x 588.0 | 439.9 x 598.1 | 451.8 x 589.3 |
 | Angulo | -8.47 grados | 10.89 grados | -8.70 grados | 10.93 grados |
 | Centro (cx, cy) | 349.1, 441.8 | 702.6, 907.6 | 347.7, 721.3 | 704.0, 1193.1 |
+
+**Texto (11-oct-2026):** pie opcional en `texto_pie`, rol subtítulo (Lora negrita cursiva, 47 px), en la franja libre sobre los marcos: en 4:5 entre y=14 y el borde de contenido del asset (86 px) menos 10 px; en 9:16 entre el margen superior usable (292 px) y 368 px menos 10 px. El título dorado con borde queda reservado a las portadas.
 
 Cada imagen de escena se recorta (crop-to-fill, con 2% de overscan para evitar bordes blancos en las esquinas) al tamano de su ventana SIN rotar, luego se rota al angulo real, y se pega centrada en (cx, cy). El marco de madera (con alpha real) va encima, tapando cualquier sobrante.
 
@@ -157,7 +119,7 @@ El asset es un LIENZO COMPLETO (1080x1920, no solo el marco recortado) con la vi
 
 | | Valor medido (9:16) |
 |---|---|
-| Ventana interior (para la imagen de escena) | x=179.4, y=320.3, ancho=722.0, alto=727.8 -- casi cuadrada, angulo de rotacion practicamente 0 (confirmado sin rotacion real) |
+| Ventana interior (para la imagen de escena) | x=179.4, y=320.3, ancho=722.0, alto=727.8 -- casi cuadrada, angulo de rotacion practicamente 0 (confirmado sin rotacion real). **Imagen a pedir en Gemini: 1:1** (11-oct-2026) |
 | Y superior del titulo | 1234.0 (medido con editor_posicion_texto.html) |
 | Ancho del bloque de titulo | 898px, sin subtitulo en este layout aplica el mismo ancho a la portada 4:5 (marco_grande_portada) |
 | Y superior del subtitulo | 1454.0 |
@@ -168,97 +130,40 @@ Ambas posiciones Y son ABSOLUTAS, medidas independientemente -- no se calculan d
 ---
 
 
-## 8. Palabra-acuarela (referencia de estilo — NO asset reutilizable)
+## 14. Lockup de cierre -- NUEVO 11-oct-2026
 
-**Archivos:** `FYR_LAYOUT_palabra-acuarela_4x5_v1.png`, `FYR_LAYOUT_palabra-acuarela_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/Style_References/`
-**Rol narrativo:** una palabra clave como portada/hook visual dominante.
-**Activador:** 11 Mito, 01 Negativo, 14 Advertencia.
+**Asset:** `assets/brand/lockups-vertical/FYR_C14_lockup-vertical_1x1_v1.png` (identidad de marca versionada en el repo, no en Drive).
+**Rol narrativo:** cierre de marca. En el carrusel 4:5 es la **última slide**; en video 9:16 es un recurso **opcional**, solo cuando el guion nombra la marca y hace falta que el espectador la reconozca.
 
-**Cómo se usa (distinto a los demás):** este NO es un asset con hueco a rellenar. Cuando el brief necesite este layout, la skill genera un prompt NUEVO en Gemini con la palabra real del hook (ej. "MYTH", "WARNING"), usando este archivo únicamente como referencia de estilo visual (textura de acuarela, paleta, flourishes decorativos alrededor de las letras) — nunca reutilizado directamente.
-
-**Nota de tamaño:** el archivo de referencia 4:5 llegó en 928×1152px, no 1080×1350px — el 9:16 sí llegó correcto en 1080×1920px. Al regenerar para producción, pedir siempre el tamaño exacto del canvas objetivo.
-
----
-
-## 9. Tachado/corrección (referencia de estilo — NO asset reutilizable)
-
-**Archivos:** `FYR_LAYOUT_tachado_4x5_v1.png`, `FYR_LAYOUT_tachado_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/Style_References/`
-**Rol narrativo:** visualiza la transformación directamente en el texto.
-**Activador:** 07 Contraste/Versus (alternativa a Doble marco, más verbal que visual).
-
-**Cómo se usa:** igual que Palabra-acuarela — referencia de estilo, se regenera con las palabras reales de cada tema (ej. "MESSY" tachado → "ORGANIZED").
-
-**Márgenes medidos del ejemplo real (4:5):** la línea diagonal llega hasta 84.5% del ancho, dejando 15.5% de margen libre al borde derecho. Al recortar/regenerar, mantener margen de aire de al menos 8-10% en los 4 lados alrededor de las palabras y la línea — ni pegado al borde ni excesivamente centrado. La versión 9:16 reescala el mismo texto con más aire arriba/abajo, mismo margen lateral relativo.
-
----
-
-## 10. Cordel guía
-
-**Assets:** `FYR_LAYOUT_cordel-guia_4x5_v1.png`, `FYR_LAYOUT_cordel-guia_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** continuidad visual entre slides consecutivos — no depende de un hook específico, es un conector.
-**Activador:** cualquiera, cuando se quiera dar continuidad fuerte a la secuencia.
-
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
-|---|---|---|
-| Bbox del contenido opaco | x: 0–1079 (0%-100%) / y: 0–1296 (0%-96%) | x: 0–1079 (0%-100%) / y: 158–1749 (8%-91%) |
-
-Atraviesa el canvas de esquina a esquina en ambos aspectos.
-
----
-
-## 11. Migas de progreso
-
-**Assets:** `FYR_LAYOUT_migas-progreso_4x5_v1.png`, `FYR_LAYOUT_migas-progreso_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** slides tipo lista/countdown con conteo visible — 3 de 5 elementos completos, 2 pendientes (plantilla de ejemplo; ajustar cantidad de "completos" según el slide real).
-**Activador:** 13 Lista, 03 Numérico.
-
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
-|---|---|---|
-| Bbox del contenido opaco | x: 95–984 (9%-91%) / y: 608–759 (45%-56%) | x: 74–1002 (7%-93%) / y: 890–1047 (46%-55%) |
-| Posición | Franja horizontal centro-baja del canvas | Igual, franja horizontal centrada verticalmente |
-
----
-
-## 12. Ventana Polaroid
-
-**Assets:** `FYR_LAYOUT_ventana-polaroid_4x5_v1.png`, `FYR_LAYOUT_ventana-polaroid_9x16_v1.png`
-**Ubicación en Drive:** `01_Brand_Assets/C13_Layout_Elements/`
-**Rol narrativo:** momento de foco/revelación con fondo ambiental desenfocado.
-**Activador:** 20 Revelación, 18 Sorpresa.
-
-| | 4:5 (1080×1350) | 9:16 (1080×1920) |
-|---|---|---|
-| Canvas | Fondo desenfocado ocupa 100%, es parte opaca del asset | Igual |
-| Ventana interior transparente (marco Polaroid) | x: 358–728 (370px ancho) / y: 453–831 (378px alto) — casi cuadrada | x: 333–746 (413px ancho) / y: 702–1122 (420px alto) — casi cuadrada |
-| Imagen de fondo a pedir en Gemini | Exactamente 370×378px, recortada/generada cuadrada | Exactamente 413×420px |
-
-**Nota:** la ventana es intencionalmente casi 1:1 (formato Polaroid clásico) — la imagen que se inserte ahí debe generarse o recortarse a proporción cuadrada, no al aspect ratio del canvas completo.
+| | Especificación |
+|---|---|
+| Fondo | Parchment sólido, sin texto ni imagen |
+| Lockup | Vertical (símbolo + wordmark Playfair Display Bold), 620 px de ancho, centrado en la zona usable, Root Black |
 
 ---
 
 ## Proporciones de imagen a pedir a Gemini (11-oct-2026)
 
-Gemini solo entrega **4:5, 9:16 y 3:4**. La proporción a pedir se elige según el hueco que la imagen va a ocupar en el slide:
+La proporción a pedir se elige según el hueco que la imagen va a ocupar en el slide, de modo que se vea completa:
 
 | Layout | Hueco de la imagen | Pedir | Resultado |
 |---|---|---|---|
+| Portada 4:5 (`marco_grande_portada`) | ventana del marco | la de la ventana (sección 1) | llena el marco |
+| Portada 9:16 (`marco_grande_cuadrado`) | 722×728 | **1:1** | llena la ventana |
+| Marco grande 4:5 | 963×1232 | 4:5 | llena la ventana |
+| Marco grande 9:16 | 938×1788 | 9:16 | llena la ventana (recorte mínimo) |
+| Doble marco | dos ventanas de ~440×590 | 4:5 | recorte mínimo |
 | Full-bleed 4:5 | 1080×1350 | 4:5 | llena exacto, sin margen |
 | Full-bleed 9:16 | 1080×1920 | 9:16 | llena exacto, sin margen |
-| Ventana+texto 4:5 | 1080×900 (6:5) | 4:5 | 720×900 centrada, 180 px de parchment por lado (ninguna proporción de Gemini llena 6:5) |
-| Ventana+texto 9:16 | 1080×1440 (3:4) | 3:4 | llena exacto, sin margen |
-| Texto+lateral 4:5 (50 %) | 540×1141 | 9:16 | recorte lateral ~16 % |
-| Texto+lateral 9:16 (50 %) | 540×1369 | 9:16 | recorte lateral ~30 % |
-| Marcos y layouts de asset fijo | ventana medida de cada asset (secciones 1, 5, 6, 7, 12, 13) | la medida de la ventana | sin cambios |
+| Ventana+texto 4:5 | 1080×900 (6:5) | 4:5 | 720×900 centrada, 180 px de parchment por lado (ninguna proporción estándar llena 6:5) |
+| Ventana+texto 9:16 | 1080×1440 | 3:4 | llena exacto, sin margen |
+| Texto+lateral (4:5 y 9:16) | 540×960 | 9:16 | llena exacto, sin recorte |
 
 ---
 
 ## Regla de variedad (recordatorio, ya en SKILL.md)
 
-Con 12 layouts disponibles, ningún layout se repite más de 2 veces en la misma pieza.
+Con 6 layouts de cuerpo disponibles (marco grande, doble marco, full-bleed, ventana+texto, solo texto, texto+lateral), ninguno se repite más de 2 veces en la misma pieza. Las portadas y el lockup de cierre quedan fuera de la cuenta.
 
 ## Proporción imagen/texto por función del slide (recordatorio, ya en SKILL.md)
 

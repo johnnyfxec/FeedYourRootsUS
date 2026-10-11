@@ -176,44 +176,6 @@ def render_text_block_top(canvas, text, role, x, y, w, max_h, align="center"):
     return {"truncated": truncated, "lines_rendered": len(lines), "height": total_h, "line_h": line_h}
 
 
-def render_text_block_rotated(canvas, text, role, w, h, angle, cx, cy, align="center"):
-    """Como render_text_block, pero para texto que vive sobre una superficie
-    rotada (etiqueta_colgante, nota_esquina medidas con medidor_esquinas.html).
-    Renderiza en un lienzo transparente de (w, h), rota ese lienzo al angulo
-    real de la superficie, y lo pega centrado en (cx, cy) del canvas. Mismo
-    principio que _paste_rotated_scene en compositors/tipo_a.py, pero para
-    texto en vez de imagen. Retorna dict con 'truncated' igual que
-    render_text_block."""
-    layer = Image.new("RGBA", (round(w), round(h)), (0, 0, 0, 0))
-    result = render_text_block(layer, text, role, (0, 0, round(w), round(h)), align=align)
-
-    rotated = layer.rotate(-angle, expand=True, resample=Image.BICUBIC)
-    paste_x = round(cx - rotated.width / 2)
-    paste_y = round(cy - rotated.height / 2)
-    canvas.alpha_composite(rotated, (paste_x, paste_y))
-
-    return result
-
-
-def render_text_block_rotated(canvas, text, role, w, h, angle, cx, cy, align="center"):
-    """Como render_text_block, pero para texto que vive sobre una superficie
-    rotada (etiqueta_colgante, nota_esquina medidas con medidor_esquinas.html).
-    Renderiza en un lienzo transparente de (w, h), rota ese lienzo al angulo
-    real de la superficie, y lo pega centrado en (cx, cy) del canvas. Mismo
-    principio que _paste_rotated_scene en compositors/tipo_a.py, pero para
-    texto en vez de imagen. Retorna dict con 'truncated' igual que
-    render_text_block."""
-    layer = Image.new("RGBA", (round(w), round(h)), (0, 0, 0, 0))
-    result = render_text_block(layer, text, role, (0, 0, round(w), round(h)), align=align)
-
-    rotated = layer.rotate(-angle, expand=True, resample=Image.BICUBIC)
-    paste_x = round(cx - rotated.width / 2)
-    paste_y = round(cy - rotated.height / 2)
-    canvas.alpha_composite(rotated, (paste_x, paste_y))
-
-    return result
-
-
 def crop_to_fill(image, target_w, target_h, anchor="center"):
     """Recorte 'cover' estandar (Seccion 4) -- equivalente a object-fit: cover.
     anchor: 'center' (default) o 'top'. Cualquier otro valor es un error

@@ -75,7 +75,7 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso |
 | `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad, excepcion de rostros en escenas narrativas (v2) |
 | `knowledge/FYR_Asset_Governance_Policy.md` (v2.3+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, estructura `01_Brand_Assets/C01-C13` (incluye C12_Frames y C13_Layout_Elements), y principio de duplicados semánticos en Themes |
-| `knowledge/reference_assets/FYR_Layout_Specs_v1.md` | Medidas exactas (bbox, ventanas de contenido) de los 12 layouts en 4:5 y 9:16, con ruta de Drive de cada asset — consultar SIEMPRE antes de generar un prompt de imagen que use un layout con marco/asset fijo |
+| `knowledge/reference_assets/FYR_Layout_Specs_v1.md` | Medidas exactas (bbox, ventanas de contenido) de los layouts vigentes en 4:5 y 9:16, con ruta de Drive de cada asset — consultar SIEMPRE antes de generar un prompt de imagen que use un layout con marco/asset fijo |
 | `knowledge/FYR_Brand_Mark_Spec_v1.md` | Simbolo oficial de marca (frasco+arbol): espacio de proteccion, tamano minimo, variantes de color, lockups aprobados, usos prohibidos, proporcion fija 1:1.405 — consultar SIEMPRE antes de usar/reproducir el simbolo o el wordmark en cualquier pieza |
 | `knowledge/FYR_Motor_Ensamblado_Arquitectura_v1.md` | Contrato de `assemble.py` (carruseles/slides estáticos): tipos de layout, tipografía, schema del config JSON — leer antes de escribir el config de un carrusel |
 | `knowledge/FYR_Protocolo_Edicion_Video.md` | Pipeline de video (voz TTS, subtítulos palabra por palabra, pausas, cierre en loop A/B, contrato del JSON de pieza, procedimiento en la PC) — leer SIEMPRE cuando `Medio = Video`, antes del Paso 3 |
@@ -118,21 +118,19 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 - Fórmula de contexto: [contexto que ubica a Morgan] + [elemento que desafía/sorprende dentro de ese contexto].
 - Alineación visual-verbal: el asset/imagen del slide 1 NUNCA debe resolver el loop que abre el texto.
 
-**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Catalogo completo: 5 layouts base (Marco grande, Full-bleed solo imagen, Ventana+texto, Solo texto + acento, Texto + imagen lateral) + 8 layouts expandidos (L6 Etiqueta colgante, L7 Nota-kraft en esquina, L8 Doble marco superpuesto, L9 Palabra-acuarela, L10 Tachado/correccion, L11 Cordel guia, L12 Migas de progreso, L13 Ventana Polaroid) — assets y ventanas de cada uno en knowledge/reference_assets/FYR_Layout_Specs_v1.md. IMPORTANTE (correccion 13-sep-2026): Full-bleed NUNCA lleva texto -- si el hook necesita mensaje verbal sobre la imagen, usar Ventana+texto, no Full-bleed.
-- 03 Numerico, 13 Lista -> Solo texto + acento, o L12 Migas de progreso si el conteo es el eje central
-- 07 Contraste/Versus -> L8 Doble marco superpuesto (preferido, un solo slide) o L10 Tachado/correccion (alternativa, mas verbal) o Marco grande dos veces (si ninguno de los anteriores calza)
+**Afinidad Hook -> Layout de apertura del cuerpo (slide 2):** al elegir el layout del primer slide del cuerpo, usar esta afinidad natural en vez de un criterio generico. Layouts vigentes (poda del 11-oct-2026): de cuerpo, Marco grande, Doble marco superpuesto, Full-bleed solo imagen, Ventana+texto, Solo texto, Texto + imagen lateral; ademas, las portadas (4:5 `marco_grande_portada`, 9:16 `marco_grande_cuadrado`) y el Lockup de cierre. Assets, ventanas y la proporcion de imagen a pedir a Gemini en knowledge/reference_assets/FYR_Layout_Specs_v1.md. IMPORTANTE (correccion 13-sep-2026): Full-bleed NUNCA lleva texto -- si el hook necesita mensaje verbal sobre la imagen, usar Ventana+texto, no Full-bleed. El texto bajo un Marco grande o Doble marco va en el campo `texto_pie` (estilo subtitulo); el titulo dorado es solo de portadas.
+- 03 Numerico, 13 Lista -> Solo texto
+- 07 Contraste/Versus -> Doble marco superpuesto (preferido, un solo slide) o Marco grande dos veces (si el anterior no calza)
 - 04 Storytelling, 10 Dolor/Frustracion -> Ventana+texto (inmersion emocional con mensaje)
-- 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral, o L7 Nota-kraft en esquina, o L13 Ventana Polaroid (revelacion con foco)
-- 11 Mito, 05 Error Comun -> Solo texto + acento, o L9 Palabra-acuarela (la creencia como palabra dominante)
+- 06 Secreto, 20 Revelacion, 12 Curiosidad -> Texto + imagen lateral
+- 11 Mito, 05 Error Comun -> Solo texto
 - 17 Resultados/Transformacion, 19 Demostracion -> Marco grande (necesita evidencia visual clara)
-- 01 Negativo, 14 Advertencia, 09 Prediccion -> Ventana+texto, o L9 Palabra-acuarela (palabra de alerta dominante)
+- 01 Negativo, 14 Advertencia, 09 Prediccion -> Ventana+texto
 - 02 Pregunta, 08 Autoridad, 15 Oportunidad, 16 Desafio, 18 Sorpresa -> libre segun el tema especifico, sin afinidad estructural fuerte
-- L6 Etiqueta colgante -> copy corto e intimo, cualquier hook que necesite sensacion de nota personal
-- L11 Cordel guia -> no depende de hook, es conector entre slides consecutivos — usar cuando se quiera dar continuidad visual fuerte a la secuencia
 
-**Regla de variedad ampliada:** con 12 layouts disponibles, ningun layout se repite mas de 2 veces en la misma pieza (antes era 'nunca consecutivo'; ahora ademas se limita la repeticion total).
+**Regla de variedad ampliada:** con 6 layouts de cuerpo disponibles, ningun layout se repite mas de 2 veces en la misma pieza (antes era 'nunca consecutivo'; ahora ademas se limita la repeticion total).
 
-**Proporcion imagen/texto por funcion del slide** (aplica sin importar cual de los 12 layouts se use): Apertura de loop (hook fuerte) = 85-90% imagen / 10-15% texto. Desarrollo/agitacion = 60-75% imagen / 25-40% texto. Giro/revelacion = 50-65% imagen / 35-50% texto. Cierre/CTA = 70-85% imagen / 15-30% texto. Esta proporcion se declara como campo `% imagen` en la tabla slide-por-slide del brief (Paso 5).
+**Proporcion imagen/texto por funcion del slide** (aplica sin importar cual de los layouts se use): Apertura de loop (hook fuerte) = 85-90% imagen / 10-15% texto. Desarrollo/agitacion = 60-75% imagen / 25-40% texto. Giro/revelacion = 50-65% imagen / 35-50% texto. Cierre/CTA = 70-85% imagen / 15-30% texto. Esta proporcion se declara como campo `% imagen` en la tabla slide-por-slide del brief (Paso 5).
 
 ### Paso 3 — Cuerpo (numero de slides segun Fase Embudo, cadena de loops)
 - **Numero de slides por Fase** (reemplaza el rango generico anterior): F1 Baja conciencia = 4-5 slides (incomodar es rapido, alargar diluye el golpe); F2 Media conciencia = 5-6 (necesita espacio para mostrar la alternativa sin apurar); F3 Alta conciencia = 6-7 (destruir objecion requiere mas desarrollo argumental, es la fase mas larga); F4 Autoridad = 4-5 (el resultado habla solo, exceso de slides diluye el impacto).
@@ -151,7 +149,7 @@ Completar: *"Cuando Morgan vea los primeros 3 segundos, la pregunta exacta en su
 ### Paso 4 — Selección de assets
 Dos búsquedas distintas en `Assets`, según qué necesita el slide:
 - **Imagen de escena** (contenido del tema): buscar por Tags relacionados al pilar/tema. Referenciar por nombre de archivo exacto + Link Drive.
-- **Elemento de layout fijo** (marco, etiqueta, nota, doble-marco, cordel, migas, polaroid — cuando el Paso 2 asignó uno de los 12 layouts): buscar por nombre `FYR_LAYOUT_[nombre-layout]_[aspecto]_v1.png` o `FYR_ASSET_marco-madera_[aspecto]_v1.png` en `Assets` — NO por tags de tema, son reutilizables entre piezas. Consultar `knowledge/reference_assets/FYR_Layout_Specs_v1.md` para la ventana exacta de cada uno antes de dimensionar la imagen de fondo a generar. Si el layout es Palabra-acuarela o Tachado (referencias de estilo, NO reutilizables), el brief debe indicar `[GENERAR EN GEMINI, usar de referencia [nombre-archivo]]` con la palabra/texto real del tema — nunca reutilizar el archivo de muestra directo.
+- **Elemento de layout fijo** (marcos: marco grande, doble marco y las portadas — cuando el Paso 2 asignó uno de ellos): buscar por nombre `FYR_LAYOUT_doble-marco_[aspecto]_v1.png`, `FYR_ASSET_marco-madera_[aspecto]_v1.png` o `FYR_ASSET_marco-cuadrado_9x16_v1.png` en `Assets` — NO por tags de tema, son reutilizables entre piezas. Consultar `knowledge/reference_assets/FYR_Layout_Specs_v1.md` para la ventana exacta y la proporcion de imagen que se pide a Gemini (4:5, 9:16, 3:4 o 1:1 segun el hueco) antes de generar la imagen de escena.
 
 Si ningún asset calza para un slide clave, incluir en el brief un prompt de generación nuevo (bloque de estilo del Brand Bible + regla de diversidad) marcado como `[GENERAR EN GEMINI]` — no bloquear la pieza por eso.
 

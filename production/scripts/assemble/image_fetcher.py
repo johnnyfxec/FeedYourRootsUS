@@ -5,7 +5,7 @@
 # y meter credenciales de API en un script plano no es el patron correcto.
 #
 # En su lugar: dado un config JSON de pieza, revisa que campo de imagen
-# necesita cada slide (imagen_escena, imagen_final, etc.) mas los assets
+# necesita cada slide (imagen_escena, imagen_escena_1/2) mas los assets
 # fijos que requiera cada layout, y reporta cuales YA estan en
 # assets_local/ y cuales FALTAN -- con la ruta esperada en Drive segun
 # FYR_Asset_Governance_Policy.md, para que quien tenga acceso real a Drive
@@ -52,7 +52,7 @@ def _required_layout_assets(cfg):
 
 
 def _required_scenes(cfg):
-    scene_fields = ("imagen_escena", "imagen_escena_1", "imagen_escena_2", "imagen_final")
+    scene_fields = ("imagen_escena", "imagen_escena_1", "imagen_escena_2")
     needed = set()
     for slide in cfg["slides"]:
         for field in scene_fields:

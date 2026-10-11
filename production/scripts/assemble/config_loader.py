@@ -3,15 +3,10 @@ import json
 from layout_specs import LAYOUT_TYPES
 
 REQUIRED_BY_LAYOUT = {
-    "marco_grande":      ["porcentaje_imagen", "imagen_escena"],
+    "marco_grande":      ["porcentaje_imagen", "imagen_escena", "texto_pie"],
     "marco_grande_portada": ["texto_titulo", "imagen_escena"],
     "marco_grande_cuadrado": ["imagen_escena"],
     "doble_marco":       ["imagen_escena_1", "imagen_escena_2"],
-    "etiqueta_colgante": ["texto_cuerpo"],
-    "nota_esquina":      ["texto_cuerpo"],
-    "ventana_polaroid":  ["imagen_escena"],
-    "palabra_acuarela":  ["imagen_final"],
-    "tachado":           ["imagen_final"],
     "full_bleed":        ["imagen_escena"],
     "ventana_texto":     ["imagen_escena", "texto_overlay"],
     "solo_texto":        ["texto_cuerpo"],
@@ -19,7 +14,10 @@ REQUIRED_BY_LAYOUT = {
     "lockup_cierre":     [],
 }
 
-VALID_ACCENTS = {"cordel_guia", "migas_progreso", None}
+# Campos retirados (11-oct-2026): fallan en voz alta en vez de ignorarse.
+# El titulo dorado con borde es exclusivo de las portadas; el texto bajo un
+# marco_grande / doble_marco va en `texto_pie` (rol subtitulo).
+LAYOUTS_CON_PIE = ("marco_grande", "doble_marco")
 
 
 def load_config(path):
@@ -45,18 +43,15 @@ def load_config(path):
         if layout not in LAYOUT_TYPES:
             errors.append(f"Slide {n}: layout desconocido: {layout}")
             continue
-        if LAYOUT_TYPES[layout] == "D":
-            errors.append(f"Slide {n}: {layout} es un acento (Tipo D), no un layout principal — usar campo acento")
-            continue
         for req in REQUIRED_BY_LAYOUT.get(layout, []):
             if not slide.get(req):
                 errors.append(f"Slide {n} ({layout}): falta campo obligatorio {req}")
-        # Tipo A necesita al menos un texto (excepto doble_marco donde es opcional)
-        if layout in ("marco_grande", "marco_grande_cuadrado") and not (slide.get("texto_titulo") or slide.get("texto_subtitulo")):
+        if layout == "marco_grande_cuadrado" and not (slide.get("texto_titulo") or slide.get("texto_subtitulo")):
             errors.append(f"Slide {n} ({layout}): requiere texto_titulo o texto_subtitulo")
-        acento = slide.get("acento")
-        if acento not in VALID_ACCENTS:
-            errors.append(f"Slide {n}: acento invalido: {acento}")
+        if layout in LAYOUTS_CON_PIE and (slide.get("texto_titulo") or slide.get("texto_subtitulo")):
+            errors.append(f"Slide {n} ({layout}): texto_titulo/texto_subtitulo ya no aplican aqui (el titulo dorado es solo de portadas) -- usar texto_pie")
+        if "acento" in slide:
+            errors.append(f"Slide {n}: el campo acento fue eliminado (cordel_guia y migas_progreso ya no existen)")
 
     if errors:
         raise ValueError("Config invalida:\n" + "\n".join(errors))

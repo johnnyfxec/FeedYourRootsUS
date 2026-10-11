@@ -41,7 +41,7 @@ FYR/
 │   │                          -- marco cuadrado CON vid y hoja decorativa ya integrados, solo 9:16,
 │   │                          exclusivo de marco_grande_cuadrado)
 │   └── C13_Layout_Elements/    (assets de los 12 layouts de Content_Pieces — ver knowledge/reference_assets/FYR_Layout_Specs_v1.md)
-│       └── Style_References/   (referencias de estilo NO reutilizables: palabra-acuarela, tachado)
+│       └── Style_References/   (referencias de estilo NO reutilizables; sin uso desde el 11-oct-2026)
 ├── 02_Decorative_Elements/          (E01-E36+, clip-art suelto 1:1, fondo transparente)
 ├── 03_Seed_Library/
 │   └── WObg/                        (L01-L101, fondo transparente — única versión en uso)
