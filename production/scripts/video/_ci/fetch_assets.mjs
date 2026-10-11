@@ -2,7 +2,8 @@
 //
 //   node ../_ci/fetch_assets.mjs pieza_4.2.json
 //
-// Lee cada slide: { asset: "NOMBRE.png", imagen: "img/02_x.png" } y guarda el archivo en `imagen`.
+// Lee cada slide: { asset, drive_id, imagen } y guarda el archivo en `imagen`.
+// `drive_id` sale de Airtable (Assets.Link Drive); si falta, busca por nombre de asset en Drive.
 // Requiere: GOOGLE_APPLICATION_CREDENTIALS (JSON de la cuenta de servicio). La cuenta solo ve lo que
 // Johnny le haya compartido en Drive (rol Lector). Falla de forma visible si falta un asset.
 
@@ -33,7 +34,8 @@ const pieza = JSON.parse(await readFile(piezaPath, 'utf8'));
 const missing = [];
 for (const s of pieza.slides) {
   if (!s.asset || !s.imagen) continue;
-  const files = await findByName(s.asset);
+  // Airtable (Assets.Link Drive) es la fuente: el ID viaja en el JSON de la pieza. Sin ID, busca por nombre.
+  const files = s.drive_id ? [{ id: s.drive_id }] : await findByName(s.asset);
   if (!files.length) { console.error(`✗ slide ${s.n}: no encuentro "${s.asset}" en Drive (¿compartido con la cuenta de servicio?)`); missing.push(s.asset); continue; }
   if (files.length > 1) console.warn(`! slide ${s.n}: ${files.length} archivos llamados "${s.asset}"; uso el mas reciente (${files[0].id})`);
   const buf = await download(files[0].id);
