@@ -67,6 +67,12 @@ jobs:
           [ -n "$KEY" ] || { echo "Falta el secreto GOOGLE_CREDENTIALS_JSON"; exit 1; }
           printf '%s' "$KEY" > "$GOOGLE_APPLICATION_CREDENTIALS"
 
+      - name: Cache del navegador (Playwright)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles(format('production/scripts/video/{0}/package-lock.json', steps.p.outputs.pieza)) }}
+
       - name: Instalar dependencias
         working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
         run: |
@@ -112,7 +118,7 @@ jobs:
             echo "- Cola (TAIL_LAST): ${{ steps.p.outputs.tail_last }}"
             echo "- Artefacto: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo; echo '## tts'; echo '```'; tail -n 40 tts.log 2>/dev/null || echo "(sin log)"; echo '```'
-            echo; echo '## render'; echo '```'; tail -n 40 render.log 2>/dev/null || echo "(sin log)"; echo '```'
+            echo; echo '## render'; echo '```'; sed -E 's/ *frame [0-9]+\/[0-9]+//g' render.log 2>/dev/null | grep -v '^[[:space:]]*$' | tail -n 40 || echo "(sin log)"; echo '```'
           } > "$F"
           git config user.name "fyr-render-bot"; git config user.email "actions@users.noreply.github.com"
           git add "$F"; git commit -m "run: ${{ steps.p.outputs.pieza }} ${{ steps.p.outputs.variante }} (#${{ github.run_id }})"
