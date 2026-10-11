@@ -1,0 +1,119 @@
+name: Render video
+
+on:
+  workflow_dispatch:
+    inputs:
+      pieza:
+        description: 'Carpeta de la pieza (production/scripts/video/<pieza>)'
+        default: 'pza-4.2'
+      variante:
+        description: 'Variante de subtitulo'
+        default: 'B-e14'
+      tail_last:
+        description: 'Cola del ultimo slide en s (cierre B 0.35, cierre A 0.05)'
+        default: '0.35'
+  push:
+    paths:
+      - 'production/queue/*.env'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-video
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.gcp-key.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Parametros
+        id: p
+        env:
+          IN_PIEZA: ${{ inputs.pieza }}
+          IN_VARIANTE: ${{ inputs.variante }}
+          IN_TAIL: ${{ inputs.tail_last }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PIEZA="$IN_PIEZA"; VARIANTE="$IN_VARIANTE"; TAIL_LAST="$IN_TAIL"
+          else
+            F=$(git diff --name-only HEAD~1 HEAD -- 'production/queue/*.env' | tail -1)
+            echo "Cola: $F"
+            set -a; . "$F"; set +a
+          fi
+          [[ "$PIEZA" =~ ^pza-[0-9a-zA-Z._-]+$ ]] || { echo "PIEZA invalida: $PIEZA"; exit 1; }
+          [[ "$VARIANTE" =~ ^[A-Za-z0-9-]+$ ]] || { echo "VARIANTE invalida: $VARIANTE"; exit 1; }
+          echo "pieza=$PIEZA" >> "$GITHUB_OUTPUT"
+          echo "variante=$VARIANTE" >> "$GITHUB_OUTPUT"
+          echo "tail_last=${TAIL_LAST:-0.35}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: production/scripts/video/${{ steps.p.outputs.pieza }}/package-lock.json
+
+      - name: Credenciales de Google
+        env:
+          KEY: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          [ -n "$KEY" ] || { echo "Falta el secreto GOOGLE_CREDENTIALS_JSON"; exit 1; }
+          printf '%s' "$KEY" > "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Instalar dependencias
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          (cd ../_ci && npm install --no-audit --no-fund)
+          mkdir -p fonts && cp ../../../fonts/DMSans.ttf fonts/DMSans.ttf
+
+      - name: Bajar imagenes de Drive
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        run: |
+          PJ=$(ls pieza_*.json | head -1)
+          NODE_PATH=../_ci/node_modules node ../_ci/fetch_assets.mjs "$PJ"
+
+      - name: Voz (Google TTS)
+        shell: bash
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        run: node tts.mjs 2>&1 | tee ../../../../tts.log
+
+      - name: Render
+        shell: bash
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        env:
+          FYR_TAIL_LAST: ${{ steps.p.outputs.tail_last }}
+        run: node render.mjs "${{ steps.p.outputs.variante }}" 2>&1 | tee ../../../../render.log
+
+      - name: Guardar MP4 (artefacto)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.p.outputs.pieza }}-${{ steps.p.outputs.variante }}
+          path: production/scripts/video/${{ steps.p.outputs.pieza }}/salida/*.mp4
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Dejar log en el repo
+        if: always()
+        run: |
+          mkdir -p production/runs
+          F="production/runs/${{ steps.p.outputs.pieza }}_${{ github.run_id }}.md"
+          {
+            echo "# Corrida ${{ github.run_id }} — ${{ steps.p.outputs.pieza }} ${{ steps.p.outputs.variante }}"
+            echo "- Resultado del job: ${{ job.status }}"
+            echo "- Cola (TAIL_LAST): ${{ steps.p.outputs.tail_last }}"
+            echo "- Artefacto: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo; echo '## tts'; echo '```'; tail -n 40 tts.log 2>/dev/null || echo "(sin log)"; echo '```'
+            echo; echo '## render'; echo '```'; tail -n 40 render.log 2>/dev/null || echo "(sin log)"; echo '```'
+          } > "$F"
+          git config user.name "fyr-render-bot"; git config user.email "actions@users.noreply.github.com"
+          git add "$F"; git commit -m "run: ${{ steps.p.outputs.pieza }} ${{ steps.p.outputs.variante }} (#${{ github.run_id }})"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && break || sleep 3; done

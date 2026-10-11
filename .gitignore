@@ -14,3 +14,5 @@ production/briefs/
 production/assets_local/
 production/output/
 pdfs_normalized/
+tts.log
+render.log
