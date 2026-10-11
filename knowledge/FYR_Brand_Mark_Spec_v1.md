@@ -62,6 +62,7 @@ El símbolo siempre es un solo color. Harvest Gold y Story Brown nunca se usan e
 - **Favicon:** Root Black a 16px. Publicar 16, 32 y 48px.
 - **Esquina de portada PDF:** esquina superior derecha, con inset de una altura de tapa (X) desde ambos bordes.
 - **Cabecera de sitio:** Forest a 32px, lockup horizontal, alineado a la izquierda.
+- **Slides de carrusel/reel (motor de ensamblado):** Root Black sobre el parchment liso del slide. De esquina: 91 px de alto, inferior derecha (en `texto_lateral`, inferior del lado del texto). De cierre (`marca_cierre: true`): 169 px de alto, centrado al pie. Nunca sobre la imagen de escena, y `full_bleed` no lleva marca. Detalle de implementación en `FYR_Motor_Ensamblado_Arquitectura_v1.md`, Sección 2.5.
 
 ---
 

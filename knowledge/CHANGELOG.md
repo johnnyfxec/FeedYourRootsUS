@@ -9,6 +9,15 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-11
+
+Integración del símbolo C14 en el motor de ensamblado (rama `claude/brand-mark-compositor`, pendiente de que Johnny confirme el render en la PC/Termux antes de pasar a `main`).
+
+- **`compositors/base.py`** -- los layouts `ventana_texto`, `solo_texto` y `texto_lateral` pegan automáticamente el símbolo C14 (esquina inferior derecha, 91 px; en `texto_lateral` del lado del texto). `solo_texto` con `marca_cierre: true` lleva la firma grande (169 px) centrada al pie, y `marca_cierre` en otro layout es error. El símbolo se lee de `assets/brand/icons/` desde la raíz del repo, no de `assets_dir`, y se ancla al borde usable (no al del canvas) para no caer bajo la interfaz de los reels en 9:16. Motivo de leerlo desde la raíz del repo: `assets_dir` apunta a `production/assets_local/` (caché local de Drive, ignorada por git), donde la marca nunca vive.
+- **`FYR_Motor_Ensamblado_Arquitectura_v1.md`** (Sección 2.5 y tabla de campos) y **`FYR_Brand_Mark_Spec_v1.md`** (Sección 07) -- reescritos en su sitio para describir la marca en los layouts base y el campo `marca_cierre`.
+
+---
+
 ## 2026-10-10
 
 Piloto de video PZA_4.2 (voz + subtitulos + render local). Se escribio la politica de video y se corrigio en su sitio lo que habia quedado desactualizado.

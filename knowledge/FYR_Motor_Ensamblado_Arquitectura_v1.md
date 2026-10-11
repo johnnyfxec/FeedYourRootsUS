@@ -111,9 +111,11 @@ Se agregan como capa final, encima de cualquier slide ya resuelto (Tipo A, B, C,
 | Layout | Composición |
 |---|---|
 | **Full-bleed** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) dentro del canvas completo, centrada, con el espacio sobrante en parchment sólido → NUNCA lleva texto (campo `texto_overlay` no aceptado, error de validación si se incluye) |
-| **Ventana+texto** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) en los dos tercios superiores del canvas, centrada, con el espacio sobrante en parchment sólido → franja de texto SÓLIDA (sin transparencia, sin imagen detrás) en el tercio inferior |
-| **Solo texto+acento** | Fondo parchment sólido → texto centrado en el 100% del área de contenido (sin ventana de imagen) → acento botánico opcional (pequeño, no listado en Layout_Specs porque usa el banco de 130+ ilustraciones sueltas, no un asset de layout fijo) |
-| **Texto+lateral** | Fondo parchment sólido → imagen de escena sin marco, 40-60% del ancho, en el lado declarado por el brief (izquierda/derecha) → texto en el lado opuesto, alineado hacia el borde exterior (no hacia el centro) |
+| **Ventana+texto** | Imagen de escena se contiene completa (modo "contain", NUNCA crop) en los dos tercios superiores del canvas, centrada, con el espacio sobrante en parchment sólido → franja de texto SÓLIDA (sin transparencia, sin imagen detrás) en el tercio inferior → marca de esquina C14 (inferior derecha de la franja) |
+| **Solo texto+acento** | Fondo parchment sólido → texto centrado en el 100% del área de contenido (sin ventana de imagen) → acento botánico opcional (pequeño, no listado en Layout_Specs porque usa el banco de 130+ ilustraciones sueltas, no un asset de layout fijo) → marca C14: de esquina (inferior derecha) o, con `marca_cierre: true`, firma centrada al pie |
+| **Texto+lateral** | Fondo parchment sólido → imagen de escena sin marco, 40-60% del ancho, en el lado declarado por el brief (izquierda/derecha) → texto en el lado opuesto, alineado hacia el borde exterior (no hacia el centro) → marca de esquina C14 del lado del texto (reflejada según `lado_imagen`) |
+
+**Marca de identidad C14 en los layouts base (decisión de Johnny, sept–oct 2026).** Ventana+texto, Solo texto+acento y Texto+lateral llevan automáticamente el símbolo C14, sin campo que activarlo; Full-bleed queda excluido (es SOLO imagen). Dos niveles, definidos por altura: **esquina** (91 px, inferior derecha; en Texto+lateral, inferior del lado del texto, es decir derecha si la imagen va a la izquierda e izquierda si va a la derecha) y **cierre** (169 px, centrado horizontalmente al pie, solo en Solo texto, activado por `marca_cierre: true`; el texto cede esa franja). `marca_cierre` en cualquier otro layout es error de validación (fail loudly). El mark se ancla al borde inferior de la zona usable (`usable_zone`) menos 24 px, no al borde del canvas — en 9:16 el borde real queda bajo la interfaz de los reels. El ancho sale de la proporción real del símbolo (~1:1.405), nunca se estira (Brand Mark Spec, Sección 06). La fuente es `assets/brand/icons/FYR_C14_logo-frasco-1024px_1x1_v1.png` (Root Black), resuelta desde la raíz del repo y **no** desde `assets_dir`: el símbolo es identidad de marca versionada en git, mientras que `production/assets_local/` es la caché local de escenas y marcos de Drive.
 
 ---
 
@@ -286,7 +288,7 @@ El JSON solo contiene: qué layout, qué texto, qué imagen, y (cuando el layout
 | A (doble_marco) | `layout`, `porcentaje_imagen`, `imagen_escena_1`, `imagen_escena_2` |
 | B (etiqueta/nota/polaroid) | `layout`, `imagen_escena` (fondo si aplica), `texto_cuerpo` |
 | C (palabra_acuarela/tachado) | `layout`, `imagen_final` (el PNG ya generado completo) |
-| Full-bleed / Solo-texto / Texto-lateral | `layout`, `imagen_escena` (excepto Solo-texto), texto correspondiente |
+| Full-bleed / Solo-texto / Texto-lateral | `layout`, `imagen_escena` (excepto Solo-texto), texto correspondiente; opcional `marca_cierre: true` (solo Solo-texto) |
 
 `config_loader.py` valida esta tabla exacta antes de dejar avanzar el proceso — es el "no adivinar" hecho código.
 
