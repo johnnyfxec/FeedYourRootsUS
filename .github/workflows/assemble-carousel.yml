@@ -1,0 +1,102 @@
+name: Assemble carousel
+
+on:
+  workflow_dispatch:
+    inputs:
+      pieza:
+        description: 'ID de la pieza (config en production/queue/carousel/<pieza>.json)'
+        default: 'PZA_1.2'
+      folder_id:
+        description: 'ID de la carpeta de fecha en Drive (PZA_x.y/AAAA-MM-DD)'
+        default: '1zriDufnwJfuORGoajKv9hTr-V_wzV2NR'
+  push:
+    paths:
+      - 'production/queue/carousel/*.env'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: assemble-carousel
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.gcp-key.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Parametros
+        id: p
+        env:
+          IN_PIEZA: ${{ inputs.pieza }}
+          IN_FOLDER: ${{ inputs.folder_id }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PIEZA="$IN_PIEZA"; FOLDER_ID="$IN_FOLDER"
+          else
+            F=$(git diff --name-only HEAD~1 HEAD -- 'production/queue/carousel/*.env' | tail -1)
+            echo "Cola: $F"
+            set -a; . "$F"; set +a
+          fi
+          [[ "$PIEZA" =~ ^PZA_[0-9a-zA-Z._-]+$ ]] || { echo "PIEZA invalida: $PIEZA"; exit 1; }
+          [[ "$FOLDER_ID" =~ ^[A-Za-z0-9_-]+$ ]] || { echo "FOLDER_ID invalido"; exit 1; }
+          [ -f "production/queue/carousel/$PIEZA.json" ] || { echo "Falta production/queue/carousel/$PIEZA.json"; exit 1; }
+          echo "pieza=$PIEZA" >> "$GITHUB_OUTPUT"
+          echo "folder_id=$FOLDER_ID" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: production/scripts/assemble/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r production/scripts/assemble/requirements.txt
+
+      - name: Credenciales de Google
+        env:
+          KEY: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          [ -n "$KEY" ] || { echo "Falta el secreto GOOGLE_CREDENTIALS_JSON"; exit 1; }
+          printf '%s' "$KEY" > "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Bajar imagenes de Drive
+        run: |
+          python production/scripts/assemble/_ci/fetch_drive_images.py \
+            "production/queue/carousel/${{ steps.p.outputs.pieza }}.json" \
+            "${{ steps.p.outputs.folder_id }}" production/assets_local
+
+      - name: Ensamblar
+        shell: bash
+        run: |
+          cd production/scripts/assemble
+          python main.py "../../queue/carousel/${{ steps.p.outputs.pieza }}.json" "" "../../output/${{ steps.p.outputs.pieza }}" 2>&1 | tee ../../../assemble.log
+
+      - name: Guardar slides (artefacto)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.p.outputs.pieza }}-carrusel
+          path: production/output/${{ steps.p.outputs.pieza }}/*.png
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Dejar log en el repo
+        if: always()
+        run: |
+          mkdir -p production/runs
+          F="production/runs/${{ steps.p.outputs.pieza }}_carrusel_${{ github.run_id }}.md"
+          {
+            echo "# Corrida ${{ github.run_id }} — ${{ steps.p.outputs.pieza }} (carrusel)"
+            echo "- Resultado del job: ${{ job.status }}"
+            echo "- Artefacto: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo; echo '```'; tail -n 40 assemble.log 2>/dev/null || echo "(sin log)"; echo '```'
+          } > "$F"
+          git config user.name "fyr-render-bot"; git config user.email "actions@users.noreply.github.com"
+          git add "$F"; git commit -m "run: ${{ steps.p.outputs.pieza }} carrusel (#${{ github.run_id }})"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && break || sleep 3; done
