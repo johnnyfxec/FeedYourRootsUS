@@ -36,7 +36,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | **La proporción del canvas: 4:5 en carrusel, 9:16 en video** (Gemini solo entrega 4:5, 9:16 y 3:4). Así llena el canvas sin margen alguno. Si llegara otra proporción, el compositor la contiene completa (modo "contain", nunca recorta) y sobra parchment |
+| Imagen a pedir en Gemini | **La proporción del canvas: 4:5 en carrusel, 9:16 en video** (Gemini entrega 1:1, 4:5, 3:4 y 9:16). Así llena el canvas sin margen alguno. Si el ratio real difiere ≤ 2 % (Gemini no es exacto al píxel) se recorta lo mínimo; si difiere más, el compositor contiene la imagen entera, sobra parchment y avisa `RATIO:` |
 | Espacio sobrante | Si la proporción de la imagen no llena el canvas exacto, el espacio libre se rellena en parchment sólido (#F5ECD7), nunca se recorta la imagen para forzar el encaje |
 | Texto | Nunca lleva — campo `texto_overlay` no aceptado, error de validación si se incluye |
 
@@ -44,7 +44,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 ## 2b. Ventana + texto
 
-**Layout nuevo, 13-sep-2026** — reemplaza el uso con texto que antes vivía (incorrectamente) dentro de "Full-bleed con overlay". La imagen se contiene completa (nunca se recorta) en los dos tercios superiores; el tercio inferior es una franja de texto SÓLIDA, sin imagen detrás, sin transparencia.
+**Layout nuevo, 13-sep-2026** — reemplaza el uso con texto que antes vivía (incorrectamente) dentro de "Full-bleed con overlay". La imagen rellena su espacio (tolerancia de ratio de 2 %, ver "Relleno de espacios") en la parte superior; el tercio inferior es una franja de texto SÓLIDA, sin imagen detrás, sin transparencia.
 
 **Asset:** ninguno.
 **Rol narrativo:** inmersión emocional con mensaje verbal — el caso que antes se llamaba "Full-bleed con overlay".
@@ -74,13 +74,13 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 
 ## 4. Texto + imagen lateral
 
-**Asset:** ninguno — imagen sin marco, completa, sin recorte.
+**Asset:** ninguno — imagen sin marco; llena el canvas (recorte mínimo solo dentro de la tolerancia de 2 %, ver "Relleno de espacios").
 **Rol narrativo:** explicación breve con apoyo visual.
 **Activador:** 06 Secreto, 20 Revelación, 12 Curiosidad.
 
 | | Especificación |
 |---|---|
-| Imagen a pedir en Gemini | **9:16, en 4:5 y en 9:16.** El compositor la muestra completa a **540×960 px** (9:16 exacto): sin recorte ni escala distinta. Pedir la imagen con el sujeto bien visible dentro del encuadre 9:16 |
+| Imagen a pedir en Gemini | **9:16, en 4:5 y en 9:16.** El compositor la coloca a **540×960 px** (9:16 exacto; recorte mínimo solo si el ratio real difiere ≤ 2 %, si no avisa `RATIO:`). Pedir la imagen con el sujeto bien visible dentro del encuadre 9:16 |
 | Posición de la imagen | Pegada al borde del canvas del lado indicado (`lado_imagen`: izquierda o derecha) y centrada verticalmente en la zona de contenido (en 4:5, sobre el icono C14) |
 | Texto | En el lado opuesto, 410 px de ancho, alineado hacia el borde exterior y **centrado en altura respecto a la imagen** |
 | Corrección 11-oct-2026 | Antes la imagen se recortaba a 540×1141 (4:5) o 540×1369 (9:16) y el recorte (16 % a 30 % del ancho) podía cortar lo que la imagen quería comunicar; `porcentaje_imagen` y `ancla_recorte` ya no aplican aquí |
@@ -157,7 +157,26 @@ La proporción a pedir se elige según el hueco que la imagen va a ocupar en el 
 | Full-bleed 9:16 | 1080×1920 | 9:16 | llena exacto, sin margen |
 | Ventana+texto 4:5 | 1080×900 (6:5) | 4:5 | 720×900 centrada, 180 px de parchment por lado (ninguna proporción estándar llena 6:5) |
 | Ventana+texto 9:16 | 1080×1440 | 3:4 | llena exacto, sin margen |
-| Texto+lateral (4:5 y 9:16) | 540×960 | 9:16 | llena exacto, sin recorte |
+| Texto+lateral (4:5 y 9:16) | 540×960 | 9:16 | llena exacto |
+
+### Relleno de espacios y tolerancia de ratio (11-oct-2026)
+
+El motor rellena siempre el espacio de la imagen. Gemini no entrega el ratio exacto (4:5 → 928×1152 = 0.806; 9:16 → 768×1376 = 0.558), por eso `full_bleed`, `ventana_texto` y `texto_lateral` aplican una tolerancia de **2 %**: dentro de ella se recorta lo mínimo y no quedan bandas; fuera de ella la imagen se contiene entera y el motor emite `RATIO:` (regenerar con la proporción correcta, no recortar a la fuerza). Los ratios esperados son los de la tabla de arriba; `ventana_texto` espera 4:5 en 4:5 (se centra a 720×900, ver tabla) y 3:4 en 9:16.
+
+### Bloque de composición para prompts de Gemini (obligatorio en todo prompt)
+
+Se añade al bloque de estilo base (`FYR_Asset_Governance_Policy.md` §4). Se rellena según el layout y la marca `fondo` del slide en el brief:
+
+```
+Aspect ratio: exactly {RATIO}. Edge-to-edge composition: the artwork fills the whole canvas to every edge — no drawn frame, border, vignette, margins or visible paper edge. Keep the key subjects at least 5% of the width away from the left and right edges.
+{FONDO}
+```
+
+- `{RATIO}`: el de la tabla anterior para el layout y el aspecto del slide (1:1, 4:5, 3:4 o 9:16).
+- `fondo: pergamino` → `{FONDO}` = "Background: plain flat warm parchment paper, uniform color #F5ECD7 reaching every edge — no gradient, no darker corners, no shadow at the edges." Es obligatorio cuando la imagen queda suelta sobre el pergamino del slide (`ventana_texto`, `texto_lateral`), porque ahí el borde de la imagen se ve si el tono no coincide.
+- `fondo: color_completo` → `{FONDO}` = "Fully painted scene filling the whole canvas, no unpainted parchment margins." Para paisajes, huertos u otras composiciones a todo color. En `ventana_texto`/`texto_lateral` el rectángulo de borde duro es parte del diseño: no se difumina.
+- `full_bleed` y los layouts con marco (`marco_grande`, portadas, `doble_marco`): cualquier fondo, porque la imagen ocupa todo el slide o la tapa el marco. Sigue valiendo el ratio.
+- Gemini aproxima el color hex, no lo clava: el fondo saldrá cercano a #F5ECD7, no idéntico. Verificar a ojo en la corrida; las imágenes ya generadas con un papel algo más claro se dan por buenas.
 
 ---
 

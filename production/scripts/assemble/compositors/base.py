@@ -7,7 +7,7 @@ import os
 from PIL import Image, ImageDraw
 
 from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone
-from text_renderer import render_text_block
+from text_renderer import render_text_block, crop_to_fill
 
 
 class CompositorError(Exception):
@@ -35,6 +35,14 @@ LOCKUP_W = 620       # px -- ancho del lockup vertical en lockup_cierre
 VENTANA_IMG_MAX = {"4:5": 2 / 3, "9:16": 3 / 4}   # tope de la zona de imagen de ventana_texto (900 px en 4:5; 1440 en 9:16, deja el 25% inferior al texto)
 VENTANA_PAD = 16     # px de aire arriba/abajo de la franja de texto de ventana_texto
 POSICIONES_TEXTO = ("centro", "tercio_superior")
+# Decision de Johnny (11-oct-2026): los espacios se rellenan siempre. Gemini
+# no entrega ratios exactos (4:5 sale 928x1152 = 0.806; 9:16 sale 768x1376 =
+# 0.558), asi que una imagen que difiere <= 2% del espacio se rellena
+# recortando lo minimo (nunca quedan bandas). Si difiere mas, NO se recorta en
+# silencio (cortaria contenido): se contiene entera y se avisa con "RATIO:"
+# para regenerar la imagen con la proporcion correcta.
+RATIO_TOL = 0.02
+VENTANA_RATIO_ESPERADO = {"4:5": 4 / 5, "9:16": 3 / 4}   # proporcion a pedir a Gemini para ventana_texto
 LATERAL_IMG_W = 540  # px -- ancho de la imagen de texto_lateral (50% del canvas)
 LATERAL_IMG_H = 960  # px -- alto: proporcion 9:16 exacta, que se pide tal cual a Gemini
 
@@ -120,12 +128,32 @@ def _contain_fit(scene, box_w, box_h):
     return resized, offset_x, offset_y
 
 
+def _colocar_imagen(scene, box_w, box_h, nombre, warnings, esperado=None):
+    """Prepara `scene` para el espacio box_w x box_h. Retorna (imagen,
+    offset_x, offset_y) para pegarla dentro del espacio.
+    - ratio dentro de RATIO_TOL del espacio -> rellena (recorte minimo).
+    - si no -> contain completo (sin recortar contenido).
+    `esperado` es el ratio que se pidio a Gemini para ese layout (por defecto,
+    el del espacio); si la imagen se aparta de el mas de RATIO_TOL se agrega
+    un aviso "RATIO:" a `warnings`."""
+    ratio = scene.width / scene.height
+    ratio_box = box_w / box_h
+    ratio_esp = esperado if esperado else ratio_box
+    if abs(ratio / ratio_esp - 1) > RATIO_TOL:
+        warnings.append(
+            f"RATIO: {nombre} llego {scene.width}x{scene.height} ({ratio:.3f}) y el layout espera {ratio_esp:.3f} "
+            f"(tolerancia {RATIO_TOL:.0%}) -- regenerar la imagen con la proporcion correcta")
+    if abs(ratio / ratio_box - 1) <= RATIO_TOL:
+        return crop_to_fill(scene, box_w, box_h), 0, 0
+    return _contain_fit(scene, box_w, box_h)
+
+
 def _compose_full_bleed(canvas, slide, aspecto, assets_dir):
     """Full-bleed real: SOLO imagen, sin texto, nunca (decision de Johnny,
     13-sep-2026 -- ver FYR_Motor_Ensamblado_Arquitectura_v1.md Seccion 2.5).
-    La imagen se contiene completa (modo contain, nunca crop) sobre el
-    canvas entero, centrada, con el padding sobrante en PARCHMENT solido --
-    nunca recorta contenido ni superpone overlay semi-transparente."""
+    La imagen llena el canvas entero (recorte minimo si el ratio difiere
+    <= RATIO_TOL; si difiere mas se contiene completa con padding PARCHMENT y
+    aviso RATIO:) -- nunca superpone overlay semi-transparente."""
     imagen_escena = slide.get("imagen_escena")
     if not imagen_escena:
         raise CompositorError("full_bleed requiere 'imagen_escena' en el slide")
@@ -138,15 +166,16 @@ def _compose_full_bleed(canvas, slide, aspecto, assets_dir):
     bg = Image.new("RGB", (canvas_w, canvas_h), _hex_to_rgb(PARCHMENT))
     canvas.paste(bg, (0, 0))
 
+    warnings = []
     scene = _load_scene(imagen_escena, assets_dir)
-    scene_fit, off_x, off_y = _contain_fit(scene, canvas_w, canvas_h)
+    scene_fit, off_x, off_y = _colocar_imagen(scene, canvas_w, canvas_h, "full_bleed", warnings)
     canvas.paste(scene_fit, (off_x, off_y))
 
-    return {"warnings": []}
+    return {"warnings": warnings}
 
 
 def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
-    """Imagen contenida (modo contain, nunca crop) arriba + franja de texto
+    """Imagen arriba (se rellena su espacio; ver RATIO_TOL) + franja de texto
     SOLIDA (sin transparencia, sin imagen detras) debajo. Decision de Johnny,
     13-sep-2026: reemplaza el full_bleed-con-overlay original (ver
     Arquitectura Seccion 2.5). Ajuste del 11-oct-2026: la zona de imagen
@@ -177,7 +206,8 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     altura_ideal = canvas_w / img_ratio
     imagen_h = round(min(altura_ideal, canvas_h * VENTANA_IMG_MAX[aspecto]))
 
-    scene_fit, off_x, off_y = _contain_fit(scene, canvas_w, imagen_h)
+    warnings = []
+    scene_fit, off_x, off_y = _colocar_imagen(scene, canvas_w, imagen_h, "ventana_texto", warnings, esperado=VENTANA_RATIO_ESPERADO[aspecto])
     canvas.paste(scene_fit, (off_x, off_y))
 
     _, zona_bottom = _zona_contenido(canvas, aspecto)
@@ -191,7 +221,6 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
     franja_top = off_y + scene_fit.height + VENTANA_PAD
     franja_h = round(zona_bottom - VENTANA_PAD - franja_top)
 
-    warnings = []
     if franja_h < 100:
         warnings.append(f"franja de texto muy baja ({franja_h}px) (BASE, ventana_texto)")
     r = render_text_block(canvas, texto, "cuerpo", (round(canvas_w * 0.10), franja_top, round(canvas_w * 0.80), max(franja_h, 1)))
@@ -234,7 +263,8 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
 
 def _compose_texto_lateral(canvas, slide, aspecto, assets_dir):
     """Imagen a un costado + texto centrado en altura respecto a ella.
-    La imagen es 9:16 y se muestra COMPLETA a 540x960 (sin recorte): es la
+    La imagen es 9:16 y llena 540x960 (recorte minimo solo si el ratio difiere
+    <= RATIO_TOL; si difiere mas se muestra completa y avisa RATIO:): es la
     proporcion que se pide a Gemini tal cual (decision de Johnny, 11-oct-2026).
     Va pegada al borde del canvas y centrada verticalmente en la zona de
     contenido (en 4:5, la zona sobre el icono); el texto ocupa el lado opuesto
@@ -260,7 +290,7 @@ def _compose_texto_lateral(canvas, slide, aspecto, assets_dir):
     img_y = round((zona_top + zona_bottom - LATERAL_IMG_H) / 2)
 
     scene = _load_scene(imagen_escena, assets_dir)
-    scene_fit, off_x, off_y = _contain_fit(scene, LATERAL_IMG_W, LATERAL_IMG_H)
+    scene_fit, off_x, off_y = _colocar_imagen(scene, LATERAL_IMG_W, LATERAL_IMG_H, "texto_lateral", warnings)
 
     if lado == "izquierda":
         img_x = 0
