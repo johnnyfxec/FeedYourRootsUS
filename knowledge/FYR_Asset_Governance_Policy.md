@@ -60,7 +60,8 @@ FYR/
 │   │   ├── Pinterest_Pins/
 │   │   ├── Video_Cover_Templates/
 │   │   └── Content_Pieces/          (carruseles y videos completos generados desde la tabla Themes — ver Sección 6;
-│   │                                cada `PZA_[tema]/[fecha]/` guarda las imágenes de la pieza Y el MP4 final aprobado;
+│   │                                cada `PZA_[tema]/[fecha]/` guarda SOLO archivos terminados: los PNG de cada slide del carrusel
+│   │                                o el MP4 final del video. Las imágenes de entrada (escenas) viven en 06_Narrative_Stock;
 │   │                                los WAV y timings.json del video son intermedios regenerables, no se suben)
 │   ├── Ad_Creatives/
 │   │   ├── Meta/
@@ -68,8 +69,8 @@ FYR/
 │   │   └── Lifestyle/
 │   ├── Web_Site/
 │   │   └── Blog_Journal_Headers/
-│   └── Video_Production/            (carpeta de trabajo activo, no banco de recursos. El pipeline de video corre en la PC,
-│                                    ver knowledge/FYR_Protocolo_Edicion_Video.md; el producto final va a Content_Pieces/)
+│   └── Video_Production/PZA_[tema]/ (insumos de trabajo de un video, p. ej. la portada ya compuesta; no es banco de recursos.
+│                                    El render corre en GitHub Actions, ver knowledge/FYR_Protocolo_Edicion_Video.md; el producto final va a Content_Pieces/)
 ├── 06_Narrative_Stock/               (escenas 9:16 sin overlay, fuente de b-roll para cualquier canal)
 └── 07_Influencer_Outreach/           (solo la lista fuente; el registro de comunicación vive en Airtable)
 ```
@@ -147,7 +148,9 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 3. **Verificar reglas técnicas** (tiling si aplica, diversidad si hay personas, ausencia de texto no deseado).
 4. Si falla: **ajustar el prompt de forma quirúrgica** (una variable a la vez) — no regenerar desde cero sin diagnóstico.
 5. Si pasa 2-3 intentos sin lograrlo: pausar y repensar el enfoque en vez de seguir iterando a ciegas.
-6. **Aprobado** → nombrar según convención (Sección 3) → **si es una pieza de `Content_Pieces/`: verificar si `PZA_[tema]/` ya existe en Drive; crear la subcarpeta de fecha de hoy dentro (nueva o primera vez, según corresponda)** → subir a la carpeta correcta (Sección 2) → registrar en Airtable (Sección 7).
+6. **Aprobado** → nombrar según convención (Sección 3) → subir a la carpeta que corresponde por tipo de archivo (Sección 2): **toda escena nueva (4:5, 9:16 o 1:1) va a `06_Narrative_Stock/`**, nunca a `Content_Pieces/` → registrar en Airtable (Sección 7).
+
+**Qué va a `Content_Pieces/PZA_[tema]/[fecha]/`:** únicamente el producto terminado (PNG de cada slide ensamblado, o el MP4). La carpeta se crea al aprobar el brief. El paso a paso de cada formato, con lo que se escribe en Airtable en cada etapa, está en `knowledge/FYR_Rutas_De_Produccion.md`.
 
 ---
 
@@ -172,6 +175,8 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 
 **Regla de oro:** ningún asset se considera "terminado" hasta que tiene su fila en Airtable **con el Link Drive real** (no un placeholder). Un asset sin link es un asset invisible para cualquier agente futuro.
 
+**Excepción:** los archivos terminados de `Content_Pieces/` (PNG de slides, MP4) y la portada compuesta de `Video_Production/` NO llevan fila en `Assets`; se rastrean desde `Content_Pieces.Carpeta Drive`. Los valores exactos que lleva cada campo al registrar una escena nueva (Subcategoría por defecto `Escena emocional`, tags, memoria de uso) están en `knowledge/FYR_Rutas_De_Produccion.md`, Sección 0.6 y 0.7.
+
 **Nota sobre `ID Pieza` en `Content_Pieces`:** usa el mismo identificador que la carpeta de Drive (`PZA_[tema]`, ej. `PZA_3.1`) — nunca un consecutivo genérico aparte. El tema es el identificador natural; dos sistemas de ID para la misma pieza desincroniza Drive y Airtable sin necesidad.
 
 **Cómo obtener el link correcto sin errores:** listar la carpeta de Drive completa (`search_files` con `parentId`), nunca escribir un link de memoria o adivinado. Cruzar por nombre de archivo exacto, nunca por posición o suposición de orden.
@@ -190,8 +195,8 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 ## 9. Qué NO está automatizado todavía (honestidad operativa)
 
 - Generación de imagen en Gemini/Nano Banana — sigue siendo un paso manual de Johnny.
-- Ensamblaje de carrusel — lo hace `assemble.py` en local (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`); no hay Canva en el flujo. Lo manual es traer los PNG a `assets_local/`, correr el motor y subir el resultado a la carpeta de fecha en Drive.
-- Ensamblaje de video — pipeline manual en la PC (voz con Google Cloud TTS + render con Clipkit local), documentado en `FYR_Protocolo_Edicion_Video.md`. Validado de punta a punta con PZA_4.2; el motor aún es una copia de carpeta por pieza (falta el motor único) y sube a Drive y registra en Airtable a mano.
+- Ensamblaje de carrusel — lo hace Claude con `assemble.py` en su sesión (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`) usando `production/scripts/assemble/run_pieza.py`; nunca pasa por Actions. Requiere el acceso a la API de Drive para descargar las escenas y subir los PNG terminados (ver Sección 1 de `FYR_Rutas_De_Produccion.md`).
+- Ensamblaje de video — el render corre en GitHub Actions (voz con Google Cloud TTS + render con Clipkit), documentado en `FYR_Protocolo_Edicion_Video.md`; la portada la compone Claude con `assemble.py`. Validado de punta a punta con PZA_4.2 (en PC); el motor aún es una copia de carpeta por pieza (falta el motor único).
 - Publicación/programación en redes sociales — no hay conector de publicación directa disponible; sigue siendo manual.
 - Producción de copy/guión — puede generarse por Claude a partir del banco de temas (Malla de 61 + temas nuevos de los PDFs) + este documento, pero requiere revisión humana antes de publicar.
 - Producción recurrente por cadencia (semanal/quincenal) — depende de una futura skill de análisis de performance que le indique a `fyr-content` qué ángulos priorizar; hasta entonces, cada corrida la inicia el usuario manualmente.

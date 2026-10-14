@@ -9,6 +9,21 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-14
+
+Rutas de producción definidas por formato (decisión de Johnny: "como un reloj suizo"), sin PC.
+
+- **FYR_Rutas_De_Produccion.md (v1.0, NUEVO)** -- fuente de verdad del paso a paso. Sección 0 común (destino de cada imagen, qué guarda cada tabla, estados, campos exactos de `Assets`, memoria de uso, reglas de escritura en Airtable); Sección 1 (acceso a Drive); Ruta A carrusel (A0–A13, nunca Actions); Ruta B video (B0–B14, render solo en Actions). Cada paso dice quién actúa, qué se escribe y cómo se verifica.
+- **Decisiones tomadas por Claude tras la auditoría:** brief y config viven en Git (`production/pieces/PZA_[tema]/`), porque la sesión es efímera y `production/briefs/` (ignorada) se perdía; `Content_Pieces` solo recibe terminados y toda escena nueva va a `06_Narrative_Stock`; la portada de video compuesta se aloja en `Video_Production/PZA_[tema]/` para que Actions la baje por ID; los terminados no llevan fila en `Assets` (se rastrean por `Content_Pieces.Carpeta Drive`); el MP4 lo sube el workflow a `Content_Pieces`; `Último uso` se corrige a la fecha de publicación; `En descanso` se libera cuando la pieza que usó el asset ya no es una de las dos más recientes.
+- **Código:** `production/scripts/drive/drive_client.py` (descargar, subir con verificación md5, crear carpetas idempotente, buscar, papelera; solo librería estándar; credenciales por variables de entorno), `drive_authorize.py` (autorización única) y `test_drive_client.py` (prueba contra un Drive simulado); `production/scripts/assemble/run_pieza.py` (descargar / ensamblar / subir del carrusel, con validación de proporción, tamaño y nombres); `production/scripts/video/_ci/upload_mp4.py` y paso "Subir MP4 a Drive" en `render-video.yml` (no falla la corrida si faltan los secretos; el artefacto de 7 días se conserva).
+- **Retirado:** paso `Portada (ensamblador)` del workflow y `_ci/make_cover.py`; carpeta `production/briefs/` y su línea en `.gitignore`.
+- **Piezas:** `production/pieces/PZA_1.2/` (brief, config y `imagenes.json` con los nombres y IDs reales del banco; el slide 5 espera `STOCK-vecino-transformado_4x5_v1.png`) y `production/pieces/PZA_1.1/` (brief, `portada_config.json`, `imagenes.json`; imagen nueva `STOCK-lapiz-plano-huerto_1x1_v1.png`). `pieza_1.1.json`: slide 1 apunta a la portada compuesta y trae `carpeta_drive_id`.
+- **Documentos corregidos en su sitio:** Policy (§2 Content_Pieces/Video_Production, §6 destino de escenas nuevas, §7 excepción de terminados, §9 ensamblado), Protocolo de Edición de Video (§1 y §9: Actions, sin PC), Protocolo de Trabajo (sin PC; código a `main`), Plan de Reutilización, `fyr-content` (Paso 5 reescrito sobre las dos rutas; `Hook Usado` con nombre completo; campo `Carpeta Drive`) y `fyr-video-assembler` (Pasos 4–6 sin comandos de PC).
+- **Airtable (aplicado por Claude):** `Hook Usado` con nombre completo en PZA_4.2 (`17 Resultados/Transformación`), PZA_1.2 (`07 Contraste/Versus`) y PZA_1.1 (`04 Storytelling`). Las opciones sueltas `04`, `07`, `17` quedan sin uso (el conector no permite borrar opciones).
+- **Pendiente de Johnny para activar Drive desde la sesión:** red del entorno con Google permitido, cliente OAuth "Desktop app" en `clipkit-production-v1`, y las variables/secretos `GOOGLE_OAUTH_*`. Hasta entonces el carrusel y el video se detienen en el paso de descarga/subida.
+
+---
+
 ## 2026-10-11
 
 Marca C14, poda de layouts y ajuste de los layouts aprobados en el motor de ensamblado (desarrollado en la rama `claude/brand-mark-compositor`; ya está en `main`). Reemplaza la primera versión del día (icono en esquina y firma de cierre), descartada tras la revisión de Johnny.
@@ -24,7 +39,7 @@ Marca C14, poda de layouts y ajuste de los layouts aprobados en el motor de ensa
 - **Airtable (aplicado por Claude)** -- `PZA_4.2`: `Estado Producción = Ensamblado` (video producido por completo, pendiente de publicar) y `Hook Usado = 17` (el asignado en `Themes`).
 - **Rutas de producción (decisión de Johnny, 11-oct-2026):** el carrusel NO pasa por Actions: Claude baja las imágenes de Drive (Drive MCP), las ensambla con `assemble.py` y deja los terminados en `Content_Pieces/PZA_[tema]/[fecha]/`, con Airtable actualizado en cada paso. Actions (`render-video.yml`) es solo para video. En `Content_Pieces` van solo archivos terminados; las imágenes de entrada viven en el banco (`06_Narrative_Stock`) y se registran en `Assets`.
 - **Airtable y Drive (aplicado por Claude):** PZA_1.2 (carrusel 4:5, tema 1.2, F2, hook 07) con carpeta `Content_Pieces/PZA_1.2/2026-10-11/` (para los terminados); alta de 1.2 en `Themes`; `Content_Pieces` en `Brief Generado`; memoria de uso actualizada (5 escenas en descanso, las de PZA_4.2 liberadas).
-- **PZA_1.1 (video 9:16, tema 1.1, F1, hook 04 Storytelling, cierre B):** `production/scripts/video/pza-1.1/` (copia del motor de 4.2 con `pieza_1.1.json`) y paso nuevo `Portada (ensamblador)` en `render-video.yml` + `_ci/make_cover.py`: si un slide trae la clave `portada`, el workflow compone la portada 9:16 (`marco_grande_cuadrado` con la ilustración 1:1 y el título) antes de generar la voz. Carpeta `Content_Pieces/PZA_1.1/2026-10-11/` en Drive; registro en `Themes` y `Content_Pieces` (Brief Generado); 5 escenas del banco marcadas en descanso y las de 1.2 liberadas.
+- **PZA_1.1 (video 9:16, tema 1.1, F1, hook 04 Storytelling, cierre B):** `production/scripts/video/pza-1.1/` (copia del motor de 4.2 con `pieza_1.1.json`). La portada la compone Claude con `assemble.py` antes del render (ver 2026-10-14); el paso `Portada (ensamblador)` del workflow y `_ci/make_cover.py` fueron retirados.
 
 ---
 

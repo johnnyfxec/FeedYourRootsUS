@@ -18,10 +18,10 @@ brief aprobado (fyr-content)
                         └─► revisión (con loop activado) ─► Drive ─► Airtable
 ```
 
-- **Dónde corre:** PC con Windows (Git Bash, VSCodium), carpeta `production/scripts/video/pza-4.2/`. Las dependencias (`@clipkit/renderer`, `@google-cloud/text-to-speech`) se instalan en esa carpeta con `npm install`.
+- **Dónde corre:** GitHub Actions (workflow `Render video`, `.github/workflows/render-video.yml`), sobre la carpeta `production/scripts/video/pza-[tema]/`. Las dependencias (`@clipkit/renderer`, `@google-cloud/text-to-speech`) se instalan en el runner con `npm ci`. No hay PC en el flujo (retirada el 14-oct-2026).
 - **Qué NO se versiona** (`.gitignore` de la carpeta): `node_modules/`, `build/`, `salida/`, `img/*.png|jpg`, `fonts/*.ttf|otf`. Las credenciales de Google (`GOOGLE_APPLICATION_CREDENTIALS`, archivo JSON fuera del repo) **nunca** se commitean.
-- **Flujo de archivos:** scripts y configuración por repo (tablet/Termux → push → `git pull` en la PC); imágenes, audio y video por Google Drive.
-- **Costo de render:** cero (local). Un video de 35 s se renderizó en ~37 s en la PC del piloto (i3, 8 GB).
+- **Flujo de archivos:** scripts y configuración por repo (Claude → push a `main`); imágenes y video por Google Drive (el workflow baja las imágenes por ID y sube el MP4 a `Content_Pieces`). Paso a paso: `knowledge/FYR_Rutas_De_Produccion.md`, Ruta B.
+- **Costo de render:** cero (minutos gratuitos de Actions en un repo público). El piloto tardó ~37 s de render en local; en Actions la corrida completa (instalación, voz y render) toma unos minutos.
 - **Limitación actual:** `tts.mjs` y `render.mjs` leen `pieza_4.2.json` fijo; para otra pieza se copia la carpeta y se renombra el JSON. PENDIENTE: motor único con `--pieza`.
 
 ---
@@ -176,18 +176,16 @@ PENDIENTE: campo "ID de variante" en `Content_Pieces` (el conector de Airtable n
 
 ---
 
-## 9. Procedimiento (Git Bash en la PC)
+## 9. Procedimiento (GitHub Actions, sin PC)
 
-1. **Preparar.** `git pull`. Bajar de Drive las imágenes a `img/` con los nombres del JSON. Confirmar fuente en `fonts/` y credenciales: `echo $GOOGLE_APPLICATION_CREDENTIALS`.
-2. **Voz.** `node tts.mjs`. Cada slide debe decir `marks`; si dice `fallback-proporcional`, esa voz no devolvió marcas.
-3. **Render.** `node render.mjs B-e14` (varias a la vez: `node render.mjs B-e14 B-e14-gold`). Para cierre A: `FYR_TAIL_LAST=0.05 node render.mjs B-e14`. Salida en `salida/PZA_X__sub<VARIANTE>.mp4`; copiar con el nombre de variante antes del siguiente render (se sobrescribe).
-4. **Revisar** con repetición activada: unión final→inicio, subtítulos que caben, ritmo, nitidez.
-5. **Aprobado** → subir el MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive (nombre propuesto: `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`) → registrar en Airtable (`Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Estado Producción`).
-6. **Commit** solo de scripts y JSON, con rutas explícitas (`git add` archivo por archivo; nunca `node_modules/`, `build/`, `salida/`, `img/`, credenciales).
+El paso a paso completo, con el registro en Airtable en cada etapa, está en `knowledge/FYR_Rutas_De_Produccion.md` (Ruta B). La parte de render:
 
-**Edición de archivos en la PC** (los parches se pegan en Git Bash): el repo tiene saltos de línea CRLF. Todo parche en Python debe leer y escribir con `newline=''` (normalizando a `\n` para editar y restaurando CRLF al guardar), verificar **cada** reemplazo con conteo exacto antes de escribir, y no escribir nada si alguno falla. Evitar `!` en los heredocs. Para abrir una carpeta: `explorer.exe "$(cygpath -w "$PWD/salida")"`. La identidad de git debe estar configurada (`git config --global user.name/user.email`).
-
----
+1. **Preparar (Claude).** Imágenes de las escenas ya en `06_Narrative_Stock` y registradas en `Assets`; portada compuesta y subida a `Video_Production/PZA_[tema]/`; el JSON de la pieza trae el `drive_id` de cada slide y `carpeta_drive_id`. Verificación previa con la API de Drive.
+2. **Disparar (Claude).** Commit a `main` de `pieza_[tema].json` y `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`). El push dispara el workflow; también se puede lanzar a mano desde la pestaña Actions.
+3. **Render (Actions).** Baja las imágenes por ID, `node tts.mjs` (cada slide debe decir `marks`; si dice `fallback-proporcional`, esa voz no devolvió marcas y la corrida se revisa), `node render.mjs <variante>` (cierre A: `TAIL_LAST=0.05`), sube el MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` como `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4` (la versión sube sola, nunca sobrescribe) y deja el registro en `production/runs/`. El MP4 queda además 7 días como artefacto.
+4. **Revisar.** Claude descarga el MP4 y comprueba duración, tamaño y fotogramas; Johnny lo ve con repetición activada (unión final→inicio, subtítulos que caben, ritmo, nitidez).
+5. **Aprobado** → registrar en Airtable (`Estado Producción = Ensamblado`, `Duración`, `ID de variante`, `Carpeta Drive`).
+6. **Commit** solo de scripts y JSON (nunca `node_modules/`, `build/`, `salida/`, `img/`, credenciales).
 
 ## 10. Registro en el sistema
 

@@ -1,6 +1,6 @@
 ---
 name: fyr-video-assembler
-description: Capa de ejecución de video de FYR. Toma un brief de video ya aprobado (generado por fyr-content) y produce el pieza_X.json (guion narrado con marcas de pausa/énfasis, imágenes, voz) más los bloques de comandos Git Bash para generar la voz con Google TTS y renderizar el MP4 9:16 con subtítulos palabra por palabra en la PC. Usar cuando el usuario diga "arma el video de PZA_X", "genera el JSON de video", "prepara el render", "crea la variante B del video" o "compara cierre A y B". No decide contenido, hooks ni CTA: eso ya viene en el brief.
+description: Capa de ejecución de video de FYR. Toma un brief de video ya aprobado (generado por fyr-content) y produce el pieza_X.json (guion narrado con marcas de pausa/énfasis, imágenes, voz) y ejecuta el render del MP4 9:16 (voz con Google TTS y subtítulos palabra por palabra) en GitHub Actions, subiendo el resultado a Drive. Usar cuando el usuario diga "arma el video de PZA_X", "genera el JSON de video", "prepara el render", "crea la variante B del video" o "compara cierre A y B". No decide contenido, hooks ni CTA: eso ya viene en el brief.
 ---
 
 # FYR Video Assembler
@@ -15,8 +15,8 @@ Skill de **ejecución**, no de contenido. `fyr-content` decide qué se dice; est
 - Escribir el guion, elegir hook o CTA → `fyr-content`. Si el brief no existe o no está aprobado, detenerse y decirlo; no inventar contenido.
 
 ## Entradas requeridas (verificar, no suponer)
-1. **Brief de video aprobado** de la pieza: slides con texto narrado, Hook usado, CTA, fase, assets. Fuente: `production/briefs/` del repo o el registro en Airtable (`Content_Pieces`, base `appMy5aOwifSbBLPR`). Si el entorno no puede leerlo, pedirlo a Johnny.
-2. **Imágenes** de cada slide, con nombre de asset en Drive/Airtable (`asset`) y archivo local previsto (`imagen`). El slide 1 es la portada (`TPL-video-cover-framed.png` u otra portada marcada).
+1. **Brief de video aprobado** de la pieza: slides con texto narrado, Hook usado, CTA, fase, assets. Fuente: `production/pieces/PZA_[tema]/brief.md` del repo y el registro en Airtable (`Content_Pieces`, base `appMy5aOwifSbBLPR`). Si el entorno no puede leerlo, pedirlo a Johnny.
+2. **Imágenes** de cada slide, con nombre de asset en Drive/Airtable (`asset`) y archivo local previsto (`imagen`). El slide 1 es la portada (portada compuesta por Claude con `marco_grande_cuadrado`, ver `knowledge/FYR_Rutas_De_Produccion.md` Ruta B, paso B8; o la plantilla `TPL-video-cover-framed.png`).
 3. **Tipo de cierre** (A cortada / B pregunta) si el brief lo indica; si no, B por defecto y se propone A como variante a comparar.
 
 ## Procedimiento
@@ -40,23 +40,19 @@ Aplicar el Protocolo §4. El CTA va antes de la línea final y separado por `//`
 - Verificar leyendo en voz alta: última frase + primera frase del video deben sonar como una sola idea. Si no, reescribir el cierre antes de entregar.
 - Para comparar A y B: preparar dos versiones del texto del slide final y avisar que cada cierre necesita su propio `tts.mjs` porque cambia el audio del último slide.
 
-### Paso 4 — Entregar los comandos (Git Bash en la PC)
-Dar bloques cortos y pegables, uno por acción, en este orden (Protocolo §9):
+### Paso 4 — Preparar y disparar el render (Claude, sin PC)
+Seguir la **Ruta B** de `knowledge/FYR_Rutas_De_Produccion.md` (pasos B8 a B10). Resumen:
+1. **Portada (B8):** `run_pieza.py descargar` + `ensamblar --config portada_config.json --portada` → subir a `Video_Production/PZA_[tema]/` → escribir su ID en el slide 1 del JSON (`asset`, `drive_id`).
+2. **Verificación previa (B9):** cada `drive_id` del JSON existe en Drive (API), es PNG y pesa > 0; `carpeta_drive_id` (subcarpeta de fecha en `Content_Pieces`) no es `null`; el guion está completo. Si algo falla, no se dispara el render.
+3. **Disparo (B10):** commit a `main` del JSON y de `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`: cierre B 0.35, cierre A 0.05). El push dispara "Render video". El workflow sube el MP4 a `Content_Pieces` y deja el registro en `production/runs/`.
+4. Esperar el registro de la corrida; si falla, leer el log, corregir la causa y repetir (máximo 3 intentos, luego reportar). Si hay que comparar cierres A y B, un archivo `.env` por variante, uno a la vez (cada cierre cambia el audio).
+- Nunca pedir ni escribir credenciales; viven en secretos de GitHub y en el entorno de la sesión.
 
-    cd /e/Mis-Repositorios/FeedYourRootsUS/production/scripts/video/pza-[tema]
-    git pull
-    node tts.mjs
-    node render.mjs B-e14
-
-Indicar siempre: qué imágenes bajar de Drive y con qué nombres; que cada slide debe imprimir `marks` en `tts.mjs` (si dice `fallback-proporcional`, detenerse: esa voz no dio marcas); que `salida/` se sobrescribe y hay que renombrar el MP4 antes del siguiente render; para el cierre A, `FYR_TAIL_LAST=0.05 node render.mjs B-e14`.
-- Si hay que parchear archivos en la PC, seguir la regla CRLF del Protocolo §9 (Python con `newline=''`, verificar cada conteo antes de escribir, sin `!` en heredocs). Si el parche es largo, preferir editar el archivo en el repo (rama de Claude) y pedir `git pull`.
-- Nunca pedir ni escribir credenciales de Google; solo comprobar `echo $GOOGLE_APPLICATION_CREDENTIALS`.
-
-### Paso 5 — Revisión (la hace Johnny)
-Pedir que revise con repetición activada: unión final→inicio, subtítulos que caben (palabras largas), ritmo de pausas, nitidez. Registrar su veredicto; si cambia una regla VALIDADO o resuelve un EN PRUEBA, **editar la sección correspondiente del Protocolo en su sitio** (no anexar al final) y actualizar el `CHANGELOG.md`.
+### Paso 5 — Revisión
+Claude descarga el MP4 de Drive y comprueba duración, 1080×1920, audio y fotogramas de cada slide. Luego Johnny revisa con repetición activada: unión final→inicio, subtítulos que caben (palabras largas), ritmo de pausas, nitidez. Registrar su veredicto; si cambia una regla VALIDADO o resuelve un EN PRUEBA, **editar la sección correspondiente del Protocolo en su sitio** (no anexar al final) y actualizar el `CHANGELOG.md`.
 
 ### Paso 6 — Registro
-Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`; en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Ruta JSON`, `ID de variante` y `Estado Producción = Ensamblado` (MP4 aprobado y en Drive); `Publicado` solo cuando sale a la red. Los WAV y `timings.json` no se suben. Claude hace estas escrituras en Airtable; Johnny no las hace a mano. Marcar el tema como `Usado` en `Themes` solo cuando la pieza se publique.
+Tras aprobar (el MP4 ya está en `Content_Pieces/PZA_[tema]/[fecha]/` con nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`, subido por el workflow; las versiones anteriores se mandan a la papelera): en Airtable `Tipo de Pieza = Video`, `Duración`, `Assets Usados`, `Ruta JSON`, `ID de variante` y `Estado Producción = Ensamblado` (MP4 aprobado y en Drive); `Publicado` solo cuando sale a la red. Los WAV y `timings.json` no se suben. Claude hace estas escrituras en Airtable; Johnny no las hace a mano. El tema pasa a `Usado` al aprobar el brief (apertura de la pieza) y la publicación se registra con `Fecha de Publicación` y el link en `Themes`.
 
 ## Reglas no negociables
 1. No decidir ni modificar hook, CTA, fase o promesa del brief. Solo aplicar marcas de pausa/énfasis y ajustar el cierre bajo las reglas del §4; si el cierre cambia el sentido, avisar.
@@ -64,8 +60,8 @@ Tras aprobar: MP4 a `Content_Pieces/PZA_[tema]/[fecha]/` en Drive con nombre `FY
 3. Un solo CTA por video.
 4. Cambiar una variable por prueba (cierre, voz, subtítulo, ritmo).
 5. Fallar de forma visible: si falta una imagen, el brief no está aprobado, las marcas no se generan o un archivo no coincide con el contrato, decirlo y detenerse; no rellenar con suposiciones.
-6. Repo = fuente de verdad. Trabajar en rama `claude/<nombre>`, nunca en `main`; no commitear `node_modules/`, `build/`, `salida/`, `img/`, fuentes ni credenciales.
-7. No decir "funciona" de nada que no se haya renderizado y revisado: el video lo valida Johnny.
+6. Repo = fuente de verdad. Commits a `main` (no hay PC que sincronizar); nunca `--force`; no commitear `node_modules/`, `build/`, `salida/`, `img/`, fuentes ni credenciales.
+7. No decir "funciona" de nada que no se haya renderizado y revisado: el video lo valida Johnny tras la revisión de Claude.
 
 ## Pendientes conocidos (no resolver por cuenta propia)
 Motor único con `--pieza`; alineación en la nube si se adopta Chirp 3 HD o Gemini-TTS; mejora de resolución de imágenes (768×1376); cierre visual en loop; subtítulo que desaparece al terminar la palabra. Ver Protocolo §11.

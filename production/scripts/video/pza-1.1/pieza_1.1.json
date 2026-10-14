@@ -2,24 +2,31 @@
   "pieza_id": "PZA_1.1",
   "medio": "Video",
   "aspecto": "9:16",
-  "canvas": { "w": 1080, "h": 1920 },
+  "canvas": {
+    "w": 1080,
+    "h": 1920
+  },
   "tema": "1.1",
-  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
-  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "voz": {
+    "name": "en-US-Neural2-J",
+    "speakingRate": 0.92,
+    "pitch": -4
+  },
+  "fuente_subtitulos": {
+    "family": "DM Sans",
+    "weight": "700",
+    "file": "fonts/DMSans.ttf"
+  },
   "slides": [
     {
       "n": 1,
       "layout": "full_bleed",
-      "asset": "FYR_PZA_1.1_S1_lapiz-papel_1x1_v1.png",
+      "asset": "FYR_PZA_1.1_PORTADA_9x16_v1.png",
       "imagen": "img/01_portada.png",
-      "portada": {
-        "layout": "marco_grande_cuadrado",
-        "texto_titulo": "I STARTED WITH HALF\nAN ACRE AND A PENCIL",
-        "texto_subtitulo": "Every homestead\nbegins on paper."
-      },
       "subtitulos": false,
       "movimiento": false,
-      "texto_narrado": "*Half an acre* and a pencil. That's all I started with."
+      "texto_narrado": "*Half an acre* and a pencil. That's all I started with.",
+      "drive_id": null
     },
     {
       "n": 2,
@@ -61,5 +68,6 @@
       "imagen": "img/06_mesa-cocina.png",
       "texto_narrado": "Now dinner starts at my own table.// Wait, what did my whole homestead start with?"
     }
-  ]
+  ],
+  "carpeta_drive_id": null
 }

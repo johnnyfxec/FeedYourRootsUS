@@ -87,18 +87,6 @@ jobs:
           PJ=$(ls pieza_*.json | head -1)
           NODE_PATH=../_ci/node_modules node ../_ci/fetch_assets.mjs "$PJ"
 
-      - name: Portada (ensamblador)
-        shell: bash
-        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
-        run: |
-          PJ=$(ls pieza_*.json | head -1)
-          if grep -q '"portada"' "$PJ"; then
-            python3 -m pip install --quiet pillow
-            python3 ../_ci/make_cover.py "$PJ"
-          else
-            echo "(esta pieza no compone portada)"
-          fi
-
       - name: Voz (Google TTS)
         shell: bash
         working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
@@ -110,6 +98,23 @@ jobs:
         env:
           FYR_TAIL_LAST: ${{ steps.p.outputs.tail_last }}
         run: node render.mjs "${{ steps.p.outputs.variante }}" 2>&1 | tee ../../../../render.log
+
+      - name: Subir MP4 a Drive (Content_Pieces)
+        id: drive
+        continue-on-error: true
+        shell: bash
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        env:
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$GOOGLE_OAUTH_REFRESH_TOKEN" ]; then
+            echo "::warning::Faltan los secretos GOOGLE_OAUTH_*; el MP4 queda solo como artefacto (7 dias)."
+            exit 0
+          fi
+          PJ=$(ls pieza_*.json | head -1)
+          python3 ../_ci/upload_mp4.py "$PJ" "${{ steps.p.outputs.variante }}"
 
       - name: Guardar MP4 (artefacto)
         uses: actions/upload-artifact@v4
@@ -129,6 +134,7 @@ jobs:
             echo "- Resultado del job: ${{ job.status }}"
             echo "- Cola (TAIL_LAST): ${{ steps.p.outputs.tail_last }}"
             echo "- Artefacto: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "- MP4 en Drive: ${{ steps.drive.outputs.drive_link || '(no subido)' }}"
             echo; echo '## tts'; echo '```'; tail -n 40 tts.log 2>/dev/null || echo "(sin log)"; echo '```'
             echo; echo '## render'; echo '```'; sed -E 's/ *frame [0-9]+\/[0-9]+//g' render.log 2>/dev/null | grep -v '^[[:space:]]*$' | tail -n 40 || echo "(sin log)"; echo '```'
           } > "$F"

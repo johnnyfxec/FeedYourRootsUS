@@ -12,14 +12,14 @@ Este documento existe para que cualquier sesión de Claude (chat o Claude Code) 
 
 **Actualizar un documento significa revisarlo y reescribir lo que quedó viejo en su lugar** — no anexar un parche al final. Un documento de política debe leerse como la realidad actual, sin capas históricas contradictorias.
 
-**Qué sigue haciendo Johnny (lo que Claude no puede):** correr el pipeline de video en la PC (necesita las credenciales de Google y el equipo), bajar imágenes de Drive, revisar los videos, crear/aprobar cosas en cuentas de terceros, y hacer `git pull` en la PC para recibir los cambios.
+**Qué sigue haciendo Johnny (lo que Claude no puede):** generar las imágenes en Gemini y exportarlas a Drive, aprobar briefs y piezas terminadas, publicar, y crear/aprobar cosas en cuentas de terceros (credenciales, secretos de GitHub). No hay PC: el render de video corre en GitHub Actions y todo lo demás en la sesión de Claude. El detalle por formato está en `knowledge/FYR_Rutas_De_Produccion.md`.
 
 ### Dónde escribe Claude
 
 | Qué | Dónde | Cómo |
 |---|---|---|
 | Documentos de `knowledge/`, skills, `CHANGELOG.md` | **`main` directo**, cuando Johnny lo pide en la sesión | commit + push |
-| Código que corre en la PC (`production/scripts/`, `assemble.py`) | **Rama `claude/<nombre>`**; pasa a `main` cuando Johnny confirma que funcionó | commit + push de rama, luego merge |
+| Código de `production/scripts/` y workflows | **`main` directo** (ya no hay PC que sincronizar); se prueba antes con datos sintéticos o con el servidor de Drive simulado | commit + push |
 | Espejo en el Proyecto de Claude.ai | `project_write` desde la misma sesión, en el mismo turno que el commit | Claude lo hace; Johnny no sube nada |
 | Skills de la cuenta de Claude.ai | Tarjeta `propose_skills` (Johnny pulsa Guardar) | el archivo del repo es la versión de referencia |
 
@@ -32,28 +32,19 @@ Nunca `git push --force`, nunca reescribir historia, nunca commitear credenciale
 | Entorno | Qué es | Qué se hace ahí |
 |---|---|---|
 | **Sesión de Claude Code (nube)** | Clon propio del repo, con acceso al Proyecto de Claude.ai y a los conectores (Airtable, Drive…) | Editar documentos, skills y código; commits y push; sincronizar el Proyecto; consultar y ajustar Airtable. Es el entorno principal. |
-| **PC con Windows (VSCodium + Git Bash)** | Otro clon del repo | Correr el pipeline de video (Node, Google Cloud TTS, Clipkit): único entorno con las credenciales y el equipo. Se recibe lo de Claude con `git pull`. |
+| **GitHub Actions** | Runner de Ubuntu que dispara el push de un archivo de `production/queue/` | Render de video (Node, Google Cloud TTS, Clipkit) y subida del MP4 a Drive. Es el único lugar donde se renderiza video. |
 | **Termux (tablet Android)** | Otro clon, para teclear comandos a mano | Respaldo cuando no hay sesión de Claude Code; ver «Respaldo: edición por comando». |
 | **Chat de Claude.ai (Proyecto)** | Conversación con el conocimiento del Proyecto | Planear y decidir. No toca el repo; lo que decida se aplica en una sesión de Claude Code. |
 
 Los clones son independientes: un cambio en uno no aparece en los otros hasta hacer `git push` donde se editó y `git pull` donde se quiere ver. Los scripts y JSON viajan por repo; las imágenes, el audio y el video viajan por Drive.
 
-Lo que una sesión de Claude Code **no** puede: ejecutar nada en la PC ni en Termux, usar las credenciales de Google de Johnny, ni salir a internet más allá de las listas permitidas (registros de paquetes y GitHub). Para eso entrega a Johnny el bloque de comandos exacto.
+Lo que una sesión de Claude Code puede hacer con Google depende del **nivel de red del entorno** (claude.ai/code → entorno → Network access): con Google permitido (`*.googleapis.com`, `accounts.google.com`) y las variables `GOOGLE_OAUTH_*` cargadas, descarga y sube archivos de Drive con `production/scripts/drive/drive_client.py`. Las credenciales nunca se commitean (el repo es público).
 
 **Cuidado con alias de shell que redefinen comandos estándar de Unix.** Si un comando básico (`touch`, `ls`, etc.) empieza a comportarse de forma inesperada (por ejemplo, abre Claude Code solo, o cambia de directorio solo), verificar primero con `type nombre_comando` antes de asumir que es un bug del script — puede ser un alias personal en `.bashrc`/`.bash_profile` pisando el comando real.
 
-### Particularidades del entorno PC (Windows, Git Bash en VSCodium)
+### Entornos retirados
 
-Claude las tiene presentes siempre que Johnny diga que está en la PC o que el trabajo sea de video:
-
-- **Shell:** Git Bash dentro de VSCodium — mismo protocolo que Termux (bash, heredocs, `git add` con rutas explícitas), pero con rutas de Windows: el repo está en `E:\Mis-Repositorios\FeedYourRootsUS`, que en Git Bash es `/e/Mis-Repositorios/FeedYourRootsUS`. Nunca dar comandos de PowerShell.
-- **Python:** el comando es `python` (3.14), no `python3`. Node 24 y npm 11. Para abrir una carpeta en el Explorador: `explorer.exe "$(cygpath -w "$PWD/carpeta")"`.
-- **Saltos de línea CRLF:** el checkout de Windows puede tener CRLF. Todo parche en Python lee y escribe con `newline=''`, normaliza a `\n` para editar y restaura CRLF al guardar. (Un parche que asume LF puede fallar su `assert` en un archivo CRLF; el patrón con `newline=''` y reemplazos de una sola línea es el que funcionó en la PC.)
-- **Parches de varios reemplazos:** verificar TODOS los conteos antes de escribir cualquier archivo; si alguno falla, imprimir cuál y cuántas coincidencias hubo, y no escribir nada. Preferir reemplazos de una sola línea.
-- **Credenciales:** `GOOGLE_APPLICATION_CREDENTIALS` apunta a un JSON fuera del repo. Nunca se commitea ni se pega en el chat.
-- **Identidad de git:** configurada con `git config --global user.name` / `user.email` (sin eso, `git commit` falla con "Author identity unknown").
-- **Equipo débil (i3, 8 GB):** no correr modelos locales pesados; todo lo costoso va a la nube (TTS) y el render se hace en local porque sí cabe.
-- **Qué no se commitea de una carpeta de video:** `node_modules/`, `build/`, `salida/`, `img/`, `fonts/*.ttf` (ya en su `.gitignore`).
+La PC con Windows (VSCodium + Git Bash) dejó de usarse el 14-oct-2026: no hay más PC. Sus particularidades (rutas `E:\`, `python` en vez de `python3`, CRLF, parches pegados en Git Bash) ya no aplican. Termux queda solo como respaldo manual.
 
 ---
 

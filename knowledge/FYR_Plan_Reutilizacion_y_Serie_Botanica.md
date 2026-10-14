@@ -86,7 +86,7 @@ PZA_4.2: producida por completo en 9:16, solo pendiente de publicar. En Airtable
 1. **Registro y cobertura:** este documento, CHANGELOG, Proyecto. *(hecho)*
 2. **Memoria de uso:** campos de uso en `Assets` creados y llenados para PZA_4.2. *(hecho)*
 3. **`fyr-content`:** reglas de §3.1, §3.2 y §3.3 en los Pasos 0, 4 y 5.6; enlace a este documento. *(hecho en el repo; la tarjeta de skill única se envía al final de la fase)*
-4. **Corrida 1.2 + 1.1:** briefs, config/JSON, ensamblado (carrusel en la PC, video en Actions) y registro en Airtable por paso. Mide el tiempo real del carrusel.
+4. **Corrida 1.2 + 1.1:** briefs, config/JSON, ensamblado (carrusel por Claude con `assemble.py`, video en Actions) y registro en Airtable por paso. Mide el tiempo real del carrusel.
 5. **Publicación:** `fyr-publisher` con YouTube primero; salen 4.2, 1.1 y 1.2. Orden sugerido de salida: 1.1 (quiénes somos), 4.2, 1.2; una publicación diaria las primeras dos semanas.
 6. **Serie botánica:** layout `ficha_planta` (en paralelo mientras Johnny genera y revisa imágenes del punto 4), piloto de una planta en dos formatos, tabla de plantas y calendario por temporada.
 7. **Kits de generación por pilar** para mantener el banco por delante de la publicación.

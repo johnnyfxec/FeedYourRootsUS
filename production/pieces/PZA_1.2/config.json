@@ -1,0 +1,11 @@
+{
+  "pieza_id": "PZA_1.2",
+  "aspecto": "4:5",
+  "slides": [
+    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-vecino-terreno-subutilizado_4x5_v1.png", "texto_titulo": "5 ACRES\nVS HALF AN ACRE"},
+    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-comparacion-vecino-libreta_4x5_v1.png", "texto_pie": "He has ten times the land. I have a notebook.", "ancla_recorte": "center"},
+    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-patio-abandonado-pov_4x5_v1.png", "imagen_escena_2": "STOCK-patio-prospero-pov_4x5_v1.png", "texto_pie": "Same yard. Different plan."},
+    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-plano-ideal-homestead_4x5_v1.png", "texto_overlay": "It was never the size of the land.\nIt was the layout."},
+    {"numero": 5, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-vecino-transformado_4x5_v1.png", "texto_pie": "Half an acre. One plan.", "ancla_recorte": "center"}
+  ]
+}
