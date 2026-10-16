@@ -1,6 +1,6 @@
 # FYR — Fase D: Producción recurrente en Claude Code (diseño)
 **Versión 1.0 — 16 de octubre 2026**
-**Estado: diseño aprobado por Johnny, pendiente de implementar y probar con la primera corrida real.**
+**Estado: implementado (16-oct-2026). Skill `fase-d-planner` creada en `.claude/skills/fase-d-planner/SKILL.md`. Trigger semanal activo (lunes 8:46 AM ET). Pendiente de probar con la primera corrida real — esa corrida calibra el tamaño definitivo del lote (§2.3).**
 
 **Propósito:** llevar la producción de FYR de "una pieza a la vez, conversacional, en este sandbox" a "lotes semanales en Claude Code, con Johnny presente pero concentrando su revisión en 5 paradas en vez de aprobar cada paso de cada pieza". Este documento es el contrato de diseño — se edita in-place cuando algo cambie, no se le agregan entradas tipo changelog.
 
