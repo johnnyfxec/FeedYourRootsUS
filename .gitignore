@@ -12,6 +12,7 @@ _grid_*.png
 # gobernanza + compositores/motor + web, nunca output de contenido)
 production/assets_local/
 production/output/
+production/pieces/*/_trabajo/
 pdfs_normalized/
 tts.log
 render.log
