@@ -56,19 +56,19 @@ Todo lo que sigue hasta «Reglas de comportamiento» aplica solo cuando Johnny d
 Para cualquier edición a un archivo ya existente en el repo:
 
 ### 1. Verificar el texto exacto (grep)
-Nunca se asume el contenido de memoria. Se pide siempre:
+Nunca se asume el contenido de memoria. Se pide siempre con `-n` (número de línea) Y marcador de fin de línea, para exponer espacios finales invisibles que rompen el `assert` del reemplazo:
 ```bash
-grep -n "texto a buscar" ruta/al/archivo.md
+grep -n "texto a buscar" ruta/al/archivo.md | cat -A
 ```
-o, si la línea es larga o tiene caracteres especiales o hace falta ver contexto alrededor, se usa `cat -n` con rango de líneas vía `head`/`tail`, o `awk` con `NR`:
+o, si la línea es larga o tiene caracteres especiales o hace falta ver contexto alrededor, se usa `cat -n` con rango de líneas vía `head`/`tail`, o `awk` con `NR` — siempre seguido de `cat -A` para ver el `$` de fin de línea y detectar espacios/tabs invisibles antes de construir el `old =`:
 ```bash
-cat -n ruta/al/archivo.md | head -n 15
+cat -n ruta/al/archivo.md | head -n 15 | cat -A
 ```
 o, para un rango específico:
 ```bash
-awk 'NR==135,NR==140{print NR": "$0}' ruta/al/archivo.md
+awk 'NR==135,NR==140{print NR": "$0}' ruta/al/archivo.md | cat -A
 ```
-**`sed -n` queda prohibido para este propósito** — usar siempre `cat`/`awk` con número de línea explícito.
+**`sed -n` queda prohibido para este propósito** — usar siempre `cat`/`awk` con número de línea explícito, y siempre con `cat -A` encadenado — nunca sin el `$` visible, porque la causa más frecuente de `assert` fallido es un número de espacios distinto al que Claude asumió de memoria.
 
 Johnny pega el resultado real. Solo con ese texto confirmado se construye el reemplazo — nunca antes.
 
