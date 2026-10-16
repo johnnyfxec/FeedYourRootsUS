@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Autorizacion UNICA de Drive por "flujo de dispositivo" (la hace Claude con Johnny, una sola vez).
+"""OBSOLETO (16-oct-2026): usar drive_authorize_web.py en su lugar. Se deja este archivo como registro de
+por que el flujo de dispositivo no sirve: Google rechaza el scope `drive` completo en este flujo (solo deja
+scopes "no sensibles" como drive.file), y drive.file no permite escribir dentro de carpetas que Johnny ya
+tenia creadas (solo en objetos creados por la propia app) -- confirmado ademas por un reporte publico
+identico de otro usuario con el mismo tipo de conector ("User cannot add children"). drive_authorize_web.py
+usa un flujo OAuth distinto (loopback/navegador real) que si acepta el scope completo.
+
+Autorizacion UNICA de Drive por "flujo de dispositivo" (la hace Claude con Johnny, una sola vez).
 
   python3 drive_authorize.py        # imprime un CODIGO y una direccion; Johnny la abre, escribe el codigo y toca Permitir.
                                     # El script espera (hasta 15 min) y al final imprime GOOGLE_OAUTH_REFRESH_TOKEN.

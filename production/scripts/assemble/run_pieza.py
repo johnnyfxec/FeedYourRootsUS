@@ -3,7 +3,7 @@
 
   python3 run_pieza.py importar  <dir_pieza> <trabajo> <resultado1.json> ...   # A8: valida y decodifica lo descargado con el conector de Drive
   python3 run_pieza.py ensamblar <dir_pieza> <trabajo> [--version N] [--config f.json] [--portada]   # A9
-  python3 run_pieza.py subir     <dir_pieza> <trabajo>                                                 # A11 (a la raiz de Drive; Claude los mueve con el conector)
+  python3 run_pieza.py subir     <dir_pieza> <trabajo> [parent_id]                                     # A11 (directo a parent_id vía OAuth de usuario; sin parent_id va a la raíz)
 
 <dir_pieza> = production/pieces/PZA_x  (config.json + imagenes.json {nombre: drive_id})
 <trabajo>   = carpeta temporal (assets/, out/, final/). Se puede borrar siempre: todo se regenera desde Drive.
@@ -91,16 +91,21 @@ def ensamblar(pieza, work, version=1, config=None, portada=False):
     print("✓ listos para revisar en", final, ":", ", ".join(nombres))
 
 
-def subir(pieza, work):
+def subir(pieza, work, parent_id=None):
+    """A11: sube los PNG finales directo a `parent_id` (carpeta de la pieza en Drive, dada por Claude segun
+    el brief), usando OAuth de usuario con scope `drive` completo (drive_client.py). Sin parent_id va a la
+    raiz de Mi unidad y hay que moverlo despues a mano / con otro paso -- siempre que se conozca el ID de la
+    carpeta de destino, pasarlo aqui evita ese paso extra."""
     from drive_client import Drive, link
     d = Drive()
     archivos = sorted(glob.glob(os.path.join(work, "final", "*.png")))
     if not archivos:
         sys.exit("No hay PNG en final/.")
     for f in archivos:
-        info = d.upload(f)
+        info = d.upload(f, parent_id=parent_id)
         print(f"✓ {info['name']} id={info['id']} {link(info['id'])} (md5 verificado)")
-    print(f"{len(archivos)} PNG subidos a la raiz de Drive. Siguiente: moverlos a la carpeta de la pieza con el conector (update_file, parentId).")
+    destino = f"carpeta {parent_id}" if parent_id else "la raiz de Mi unidad"
+    print(f"{len(archivos)} PNG subidos directo a {destino}.")
 
 
 if __name__ == "__main__":
@@ -112,4 +117,4 @@ if __name__ == "__main__":
     elif a[1] == "ensamblar":
         ensamblar(a[2], a[3], int(_arg(a, "--version", 1)), _arg(a, "--config"), "--portada" in a)
     else:
-        subir(a[2], a[3])
+        subir(a[2], a[3], a[4] if len(a) > 4 else None)
