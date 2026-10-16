@@ -12,6 +12,9 @@ on:
       tail_last:
         description: 'Cola del ultimo slide en s (cierre B 0.35, cierre A 0.05)'
         default: '0.35'
+      parent_id:
+        description: 'ID de carpeta de Drive donde subir el MP4 (vacio = raiz de Mi unidad)'
+        default: ''
   push:
     paths:
       - 'production/queue/*.env'
@@ -40,9 +43,10 @@ jobs:
           IN_PIEZA: ${{ inputs.pieza }}
           IN_VARIANTE: ${{ inputs.variante }}
           IN_TAIL: ${{ inputs.tail_last }}
+          IN_PARENT: ${{ inputs.parent_id }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            PIEZA="$IN_PIEZA"; VARIANTE="$IN_VARIANTE"; TAIL_LAST="$IN_TAIL"
+            PIEZA="$IN_PIEZA"; VARIANTE="$IN_VARIANTE"; TAIL_LAST="$IN_TAIL"; PARENT_ID="$IN_PARENT"
           else
             F=$(git diff --name-only HEAD~1 HEAD -- 'production/queue/*.env' | tail -1)
             echo "Cola: $F"
@@ -50,9 +54,11 @@ jobs:
           fi
           [[ "$PIEZA" =~ ^pza-[0-9a-zA-Z._-]+$ ]] || { echo "PIEZA invalida: $PIEZA"; exit 1; }
           [[ "$VARIANTE" =~ ^[A-Za-z0-9-]+$ ]] || { echo "VARIANTE invalida: $VARIANTE"; exit 1; }
+          [[ -z "$PARENT_ID" || "$PARENT_ID" =~ ^[0-9a-zA-Z_-]+$ ]] || { echo "PARENT_ID invalido: $PARENT_ID"; exit 1; }
           echo "pieza=$PIEZA" >> "$GITHUB_OUTPUT"
           echo "variante=$VARIANTE" >> "$GITHUB_OUTPUT"
           echo "tail_last=${TAIL_LAST:-0.35}" >> "$GITHUB_OUTPUT"
+          echo "parent_id=${PARENT_ID:-}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@v4
         with:
@@ -114,7 +120,7 @@ jobs:
             exit 0
           fi
           PJ=$(ls pieza_*.json | head -1)
-          python3 ../_ci/upload_mp4.py "$PJ" "${{ steps.p.outputs.variante }}"
+          python3 ../_ci/upload_mp4.py "$PJ" "${{ steps.p.outputs.variante }}" "${{ steps.p.outputs.parent_id }}"
 
       - name: Guardar MP4 (artefacto)
         uses: actions/upload-artifact@v4
