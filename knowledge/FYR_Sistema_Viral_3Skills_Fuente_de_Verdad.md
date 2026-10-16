@@ -128,7 +128,7 @@ La sesión arrancó con un documento de investigación (pegado por Johnny, gener
 | Volumen_Uso | Number (integer) | Puede quedar vacío si la fuente no lo da |
 | Ventana_Vida_Estimada | Single line text | Texto libre ("7-14 dias"), estimación cualitativa, no un dato duro |
 | Score_Afinidad_Avatar | Number | 1-5, criterio en SKILL.md §Paso 2 |
-| Pilar_Relacionado | **Link to another record → Themes** | Verificar nombre exacto contra `Themes` real antes de escribir — nunca de memoria |
+| Pilar_Relacionado | **Link to another record → Themes** — ⚠️ contradice `trend-scout/references/schema_trend_signals.md` (dice singleSelect); como esta tabla está marcada "Tipo Airtable real" y el otro no, **este documento es la hipótesis más probable**, pero ninguno de los dos se verificó contra Airtable en la auditoría del 16-oct-2026 — confirmar con `get_table_schema` antes de la próxima escritura a este campo y resolver la contradicción en ambos lugares de una vez. | Verificar nombre exacto contra `Themes` real antes de escribir — nunca de memoria |
 | Hook_CRS_Equivalente | **Single select propio, 20 opciones (01 Negativo → 20 Revelación)** | **Corregido en esta sesión** — ver §5.1 |
 | Fase_Embudo_Sugerida | Single select | F1 / F2 / F3 / F4 |
 | Formato_Sugerido | Single select | POV / Antes-Después / Countdown / Storytime |

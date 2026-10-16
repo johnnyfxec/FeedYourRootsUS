@@ -72,8 +72,9 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | Archivo | Uso |
 |---|---|
 | `knowledge/FYR_Malla_60_Temas_Virales_v2.md` | Banco semilla de 61 temas (no está cargado en Airtable; un tema entra a `Themes` al producirse). Marcar aquí el estado de un tema NO es necesario: manda `Themes` |
-| `knowledge/Sistema_Maestro_CRS_v2.md` | Fases de embudo, arquitectura de loops, Question Test, framework 6 pasos |
-| `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso |
+| `knowledge/Sistema_Maestro_CRS_v2.md` | **Solo Partes 1–6** (Estrategia/fases de embudo, Selección de hook, Arquitectura/Question Test/loops, Ejecución, Distribución, Optimización) — es la base de conocimiento personal de Johnny para su otro negocio (trading/JIFU), compartida aquí solo por la ciencia que contiene. **Nunca usar la Parte 8** ("Temas por Fase", banco de 30 temas en trading sin traducir — usar la Malla de FYR en su lugar) **ni la Parte 9** ("Sistema de DMs": flujos de prospección e inscripción de JIFU, cero aplicación a FYR, que no vende por DM uno a uno) |
+| `knowledge/hooks_verbales_20_v2.md` | Los 20 hooks: principio psicológico, estructura, reglas de uso. Es un documento compartido con otro negocio de Johnny — sus "5 ejemplos" por hook están en el avatar de trading, no se traducen aquí |
+| `.claude/skills/fyr-content/references/hooks_ejemplos_morgan.md` | 2 ejemplos ya traducidos al avatar Morgan por cada uno de los 20 hooks — leer junto con el de arriba al construir un hook (Paso 2), para no traducir de memoria ni arriesgar que se filtre vocabulario del dominio equivocado |
 | `knowledge/Feed-Your-Roots-Brand-Bible.md` | Voz, paleta, tipografía, banned words, regla de diversidad, excepcion de rostros en escenas narrativas (v2) |
 | `knowledge/FYR_Asset_Governance_Policy.md` (v2.3+) | Nomenclatura, ubicación de archivos, estructura `Content_Pieces/PZA_[tema]/[fecha]/`, estructura `01_Brand_Assets/C01-C13` (incluye C12_Frames y C13_Layout_Elements), y principio de duplicados semánticos en Themes |
 | `knowledge/reference_assets/FYR_Layout_Specs_v1.md` | Medidas exactas (bbox, ventanas de contenido) de los layouts vigentes en 4:5 y 9:16, con ruta de Drive de cada asset — consultar SIEMPRE antes de generar un prompt de imagen que use un layout con marco/asset fijo |
@@ -84,7 +85,7 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 | `knowledge/FYR_Plan_Reutilizacion_y_Serie_Botanica.md` | Inventario del banco de assets, informe de cobertura Malla vs banco, serie "Conoce la planta" y orden de ejecución — consultar al elegir tema y al buscar assets (Paso 4): primero el banco |
 | `knowledge/FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` | Arquitectura del sistema completo de 3 skills (trend-scout, fyr-content, performance-lens), como se comunican vía Airtable, y el schema real de `Trend_Signals` — leer antes de tocar cualquier logica relacionada a tendencias o performance |
 
-**Adaptación obligatoria del CRS:** el sistema fue escrito para el avatar de trading/libertad financiera. Al aplicarlo, traducir SIEMPRE al avatar Morgan (28-42, patio suburbano, busca soberanía alimentaria): el dolor no es "depender de un sueldo", es "depender del supermercado / no saber qué come su familia / sentir que la autosuficiencia es para gente con 5 acres". La ciencia (loops, fases, hooks) se conserva; el contenido se traduce.
+**Adaptación obligatoria del CRS:** el sistema fue escrito para el avatar de trading/libertad financiera. Al aplicarlo, traducir SIEMPRE al avatar Morgan (28-42, patio suburbano, busca soberanía alimentaria): el dolor no es "depender de un sueldo", es "depender del supermercado / no saber qué come su familia / sentir que la autosuficiencia es para gente con 5 acres". La ciencia (loops, fases, hooks) se conserva; el contenido se traduce. Para el hook específico del Paso 2, usar `references/hooks_ejemplos_morgan.md` (2 ejemplos ya traducidos por hook) en vez de traducir los ejemplos de trading de `hooks_verbales_20_v2.md` de memoria en cada sesión.
 
 ---
 

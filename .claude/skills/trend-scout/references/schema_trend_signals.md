@@ -15,7 +15,7 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 | Volumen_Uso | Número | Views o posts asociados, si la fuente lo da. Puede quedar vacío. |
 | Ventana_Vida_Estimada | Texto | Estimación libre, ej. "7-14 dias". No es un dato duro, es una lectura de la skill. |
 | Score_Afinidad_Avatar | Número (1-5) | Qué tanto le habla esta señal al avatar de la marca. Ver criterio en SKILL.md. |
-| Pilar_Relacionado | singleSelect | Debe coincidir exacto con los nombres de Pilar usados en `Themes` (Airtable `appMy5aOwifSbBLPR`). Vacío si no aplica a ningún pilar. |
+| Pilar_Relacionado | **Verificar con `get_table_schema` antes de la primera escritura** (ver nota de tipo, abajo) | Debe coincidir exacto con los nombres de Pilar usados en `Themes` (Airtable `appMy5aOwifSbBLPR`). Vacío si no aplica a ningún pilar. |
 | Hook_CRS_Equivalente | singleSelect | Uno de los 20 hooks verbales, mismo formato que `Hook Asignado` en `Themes` (ej. "11. Mito"). Este es el campo puente hacia `fyr-content`. |
 | Fase_Embudo_Sugerida | singleSelect | F1/F2/F3/F4 |
 | Formato_Sugerido | singleSelect | POV / Antes-Después / Countdown / Storytime — mismo vocabulario que `Themes.Formato` |
@@ -23,8 +23,8 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 | Sonido_URL_Referencia | URL | Link al sonido original en la plataforma, si aplica. |
 | Video_Referencia_URL | URL | Link al video líder deconstruido (si se hizo deconstrucción). |
 | Estado | singleSelect | Detectada / Aprobada / Usada / Expirada / Descartada |
-| Tema_Vinculado | Texto o Link | Número de tema en `Themes` (ej. "3.1") si la señal calza con un tema existente. Vacío si no. |
-| Content_Piece_Generada | Texto o Link | ID `PZA_[tema]` de la pieza que terminó usando esta señal. Se llena cuando `fyr-content` produce algo montado sobre esta tendencia. |
+| Tema_Vinculado | **Verificar con `get_table_schema` antes de la primera escritura** (ver nota de tipo, abajo) | Número de tema en `Themes` (ej. "3.1") si la señal calza con un tema existente. Vacío si no. |
+| Content_Piece_Generada | **Verificar con `get_table_schema` antes de la primera escritura** (ver nota de tipo, abajo) | ID `PZA_[tema]` de la pieza que terminó usando esta señal. Se llena cuando `fyr-content` produce algo montado sobre esta tendencia. |
 | Fecha_Aprobacion | Fecha | Cuándo el usuario aprobó pasar la señal de Detectada a Aprobada. |
 | Fecha_Expiracion | Fecha | Fecha_Deteccion + Ventana_Vida_Estimada, calculada al aprobar. Pasada esta fecha sin usarse, la skill sugiere marcar como Expirada. |
 | Resultado_Post_Uso | singleSelect | Alto / Medio / Bajo / Sin datos — mismo vocabulario que `Content_Pieces.Performance`, para que `performance-lens` (futura skill 3) pueda cruzar ambas tablas sin traducción. |
@@ -35,3 +35,5 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 - Para singleSelect/multipleSelects: escribir el nombre exacto de la opción como string, usar `typecast: true` si la opción puede no existir aún.
 - `Pilar_Relacionado` y `Hook_CRS_Equivalente` deben calzar carácter por carácter con las opciones ya usadas en `Themes` — si no calzan, Airtable crea una opción duplicada con variación mínima y el cruce entre tablas se rompe silenciosamente. Verificar contra `Themes` antes de escribir, nunca asumir el nombre exacto de memoria.
 - `Signal_ID`: antes de asignar uno nuevo, consultar el último `TR-####` existente — igual que la regla ya usada para `PZA_[tema]` en `fyr-content`.
+
+**Nota de tipo (16-oct-2026, sin resolver):** este documento y `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §5 describían tipos distintos para `Pilar_Relacionado`, `Tema_Vinculado` y `Content_Piece_Generada` (singleSelect/texto aquí vs. "Link to another record" allá) — contradicción real, no solo de redacción, detectada en la auditoría del 16-oct. Ninguno de los dos se puede confirmar sin consultar Airtable real. **Antes de la primera escritura a cualquiera de estos 3 campos**, correr `get_table_schema` sobre `Trend_Signals` y usar el tipo que devuelva — si es Link, el valor a escribir es el `recXXXXXXXXXXXXXX` del registro vinculado (vía `search_candidate_linked_records` o similar), no el texto/número visible. Una vez confirmado, actualizar este archivo Y la Sección 5 del documento fuente de verdad para que dejen de contradecirse, y borrar esta nota.

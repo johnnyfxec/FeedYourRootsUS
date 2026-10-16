@@ -108,6 +108,8 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 
 Toda subida se verifica: `md5Checksum` que devuelve Drive = md5 del archivo local. Si no coincide, la subida **no cuenta** y se repite.
 
+**Tercer mecanismo de acceso a Drive (solo lectura, solo dentro de Actions):** el paso "Bajar imagenes de Drive" del workflow (`production/scripts/video/_ci/fetch_assets.mjs`) NO usa el OAuth de usuario de arriba ni el conector — usa una **cuenta de servicio** de Google Cloud, vía `GoogleAuth` con scope `drive.readonly`, autenticada con el JSON de esa cuenta guardado en el secreto de GitHub `GOOGLE_CREDENTIALS_JSON` (el mismo JSON que Johnny descargó y pegó como secreto cuando esto se diseñó para correr vía PC/Git Bash; ya no hay PC, pero el mecanismo sigue siendo válido porque Actions lo necesita igual: Actions no puede usar el OAuth de usuario de arriba porque ese flujo requiere interacción humana en un navegador, y la cuenta de servicio no la requiere). Por diseño, esa cuenta solo ve lo que esté compartido con ella (rol Lector) — si falta compartir una carpeta nueva del banco de assets con esa cuenta, el paso falla de forma visible (`✗ slide N: no encuentro "..." en Drive`), nunca en silencio. Si `GOOGLE_CREDENTIALS_JSON` deja de existir como secreto o la cuenta pierde acceso a una carpeta, este es el primer lugar a revisar.
+
 Hasta que la autorización esté hecha, el carrusel y el video **se detienen en el paso de subida** y Claude lo dice; no se improvisa otra vía.
 
 ---
