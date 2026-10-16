@@ -45,6 +45,18 @@ ASSETS = {
         "4:5": "FYR_ASSET_marco-madera_4x5_v1.png",
         "9:16": "FYR_ASSET_marco-madera_9x16_v1.png",
     },
+    # marco_grande_portada reutiliza el mismo archivo fisico que marco_grande
+    # (ver tipo_a.py::_compose_marco_grande_portada, que llama
+    # _load_asset("marco_grande", ...) -- solo cambia el escalado, no el
+    # asset). Entrada duplicada aqui a proposito: si una pieza usa
+    # marco_grande_portada sin ningun slide marco_grande, el verificador de
+    # image_fetcher.py._required_layout_assets() (que filtra por `layout in
+    # ASSETS`) debe poder detectar igual que falta el archivo antes del
+    # ensamblado, en vez de fallar recien en tipo_a.py.
+    "marco_grande_portada": {
+        "4:5": "FYR_ASSET_marco-madera_4x5_v1.png",
+        "9:16": "FYR_ASSET_marco-madera_9x16_v1.png",
+    },
     "marco_grande_cuadrado": {
         # Solo 9:16 -- portadas de reel/video, ventana 1:1 real por diseno
         # (a diferencia de marco_grande, que es rectangular alto). El 4:5
