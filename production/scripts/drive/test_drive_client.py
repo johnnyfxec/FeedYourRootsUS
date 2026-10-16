@@ -42,7 +42,7 @@ class H(BaseHTTPRequestHandler):
         meta = json.loads(re.search(rb"\r\n\r\n(\{.*?\})\r\n", b, re.S).group(1))
         data = b.split(b"\r\n\r\n", 2)[2].rsplit(b"\r\n--", 1)[0]
         if fid is None:
-            fid = newid(); FILES[fid] = {"meta": {"id": fid, "mimeType": "x", "parents": meta["parents"], "trashed": False}, "data": b""}
+            fid = newid(); FILES[fid] = {"meta": {"id": fid, "mimeType": "x", "parents": meta.get("parents", ["root"]), "trashed": False}, "data": b""}
         FILES[fid]["meta"].update(name=meta["name"], md5Checksum=hashlib.md5(data).hexdigest(), size=str(len(data)))
         if os.environ.get("CORRUPT"): FILES[fid]["meta"]["md5Checksum"] = "0" * 32
         FILES[fid]["data"] = data
@@ -66,18 +66,19 @@ dc.TOKEN_URL = base + "/token"; dc.API = base + "/drive/v3/files"; dc.UPLOAD = b
 
 d = dc.Drive("cid", "sec", "rt")
 tmp = tempfile.mkdtemp()
-raiz = d.mkdir("PZA_9.9", "ROOT"); assert d.mkdir("PZA_9.9", "ROOT")["id"] == raiz["id"], "mkdir debe ser idempotente"
-sub = d.mkdir("2026-10-14", raiz["id"])
 p = os.path.join(tmp, "a.png"); open(p, "wb").write(os.urandom(300000))
-up = d.upload(p, sub["id"], "FYR_PZA_9.9_S1_4x5_v1.png")
-again = d.upload(p, sub["id"], "FYR_PZA_9.9_S1_4x5_v1.png"); assert again["id"] == up["id"], "re-subida debe reemplazar, no duplicar"
-assert len(d.ls(sub["id"])) == 1
+up = d.upload(p, None, "FYR_PZA_9.9_S1_4x5_v1.png")                  # a la raiz (alcance drive.file)
+assert up["parents"] == ["root"]
+again = d.upload(p, None, "FYR_PZA_9.9_S1_4x5_v1.png"); assert again["id"] == up["id"], "re-subida debe reemplazar, no duplicar"
+d.upload(p, None, "FYR_PZA_9.9_VIDEO_B-e14_9x16_v1.mp4")
+assert len(d.find_prefix("FYR_PZA_9.9_VIDEO_B-e14_9x16_v")) == 1
+assert len(d.ls("root")) == 2
 out = os.path.join(tmp, "dl", "b.png"); d.download(up["id"], out); assert open(out, "rb").read() == open(p, "rb").read()
-assert d.find("FYR_PZA_9.9_S1_4x5_v1.png", sub["id"])[0]["id"] == up["id"]
-d.trash(up["id"]); assert d.ls(sub["id"]) == []
+assert d.find("FYR_PZA_9.9_S1_4x5_v1.png")[0]["id"] == up["id"]
+d.trash(up["id"]); assert len(d.ls("root")) == 1
 os.environ["CORRUPT"] = "1"
 try:
-    d.upload(p, sub["id"], "mala.png"); raise SystemExit("FALLO: debio detectar md5 distinto")
+    d.upload(p, None, "mala.png"); raise SystemExit("FALLO: debio detectar md5 distinto")
 except dc.DriveError as e:
     assert "NO verificada" in str(e)
 try:
@@ -85,4 +86,4 @@ try:
     raise SystemExit("FALLO: debio exigir variables")
 except dc.DriveError as e:
     assert "Faltan variables" in str(e)
-print("OK: mkdir idempotente, subida verificada, reemplazo sin duplicar, descarga, papelera, md5 corrupto detectado, variables obligatorias")
+print("OK: subida a la raiz verificada, reemplazo sin duplicar, descarga, papelera, md5 corrupto detectado, variables obligatorias")

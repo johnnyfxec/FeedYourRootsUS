@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Orquestador del carrusel (Ruta A de FYR_Rutas_De_Produccion.md). NUNCA corre en Actions.
 
-  python3 run_pieza.py descargar <dir_pieza> <trabajo>            # A8: baja las imagenes por ID desde Drive
+  python3 run_pieza.py importar  <dir_pieza> <trabajo> <resultado1.json> ...   # A8: valida y decodifica lo descargado con el conector de Drive
   python3 run_pieza.py ensamblar <dir_pieza> <trabajo> [--version N] [--config f.json] [--portada]   # A9
-  python3 run_pieza.py subir     <dir_pieza> <trabajo> <carpeta_drive_id>                              # A11
+  python3 run_pieza.py subir     <dir_pieza> <trabajo>                                                 # A11 (a la raiz de Drive; Claude los mueve con el conector)
 
 <dir_pieza> = production/pieces/PZA_x  (config.json + imagenes.json {nombre: drive_id})
 <trabajo>   = carpeta temporal (assets/, out/, final/). Se puede borrar siempre: todo se regenera desde Drive.
-Opcion de prueba: --local-dir <dir> en `descargar` copia las imagenes por nombre en vez de bajarlas de Drive.
+Descarga: Claude llama `download_file_content` (conector de Drive) por cada ID de imagenes.json; el resultado queda
+guardado en un archivo JSON {content(base64), id, title, mimeType} cuya ruta se pasa a `importar`.
 """
 import glob
 import json
@@ -28,31 +29,37 @@ def _arg(argv, flag, default=None):
     return argv[argv.index(flag) + 1] if flag in argv else default
 
 
-def descargar(pieza, work, local_dir=None):
+def importar(pieza, work, archivos):
+    """A8: toma los resultados guardados por `download_file_content` del conector de Drive
+    ({content: base64, id, title, mimeType}), los decodifica a <trabajo>/assets/<nombre> y valida."""
+    import base64
     from PIL import Image
     ids = json.load(open(os.path.join(pieza, "imagenes.json"), encoding="utf-8"))
     assets = os.path.join(work, "assets")
     os.makedirs(assets, exist_ok=True)
-    sin_id = [n for n, i in ids.items() if not i and not local_dir]
+    sin_id = [n for n, i in ids.items() if not i]
     if sin_id:
         sys.exit(f"Sin ID de Drive (imagen aun no registrada en Assets): {sin_id}. Me detengo.")
-    d = None
-    if not local_dir:
-        from drive_client import Drive
-        d = Drive()
-    for nombre, fid in ids.items():
+    recibidos = set()
+    for f in archivos:
+        j = json.load(open(f, encoding="utf-8"))
+        nombre = j["title"]
+        if nombre not in ids:
+            sys.exit(f"'{nombre}' no esta en imagenes.json. Me detengo.")
+        if ids[nombre] != j["id"]:
+            sys.exit(f"{nombre}: el ID descargado ({j['id']}) no es el de imagenes.json ({ids[nombre]}). Me detengo.")
         dest = os.path.join(assets, nombre)
-        if local_dir:
-            shutil.copy(os.path.join(local_dir, nombre), dest)
-        else:
-            meta = d.download(fid, dest)
-            if meta["name"] != nombre:
-                sys.exit(f"El ID {fid} es '{meta['name']}', no '{nombre}'. Me detengo.")
+        with open(dest, "wb") as out:
+            out.write(base64.b64decode(j["content"]))
         w, h = Image.open(dest).size
         for k, r in RATIOS.items():
             if f"_{k}_" in nombre and abs(w / h - r) / r > 0.02:
                 sys.exit(f"{nombre}: {w}x{h} no es {k} (proporcion {w/h:.3f}, esperada {r:.3f}). Me detengo.")
+        recibidos.add(nombre)
         print(f"✓ {nombre} {w}x{h}")
+    faltan = sorted(set(ids) - recibidos)
+    if faltan:
+        sys.exit(f"Faltan por descargar: {faltan}. Me detengo.")
     for f in glob.glob(os.path.join(REPO, "production", "assets_local", "FYR_*")):
         shutil.copy(f, assets)
     print(f"✓ marcos y layouts copiados a {assets}")
@@ -84,26 +91,25 @@ def ensamblar(pieza, work, version=1, config=None, portada=False):
     print("✓ listos para revisar en", final, ":", ", ".join(nombres))
 
 
-def subir(pieza, work, carpeta):
+def subir(pieza, work):
     from drive_client import Drive, link
     d = Drive()
     archivos = sorted(glob.glob(os.path.join(work, "final", "*.png")))
     if not archivos:
         sys.exit("No hay PNG en final/.")
     for f in archivos:
-        info = d.upload(f, carpeta)
-        print(f"✓ {info['name']} {link(info['id'])} (md5 verificado)")
-    en_drive = [x for x in d.ls(carpeta) if x["name"].lower().endswith(".png")]
-    print(f"Carpeta con {len(en_drive)} PNG; subidos ahora: {len(archivos)}")
+        info = d.upload(f)
+        print(f"✓ {info['name']} id={info['id']} {link(info['id'])} (md5 verificado)")
+    print(f"{len(archivos)} PNG subidos a la raiz de Drive. Siguiente: moverlos a la carpeta de la pieza con el conector (update_file, parentId).")
 
 
 if __name__ == "__main__":
     a = sys.argv
-    if len(a) < 4 or a[1] not in ("descargar", "ensamblar", "subir"):
+    if len(a) < 4 or a[1] not in ("importar", "ensamblar", "subir"):
         sys.exit(__doc__)
-    if a[1] == "descargar":
-        descargar(a[2], a[3], _arg(a, "--local-dir"))
+    if a[1] == "importar":
+        importar(a[2], a[3], [x for x in a[4:] if not x.startswith("--")])
     elif a[1] == "ensamblar":
         ensamblar(a[2], a[3], int(_arg(a, "--version", 1)), _arg(a, "--config"), "--portada" in a)
     else:
-        subir(a[2], a[3], a[4])
+        subir(a[2], a[3])

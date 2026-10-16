@@ -4,18 +4,23 @@
 Credenciales: SIEMPRE por variables de entorno, nunca en el repo.
   GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN
 
+ALCANCE: `drive.file` (el minimo). Con ese alcance este cliente SOLO ve y toca los archivos que el mismo
+creo. Por eso su unica tarea real es SUBIR archivos binarios (PNG/MP4) a la raiz del Drive de Johnny y
+verificar el md5; despues Claude los MUEVE a su carpeta con el conector de Drive (update_file con parentId).
+Todo lo demas (listar, descargar, crear carpetas, mover, papelera) se hace con el conector de Drive.
+
 Uso como libreria:
   from drive_client import Drive
   d = Drive()
-  d.download("<id>", "ruta/local.png")
-  info = d.upload("local.png", carpeta_id, nombre="FYR_PZA_1.2_S1_4x5_v1.png")   # verifica md5
-  d.mkdir("PZA_1.2", padre_id)  /  d.find("nombre", padre_id)  /  d.metadata(id)  /  d.trash(id)
+  info = d.upload("local.png", nombre="FYR_PZA_1.2_S1_4x5_v1.png")   # a la raiz, verifica md5
+  d.find("nombre") / d.find_prefix("prefijo") / d.metadata(id) / d.trash(id)
+  (descargar y crear carpetas solo funcionan sobre lo que este cliente creo)
 
 Uso como CLI (para comprobar el acceso):
   python3 drive_client.py check
   python3 drive_client.py download <id> <ruta>
-  python3 drive_client.py upload <ruta> <carpeta_id> [nombre]
-  python3 drive_client.py ls <carpeta_id>
+  python3 drive_client.py upload <ruta> [nombre]
+  python3 drive_client.py ls
 """
 import hashlib
 import json
@@ -95,6 +100,13 @@ class Drive:
     def metadata(self, file_id):
         return self._json(f"{API}/{file_id}?fields={FIELDS}&supportsAllDrives=true")
 
+    def find_prefix(self, prefix, parent_id="root"):
+        """Archivos del cliente cuyo nombre empieza por `prefix` (Drive solo busca por palabra; se filtra aqui)."""
+        q = "name contains '%s' and trashed = false and '%s' in parents" % (
+            prefix.split("_v")[0].replace("\\", "\\\\").replace("'", "\\'"), parent_id)
+        url = (f"{API}?q={urllib.parse.quote(q)}&fields=files({FIELDS})&pageSize=100&supportsAllDrives=true")
+        return [f for f in self._json(url).get("files", []) if f["name"].startswith(prefix)]
+
     def find(self, name, parent_id=None):
         q = "name = '%s' and trashed = false" % name.replace("\\", "\\\\").replace("'", "\\'")
         if parent_id:
@@ -138,16 +150,17 @@ class Drive:
         return self._json(f"{API}?fields={FIELDS}&supportsAllDrives=true", "POST", {
             "name": name, "mimeType": "application/vnd.google-apps.folder", "parents": [parent_id]})
 
-    def upload(self, path, parent_id, name=None):
-        """Sube (multipart) y VERIFICA md5 contra lo que Drive guardo. Si ya hay un archivo con ese nombre
-        en la carpeta, lo reemplaza (mismo ID) para no duplicar."""
+    def upload(self, path, parent_id=None, name=None):
+        """Sube (multipart) y VERIFICA md5 contra lo que Drive guardo. Sin `parent_id` va a la raiz de Drive
+        (lo unico permitido con alcance drive.file). Si el cliente ya subio un archivo con ese nombre, lo
+        reemplaza (mismo ID) para no duplicar."""
         name = name or os.path.basename(path)
         with open(path, "rb") as f:
             data = f.read()
         local_md5 = hashlib.md5(data).hexdigest()
         mime = mimetypes.guess_type(name)[0] or "application/octet-stream"
-        existing = [f for f in self.find(name, parent_id) if f["mimeType"] != "application/vnd.google-apps.folder"]
-        meta = {"name": name} if existing else {"name": name, "parents": [parent_id]}
+        existing = [f for f in self.find(name, parent_id or "root") if f["mimeType"] != "application/vnd.google-apps.folder"]
+        meta = {"name": name} if existing else ({"name": name, "parents": [parent_id]} if parent_id else {"name": name})
         boundary = uuid.uuid4().hex
         body = (f"--{boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n".encode()
                 + json.dumps(meta).encode()
@@ -185,9 +198,9 @@ def _cli(argv):
     elif cmd == "download":
         print(json.dumps(d.download(argv[2], argv[3]), indent=1))
     elif cmd == "upload":
-        print(json.dumps(d.upload(argv[2], argv[3], argv[4] if len(argv) > 4 else None), indent=1))
+        print(json.dumps(d.upload(argv[2], None, argv[3] if len(argv) > 3 else None), indent=1))
     elif cmd == "ls":
-        for f in d.ls(argv[2]):
+        for f in d.ls("root"):
             print(f["id"], f["mimeType"].split(".")[-1], f.get("size", "-"), f["name"])
     else:
         print(__doc__)

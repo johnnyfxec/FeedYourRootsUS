@@ -1,57 +1,58 @@
 #!/usr/bin/env python3
-"""Autorizacion UNICA de Drive (se corre una sola vez, la hace Claude con Johnny).
+"""Autorizacion UNICA de Drive por "flujo de dispositivo" (la hace Claude con Johnny, una sola vez).
 
-Paso 1:  python3 drive_authorize.py url
-         -> imprime la direccion que Johnny abre en su navegador y donde da "Permitir".
-         Al terminar, el navegador muestra una pagina que "no se puede abrir" (localhost). ES NORMAL:
-         Johnny copia la direccion COMPLETA de esa pagina y se la pega a Claude.
-Paso 2:  python3 drive_authorize.py canjear "<direccion pegada>"
-         -> imprime el refresh token. Se guarda como variable GOOGLE_OAUTH_REFRESH_TOKEN
-            (entorno de claude.ai/code y secreto de GitHub). NUNCA se escribe en el repo.
+  python3 drive_authorize.py        # imprime un CODIGO y una direccion; Johnny la abre, escribe el codigo y toca Permitir.
+                                    # El script espera (hasta 15 min) y al final imprime GOOGLE_OAUTH_REFRESH_TOKEN.
 
-Requiere GOOGLE_OAUTH_CLIENT_ID y GOOGLE_OAUTH_CLIENT_SECRET en el entorno.
+Alcance: SOLO drive.file (acceso unicamente a los archivos que esta app cree). Requiere un cliente OAuth de tipo
+"TVs y dispositivos de entrada limitada" y las variables GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET.
+El refresh token NUNCA se escribe en el repo.
 """
 import json
 import os
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
-REDIRECT = "http://localhost:8765/"
-SCOPE = "https://www.googleapis.com/auth/drive"
+SCOPE = "https://www.googleapis.com/auth/drive.file"
 
 
-def _creds():
+def _post(url, data):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, data=urllib.parse.urlencode(data).encode()), timeout=60) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        return json.loads(e.read().decode() or "{}")
+
+
+def main():
     cid, sec = os.environ.get("GOOGLE_OAUTH_CLIENT_ID"), os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
     if not cid or not sec:
         sys.exit("Faltan GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET en el entorno.")
-    return cid, sec
-
-
-def main(argv):
-    if len(argv) < 2 or argv[1] not in ("url", "canjear"):
-        sys.exit(__doc__)
-    cid, sec = _creds()
-    if argv[1] == "url":
-        q = urllib.parse.urlencode({
-            "client_id": cid, "redirect_uri": REDIRECT, "response_type": "code", "scope": SCOPE,
-            "access_type": "offline", "prompt": "consent"})
-        print("https://accounts.google.com/o/oauth2/v2/auth?" + q)
-        return
-    pegado = argv[2]
-    code = urllib.parse.parse_qs(urllib.parse.urlparse(pegado).query).get("code", [None])[0]
-    if not code:
-        sys.exit("La direccion pegada no trae 'code='. Pidele a Johnny que copie la direccion completa.")
-    data = urllib.parse.urlencode({
-        "code": code, "client_id": cid, "client_secret": sec,
-        "redirect_uri": REDIRECT, "grant_type": "authorization_code"}).encode()
-    with urllib.request.urlopen(urllib.request.Request("https://oauth2.googleapis.com/token", data=data), timeout=60) as r:
-        j = json.loads(r.read())
-    if "refresh_token" not in j:
-        sys.exit("Google no devolvio refresh_token (repetir el paso 1 con prompt=consent): " + json.dumps(j)[:300])
-    print("REFRESH_TOKEN=" + j["refresh_token"])
-    print("alcance:", j.get("scope"))
+    j = _post("https://oauth2.googleapis.com/device/code", {"client_id": cid, "scope": SCOPE})
+    if "device_code" not in j:
+        sys.exit("Google rechazo la solicitud: " + json.dumps(j)[:400])
+    print(f"ABRE: {j['verification_url']}\nESCRIBE EL CODIGO: {j['user_code']}", flush=True)
+    fin = time.time() + min(int(j.get("expires_in", 900)), 900)
+    espera = int(j.get("interval", 5))
+    while time.time() < fin:
+        time.sleep(espera)
+        t = _post("https://oauth2.googleapis.com/token", {
+            "client_id": cid, "client_secret": sec, "device_code": j["device_code"],
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code"})
+        if "refresh_token" in t:
+            print("GOOGLE_OAUTH_REFRESH_TOKEN=" + t["refresh_token"])
+            print("alcance:", t.get("scope"))
+            return
+        err = t.get("error")
+        if err == "slow_down":
+            espera += 5
+        elif err not in ("authorization_pending", None):
+            sys.exit("Autorizacion fallida: " + json.dumps(t)[:300])
+    sys.exit("El codigo caduco sin que se autorizara. Repetir.")
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

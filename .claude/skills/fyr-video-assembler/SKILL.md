@@ -42,9 +42,9 @@ Aplicar el Protocolo §4. El CTA va antes de la línea final y separado por `//`
 
 ### Paso 4 — Preparar y disparar el render (Claude, sin PC)
 Seguir la **Ruta B** de `knowledge/FYR_Rutas_De_Produccion.md` (pasos B8 a B10). Resumen:
-1. **Portada (B8):** `run_pieza.py descargar` + `ensamblar --config portada_config.json --portada` → subir a `Video_Production/PZA_[tema]/` → escribir su ID en el slide 1 del JSON (`asset`, `drive_id`).
-2. **Verificación previa (B9):** cada `drive_id` del JSON existe en Drive (API), es PNG y pesa > 0; `carpeta_drive_id` (subcarpeta de fecha en `Content_Pieces`) no es `null`; el guion está completo. Si algo falla, no se dispara el render.
-3. **Disparo (B10):** commit a `main` del JSON y de `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`: cierre B 0.35, cierre A 0.05). El push dispara "Render video". El workflow sube el MP4 a `Content_Pieces` y deja el registro en `production/runs/`.
+1. **Portada (B8):** descargar la imagen 1:1 con el conector → `run_pieza.py importar` + `ensamblar --config portada_config.json --portada` → `drive_client.py upload` (raíz) y mover con el conector a `Video_Production/PZA_[tema]/` → escribir su ID en el slide 1 del JSON (`asset`, `drive_id`).
+2. **Verificación previa (B9):** cada `drive_id` del JSON existe en Drive (`get_file_metadata`), es PNG y pesa > 0; ninguno es `null`; el guion está completo. Si algo falla, no se dispara el render.
+3. **Disparo (B10):** commit a `main` del JSON y de `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`: cierre B 0.35, cierre A 0.05). El push dispara "Render video". El workflow sube el MP4 a la raíz de Drive y deja el registro (con el enlace) en `production/runs/`; Claude lo mueve a `Content_Pieces/PZA_[tema]/[fecha]/` con el conector.
 4. Esperar el registro de la corrida; si falla, leer el log, corregir la causa y repetir (máximo 3 intentos, luego reportar). Si hay que comparar cierres A y B, un archivo `.env` por variante, uno a la vez (cada cierre cambia el audio).
 - Nunca pedir ni escribir credenciales; viven en secretos de GitHub y en el entorno de la sesión.
 

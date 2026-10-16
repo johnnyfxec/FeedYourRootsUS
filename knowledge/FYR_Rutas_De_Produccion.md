@@ -86,26 +86,35 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 
 ## 1. Acceso a Drive (requisito compartido)
 
-Claude necesita **leer y escribir archivos binarios en Drive**. El conector de Drive de la sesión descarga bien, pero no puede subir PNG/MP4 pesados. Se resuelve con la API de Drive y una autorización de Johnny (una sola vez).
+**Regla de diseño (16-oct-2026): el conector de Drive hace todo lo que puede; la API solo sube.**
+
+| Operación | Herramienta | Nota |
+|---|---|---|
+| Buscar, listar, leer metadatos | Conector de Drive (`search_files`, `get_file_metadata`) | Siempre por ID o nombre exacto |
+| Descargar imágenes | Conector (`download_file_content`) | El resultado queda guardado en un archivo JSON con el contenido en base64; `run_pieza.py importar` lo decodifica y valida |
+| Crear carpetas, copiar, mover, papelera | Conector (`create_file` con tipo carpeta, `copy_file`, `update_file` con `parentId`, `trash_file`) | Mover = `update_file(fileId, parentId = carpeta destino)` |
+| **Subir archivos pesados (PNG ensamblados, MP4)** | **API de Drive** con `production/scripts/drive/drive_client.py` | El conector solo sube pegando el archivo entero dentro de la llamada (millones de caracteres por slide; un MP4 es imposible). El script sube con verificación `md5` |
+
+**Cómo se sube (A11 y B10):** el cliente de la API tiene el permiso mínimo (`drive.file`: solo ve lo que él mismo sube). Sube el archivo a la **raíz** del Drive de Johnny y verifica el `md5`; después Claude lo **mueve** a su carpeta con el conector y comprueba con `search_files` (padre = carpeta destino) que el archivo está y que el nombre es exacto.
 
 | Pieza | Qué es | Dónde queda |
 |---|---|---|
-| Red de la sesión | El entorno en la nube debe permitir `*.googleapis.com` y `accounts.google.com` | Ajuste del entorno en claude.ai/code |
-| Cliente OAuth "Desktop app" | Proyecto de Google Cloud `clipkit-production-v1`, alcance `drive`, pantalla de consentimiento **En producción** | Google Cloud Console |
-| Variables del entorno | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | Entorno de claude.ai/code (nunca en el repo) |
-| Secretos de GitHub | Los mismos tres, para que Actions suba el MP4 | Settings → Secrets del repo |
-| Cliente | `production/scripts/drive/drive_client.py`: `download(id, ruta)`, `upload(ruta, carpeta_id, nombre)`, `find(nombre, carpeta_id)`, `mkdir(nombre, padre_id)`, `metadata(id)`, `trash(id)` | Repo |
+| Red de la sesión | Configuración → Capacidades → Lista de dominios permitidos: `*.googleapis.com` y `accounts.google.com` (ya agregados el 16-oct-2026) | Ajustes de Claude |
+| Cliente OAuth "TVs y dispositivos de entrada limitada" | Proyecto de Google Cloud `clipkit-production-v1`, alcance `drive.file`, pantalla de consentimiento **En producción** (si no, el permiso caduca a los 7 días) | Google Cloud Console |
+| Credenciales | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | Secretos de GitHub (para que Actions suba el MP4) y, en una sesión de chat, se las pasa Johnny a Claude al inicio si hay que subir archivos. **Nunca en el repo ni en el Proyecto** |
+| Autorización única | `production/scripts/drive/drive_authorize.py` (flujo de dispositivo: Johnny abre google.com/device, escribe un código y toca Permitir) | Repo |
+| Cliente | `production/scripts/drive/drive_client.py` (`upload`, `find`, `find_prefix`, `metadata`, `trash`) y su prueba `test_drive_client.py` | Repo |
 
 Toda subida se verifica: `md5Checksum` que devuelve Drive = md5 del archivo local. Si no coincide, la subida **no cuenta** y se repite.
 
-Hasta que esto esté activo, el carrusel y el video **se detienen en el paso de descarga/subida** y Claude lo dice; no se improvisa otra vía.
+Hasta que la autorización esté hecha, el carrusel y el video **se detienen en el paso de subida** y Claude lo dice; no se improvisa otra vía.
 
 ---
 
 # RUTA A — CARRUSEL (4:5)
 
 **Quién hace qué:** Johnny solo (1) aprueba el brief, (2) genera en Gemini lo que falte y lo exporta a `06_Narrative_Stock`, (3) aprueba los slides terminados, (4) publica. Todo lo demás lo hace Claude.
-**Herramientas:** Airtable (MCP), Drive (MCP para listar/crear carpetas, API para descargar/subir), `assemble.py`. **Nunca Actions.**
+**Herramientas:** Airtable (MCP), Drive (conector para todo; API solo para subir los PNG terminados), `assemble.py`. **Nunca Actions.**
 
 ### A0 — Selección del tema
 - Claude: revisa `Trend_Signals` aprobadas vigentes; si Johnny dio número `X.Y`, lo busca en `Themes` y luego en la Malla; si dijo "el siguiente", elige por cobertura del banco y mezcla de fases; si es tema nuevo, búsqueda semántica obligatoria (Sección 3 de `fyr-content`).
@@ -149,8 +158,8 @@ Claude escribe, en este orden:
 - Si no hubo imágenes nuevas, el estado pasa a `Assets en Drive` aquí mismo tras verificar los IDs del banco.
 
 ### A8 — Descarga
-- Claude: `python3 production/scripts/assemble/run_pieza.py descargar production/pieces/PZA_[tema] <trabajo>`.
-- El script baja por ID (`imagenes.json`: nombre → ID de Drive, que Claude mantiene en el paso A7), verifica el checksum, que el nombre del archivo en Drive coincida, y que la proporción real coincida con el sufijo (`4x5`, `9x16`, `1x1`, ±2 %); copia los marcos de `production/assets_local/`. Si una imagen no tiene ID, se detiene.
+- Claude llama al conector (`download_file_content`) una vez por cada ID de `imagenes.json` (nombre → ID de Drive, que Claude mantiene en el paso A7); cada resultado queda guardado en un archivo JSON.
+- Luego: `python3 production/scripts/assemble/run_pieza.py importar production/pieces/PZA_[tema] <trabajo> <archivo1.json> <archivo2.json> …`. El script decodifica, comprueba que el ID y el nombre coinciden con `imagenes.json`, que no falte ninguna imagen y que la proporción real coincida con el sufijo (`4x5`, `9x16`, `1x1`, ±2 %); copia los marcos de `production/assets_local/`. Si una imagen no tiene ID, se detiene.
 
 ### A9 — Ensamblado
 - Claude: `python3 production/scripts/assemble/run_pieza.py ensamblar production/pieces/PZA_[tema] <trabajo> [--version N]`.
@@ -162,7 +171,8 @@ Claude escribe, en este orden:
 - Cambios: se corrige el config y se vuelve a A9. Versión nueva = `v2`; solo se sube la versión aprobada, y las anteriores en la carpeta se mandan a la papelera.
 
 ### A11 — Subida y verificación
-- Claude: `python3 production/scripts/assemble/run_pieza.py subir production/pieces/PZA_[tema] <trabajo> <ID de la subcarpeta de fecha>`. Sube los PNG aprobados (reemplaza si ya existían, sin duplicar), verifica el checksum de cada uno y que la carpeta tenga la cuenta esperada (= `Número de Slides`).
+- Claude: `python3 production/scripts/assemble/run_pieza.py subir production/pieces/PZA_[tema] <trabajo>`. Sube los PNG aprobados a la raíz de Drive (reemplaza si ya existían, sin duplicar) y verifica el checksum de cada uno; imprime el ID de cada archivo.
+- Después, con el conector: `update_file(fileId, parentId = subcarpeta de fecha de Content_Pieces)` por cada archivo, y `search_files` con esa carpeta como padre para comprobar que están todos (cuenta = `Número de Slides`) con el nombre exacto. Las versiones anteriores de la carpeta se mandan a la papelera con `trash_file`.
 - Airtable: **`Estado Producción = Ensamblado`**, `Carpeta Drive` confirmada.
 - Claude entrega a Johnny: link de la carpeta + caption final.
 
@@ -180,7 +190,7 @@ Claude escribe, en este orden:
 # RUTA B — VIDEO (9:16)
 
 **Quién hace qué:** Johnny (1) aprueba el brief, (2) genera en Gemini lo que falte y lo exporta a `06_Narrative_Stock`, (3) aprueba el MP4, (4) publica. Claude hace todo lo demás y dispara el render en GitHub Actions.
-**Herramientas:** Airtable (MCP), Drive (MCP + API), `assemble.py` (solo la portada), GitHub Actions (render). El render **solo** ocurre en Actions.
+**Herramientas:** Airtable (MCP), Drive (conector; la API solo sube la portada y, desde Actions, el MP4), `assemble.py` (solo la portada), GitHub Actions (render). El render **solo** ocurre en Actions.
 
 ### B0 y B1 — Selección y diseño
 - Igual que A0 y A1, con estas diferencias (leer `FYR_Protocolo_Edicion_Video.md` completo):
@@ -195,7 +205,7 @@ Claude escribe, en este orden:
 - Nombres nuevos: `STOCK-[slug]_9x16_v1.png` y `STOCK-[slug]_1x1_v1.png`, ambos en `06_Narrative_Stock/`.
 
 ### B3 — Brief y JSON
-- Claude escribe `production/pieces/PZA_[tema]/brief.md` y `production/scripts/video/pza-[tema]/pieza_[tema].json` (contrato del Protocolo §2). Slides 2–N llevan el ID de Drive de la escena; el slide 1 (`asset` = nombre de la portada compuesta, `drive_id`) y `carpeta_drive_id` (ID de la subcarpeta de fecha en `Content_Pieces`, creada en B5) se completan en B5/B8. Si cualquiera está en `null`, B9 falla a propósito.
+- Claude escribe `production/pieces/PZA_[tema]/brief.md` y `production/scripts/video/pza-[tema]/pieza_[tema].json` (contrato del Protocolo §2). Slides 2–N llevan el ID de Drive de la escena; el slide 1 (`asset` = nombre de la portada compuesta, `drive_id`) se completa en B8. Si está en `null`, B9 falla a propósito.
 - Validación: JSON válido; cada escena del banco existe en `Assets`; longitud del guion; sin palabras prohibidas; el cierre cumple el tipo elegido.
 
 ### B4 — PAUSA: aprobación del brief (Johnny). Igual que A4.
@@ -207,23 +217,23 @@ Igual que A5, con: `Tipo de Pieza = Video`, `Duración` estimada, `ID de variant
 - Igual que A6 y A7 (proporciones: 9:16 ≈ 0.5625, 1:1 = 1.0; ±2 %). `Estado = Assets en Drive`.
 
 ### B8 — Portada compuesta
-- Claude: con `production/pieces/PZA_[tema]/portada_config.json` (`marco_grande_cuadrado`, `texto_titulo`, `texto_subtitulo`) y `imagenes.json` (la imagen 1:1): `run_pieza.py descargar …` y luego `run_pieza.py ensamblar … --config portada_config.json --portada` → `FYR_PZA_[tema]_PORTADA_9x16_v1.png`, 1080×1920.
+- Claude: con `production/pieces/PZA_[tema]/portada_config.json` (`marco_grande_cuadrado`, `texto_titulo`, `texto_subtitulo`) y `imagenes.json` (la imagen 1:1): descargar con el conector y `run_pieza.py importar …`, y luego `run_pieza.py ensamblar … --config portada_config.json --portada` → `FYR_PZA_[tema]_PORTADA_9x16_v1.png`, 1080×1920.
 - Revisa la portada visualmente y la manda a Johnny para su OK **junto con la aprobación del resto** (B11 no la repite).
-- Sube la portada a `Video_Production/PZA_[tema]/` (crea la carpeta si no existe), verifica checksum, escribe su ID en el slide 1 del JSON y quita el bloque `portada`. Commit.
+- Sube la portada con la API (`drive_client.py upload <png>`, a la raíz), la mueve con el conector a `Video_Production/PZA_[tema]/` (crea la carpeta si no existe), comprueba que está, escribe su ID en el slide 1 del JSON (`asset`, `drive_id`) y quita el bloque `portada`. Commit.
 - El paso "Portada (ensamblador)" del workflow y `_ci/make_cover.py` ya fueron eliminados (14-oct-2026).
-- Subida de la portada: `python3 production/scripts/drive/drive_client.py upload <png> <ID de Video_Production/PZA_[tema]>`.
 
 ### B9 — Verificación previa al render
-Claude comprueba, con la API, que **cada ID de Drive del JSON** existe, es PNG y tiene tamaño > 0; que el slide 1 es 1080×1920; que el guion está completo. Si algo falla, no se dispara el render.
+Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive del JSON** existe, es PNG y tiene tamaño > 0; que el slide 1 es 1080×1920; que el guion está completo. Si algo falla, no se dispara el render.
 
 ### B10 — Render en Actions
 1. Claude hace commit a `main` del JSON y del archivo de cola `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`).
 2. Ese push dispara el workflow "Render video" (voz TTS + subtítulos palabra por palabra + render).
-3. El workflow sube el MP4 (paso `upload_mp4.py`, con los secretos `GOOGLE_OAUTH_*`) a `Content_Pieces/PZA_[tema]/[fecha]/` (nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4`) y deja el registro de la corrida en `production/runs/`.
+3. El workflow sube el MP4 (paso `upload_mp4.py`, con los secretos `GOOGLE_OAUTH_*`) a la raíz de Drive con el nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4` (la versión sube sola) y deja el registro de la corrida, con el enlace del MP4, en `production/runs/`.
+   Claude lee el ID del enlace y mueve el MP4 con el conector (`update_file`, `parentId` = subcarpeta de fecha de `Content_Pieces`), verificando con `search_files`.
 4. Claude espera el registro de la corrida; si el workflow falla, lee el log, corrige la causa y vuelve a B9. Máximo 3 intentos; después reporta.
 
 ### B11 — Revisión y PAUSA de aprobación
-- Claude descarga el MP4 de Drive, comprueba duración, resolución 1080×1920, audio presente, y extrae fotogramas de cada slide para revisar subtítulos y cortes.
+- Claude descarga el MP4 con el conector, comprueba duración, resolución 1080×1920, audio presente, y extrae fotogramas de cada slide para revisar subtítulos y cortes.
 - Johnny ve el MP4 desde la carpeta de Drive y aprueba o pide cambios. Cambio = corregir JSON → B9 → B10; la versión nueva es `v2` y las anteriores se mandan a la papelera tras la aprobación.
 
 ### B12 — Registro final

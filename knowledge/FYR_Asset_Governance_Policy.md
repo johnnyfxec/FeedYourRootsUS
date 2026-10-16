@@ -195,7 +195,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 ## 9. Qué NO está automatizado todavía (honestidad operativa)
 
 - Generación de imagen en Gemini/Nano Banana — sigue siendo un paso manual de Johnny.
-- Ensamblaje de carrusel — lo hace Claude con `assemble.py` en su sesión (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`) usando `production/scripts/assemble/run_pieza.py`; nunca pasa por Actions. Requiere el acceso a la API de Drive para descargar las escenas y subir los PNG terminados (ver Sección 1 de `FYR_Rutas_De_Produccion.md`).
+- Ensamblaje de carrusel — lo hace Claude con `assemble.py` en su sesión (Pillow, ver `FYR_Motor_Ensamblado_Arquitectura_v1.md`) usando `production/scripts/assemble/run_pieza.py`; nunca pasa por Actions. Descarga y mueve archivos con el conector de Drive; solo la subida de los PNG terminados usa la API de Drive (ver Sección 1 de `FYR_Rutas_De_Produccion.md`).
 - Ensamblaje de video — el render corre en GitHub Actions (voz con Google Cloud TTS + render con Clipkit), documentado en `FYR_Protocolo_Edicion_Video.md`; la portada la compone Claude con `assemble.py`. Validado de punta a punta con PZA_4.2 (en PC); el motor aún es una copia de carpeta por pieza (falta el motor único).
 - Publicación/programación en redes sociales — no hay conector de publicación directa disponible; sigue siendo manual.
 - Producción de copy/guión — puede generarse por Claude a partir del banco de temas (Malla de 61 + temas nuevos de los PDFs) + este documento, pero requiere revisión humana antes de publicar.

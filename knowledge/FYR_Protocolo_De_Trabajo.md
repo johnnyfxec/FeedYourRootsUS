@@ -38,7 +38,7 @@ Nunca `git push --force`, nunca reescribir historia, nunca commitear credenciale
 
 Los clones son independientes: un cambio en uno no aparece en los otros hasta hacer `git push` donde se editó y `git pull` donde se quiere ver. Los scripts y JSON viajan por repo; las imágenes, el audio y el video viajan por Drive.
 
-Lo que una sesión de Claude Code puede hacer con Google depende del **nivel de red del entorno** (claude.ai/code → entorno → Network access): con Google permitido (`*.googleapis.com`, `accounts.google.com`) y las variables `GOOGLE_OAUTH_*` cargadas, descarga y sube archivos de Drive con `production/scripts/drive/drive_client.py`. Las credenciales nunca se commitean (el repo es público).
+Con Google en la lista de dominios permitidos (Configuración → Capacidades en un chat; **Network access** del entorno en una sesión de Claude Code), la sesión sube archivos pesados con `production/scripts/drive/drive_client.py` (permiso mínimo `drive.file`); todo lo demás de Drive va por el conector. Las credenciales nunca se commitean (el repo es público).
 
 **Cuidado con alias de shell que redefinen comandos estándar de Unix.** Si un comando básico (`touch`, `ls`, etc.) empieza a comportarse de forma inesperada (por ejemplo, abre Claude Code solo, o cambia de directorio solo), verificar primero con `type nombre_comando` antes de asumir que es un bug del script — puede ser un alias personal en `.bashrc`/`.bash_profile` pisando el comando real.
 
