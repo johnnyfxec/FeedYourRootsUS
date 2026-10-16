@@ -113,7 +113,7 @@ La sesión arrancó con un documento de investigación (pegado por Johnny, gener
 
 ## 5. Tabla Airtable `Trend_Signals` — schema final verificado
 
-**Base:** `appMy5aOwifSbBLPR` — **Tabla:** `Trend_Signals` (`tblxdaRsgEy8CHvV9`)
+**Base:** `appMy5aOwifSbBLPR` — **Tabla:** `Trend_Signals` en prosa / **`Trend Signals`** (con espacio) es el nombre real en Airtable (`tblxdaRsgEy8CHvV9`, confirmado 16-oct-2026)
 
 | Campo | Tipo Airtable real | Config / Notas |
 |---|---|---|
@@ -128,7 +128,7 @@ La sesión arrancó con un documento de investigación (pegado por Johnny, gener
 | Volumen_Uso | Number (integer) | Puede quedar vacío si la fuente no lo da |
 | Ventana_Vida_Estimada | Single line text | Texto libre ("7-14 dias"), estimación cualitativa, no un dato duro |
 | Score_Afinidad_Avatar | Number | 1-5, criterio en SKILL.md §Paso 2 |
-| Pilar_Relacionado | **Link to another record → Themes** — ⚠️ contradice `trend-scout/references/schema_trend_signals.md` (dice singleSelect); como esta tabla está marcada "Tipo Airtable real" y el otro no, **este documento es la hipótesis más probable**, pero ninguno de los dos se verificó contra Airtable en la auditoría del 16-oct-2026 — confirmar con `get_table_schema` antes de la próxima escritura a este campo y resolver la contradicción en ambos lugares de una vez. | Verificar nombre exacto contra `Themes` real antes de escribir — nunca de memoria |
+| Pilar_Relacionado | **Link to another record → Themes** (confirmado contra Airtable real 16-oct-2026 con `get_table_schema`; `trend-scout/references/schema_trend_signals.md` decía singleSelect — corregido ahí también en el mismo commit) | Escribir el `recXXXXXXXXXXXXXX` del registro de `Themes`, no el nombre como texto. Campo lookup de solo lectura asociado: `Pilar (from Pilar_Relacionado)` |
 | Hook_CRS_Equivalente | **Single select propio, 20 opciones (01 Negativo → 20 Revelación)** | **Corregido en esta sesión** — ver §5.1 |
 | Fase_Embudo_Sugerida | Single select | F1 / F2 / F3 / F4 |
 | Formato_Sugerido | Single select | POV / Antes-Después / Countdown / Storytime |

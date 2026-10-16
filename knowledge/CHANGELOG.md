@@ -19,11 +19,18 @@ Johnny pidió una primera pasada de auditoría de todo el repo (`knowledge/`, la
 - **`image_fetcher.py` no verificaba el asset de marco para el layout `marco_grande_portada`.** Causa real: ese layout reutiliza el mismo archivo físico que `marco_grande` (`_compose_marco_grande_portada` llama `_load_asset("marco_grande", ...)`), pero como no tenía su propia entrada en el dict `ASSETS` de `layout_specs.py`, una pieza que use `marco_grande_portada` sin ningún slide `marco_grande` nunca activaría la verificación previa — el fallo solo aparecería tarde, en el ensamblado real. Corregido agregando la entrada duplicada (mismo archivo, documentado por qué) a `ASSETS`.
 
 **Quedó pendiente, ordenado por prioridad (ver mensaje de la sesión para el detalle completo):**
-1. ~~Tercera vía de credenciales de Drive sin documentar~~ — **resuelto**, ver abajo.
-2. ~~Contradicción de tipo de campo Airtable en `Trend_Signals`~~ — **marcado explícitamente para verificar**, ver abajo (no se puede cerrar sin consultar Airtable real).
-3. ~~Contenido de otro negocio de Johnny mezclado sin traducir~~ — **resuelto parcialmente**, ver abajo.
+1. ~~Tercera vía de credenciales de Drive sin documentar~~ — **resuelto**.
+2. ~~Contradicción de tipo de campo Airtable en `Trend_Signals`~~ — **resuelto**, ver entrada de abajo.
+3. ~~Contenido de otro negocio de Johnny mezclado sin traducir~~ — **resuelto parcialmente**, ver entrada de la pasada anterior.
 4. Error ya conocido y documentado como pendiente en `FYR_Brand_Mark_Spec_v1.md` (el PDF cita `_v2.svg`, el archivo real es `_v1.svg`) — queda como estaba, se corrige en la próxima revisión del PDF, no bloquea nada.
 5. `seed-library-final.md`: Johnny confirmó que el PDF real tiene 101 ilustraciones (ya las contó varias veces) — la discrepancia está en el `.md`, probablemente falta una fila/categoría. Johnny lo va a revisar él mismo contra el PDF y avisa qué falta exactamente antes de corregir el documento.
+
+Con esto, los 5 hallazgos de la auditoría quedan cerrados o en espera de una acción puntual de Johnny (no de más trabajo de Claude) — listo para pasar a Fase D.
+
+## 2026-10-16 (continuación — Auditoría, tercera pasada: schema de Trend_Signals confirmado)
+
+- **Contradicción de schema resuelta con el conector de Airtable real** (`get_table_schema` sobre `appMy5aOwifSbBLPR`/`tblxdaRsgEy8CHvV9`). `Pilar_Relacionado`, `Tema_Vinculado` y `Content_Piece_Generada` son los tres `multipleRecordLinks` (Link to another record) — `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §5 tenía razón; `trend-scout/references/schema_trend_signals.md` fue el que quedó desactualizado (decía singleSelect/texto) y se corrigió para que coincida. Se escribe con el `recXXXXXXXXXXXXXX` del registro vinculado, nunca el texto/número visible.
+- **Dos hallazgos adicionales de la misma consulta, documentados:** existe un campo lookup de solo lectura `Pilar (from Pilar_Relacionado)` que ningún documento mencionaba — ya no hace falta resolver el nombre del pilar a mano. Y el nombre real de la tabla en Airtable es `Trend Signals` (con espacio), no `Trend_Signals` — el guion bajo es solo la convención de escritura en prosa de `knowledge/`, no el nombre real; anotado en ambos documentos para quien busque la tabla por nombre exacto.
 
 ## 2026-10-16 (continuación — Auditoría, segunda pasada: correcciones 1-3)
 
