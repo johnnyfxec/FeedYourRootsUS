@@ -9,6 +9,11 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-16
+
+- **Drive — migración de arquitectura de subida.** `FYR_Rutas_De_Produccion.md`: corregida la descripción de cómo A11/B8 suben archivos — ya no "API sube a la raíz con `drive.file`, el conector mueve", sino OAuth de usuario con scope `drive` completo por flujo web/loopback, subida directa a la carpeta final. Causa: `drive.file` + flujo de dispositivo resultó estar restringido por Google de forma no configurable (confirmado con reporte público idéntico de otro usuario); la arquitectura real quedó documentada en los docstrings de `drive_client.py`, `drive_authorize_web.py` y `drive_authorize.py` (este último obsoleto, se deja como registro). Se documenta también la cuenta dueña del Drive de FYR (`johnnyhacetrading@gmail.com`) y queda pendiente de verificar si los secretos de GitHub Actions (`upload_mp4.py`) ya usan el mismo refresh token o siguen en la arquitectura vieja.
+- **Protocolo de trabajo — 2 lecciones nuevas.** `FYR_Protocolo_De_Trabajo.md`: verificar con qué cuenta de Google se autentica antes de asumir que es la correcta (causó horas de debugging hoy); una app OAuth en status "Testing" admite un solo test user a la vez, no varios de antemano (el límite de 100 es solo tras Verificación).
+
 ## 2026-10-14
 
 Rutas de producción definidas por formato (decisión de Johnny: "como un reloj suizo"), sin PC.

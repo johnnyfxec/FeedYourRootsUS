@@ -95,14 +95,15 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 | Crear carpetas, copiar, mover, papelera | Conector (`create_file` con tipo carpeta, `copy_file`, `update_file` con `parentId`, `trash_file`) | Mover = `update_file(fileId, parentId = carpeta destino)` |
 | **Subir archivos pesados (PNG ensamblados, MP4)** | **API de Drive** con `production/scripts/drive/drive_client.py` | El conector solo sube pegando el archivo entero dentro de la llamada (millones de caracteres por slide; un MP4 es imposible). El script sube con verificación `md5` |
 
-**Cómo se sube (A11 y B10):** el cliente de la API tiene el permiso mínimo (`drive.file`: solo ve lo que él mismo sube). Sube el archivo a la **raíz** del Drive de Johnny y verifica el `md5`; después Claude lo **mueve** a su carpeta con el conector y comprueba con `search_files` (padre = carpeta destino) que el archivo está y que el nombre es exacto.
+**Cómo se sube (A11 y B10, vigente desde 16-oct-2026):** el cliente de la API usa OAuth de **usuario** (no cuenta de servicio) con scope `drive` completo, autorizado por flujo **web/loopback** (no flujo de dispositivo: ese rechaza el scope completo). Con ese scope, `parent_id` puede ser cualquier carpeta de Johnny — sube **directo** a la carpeta final (`Content_Pieces/PZA_x/<fecha>/` o `Video_Production/PZA_x/`) y verifica el `md5`; no hace falta que el conector la mueva después. Historia completa de por qué `drive.file` y el flujo de dispositivo no sirven: ver las notas de diseño en `drive_client.py`, `drive_authorize_web.py` y `drive_authorize.py` (este último queda como registro, obsoleto).
 
 | Pieza | Qué es | Dónde queda |
 |---|---|---|
-| Red de la sesión | Configuración → Capacidades → Lista de dominios permitidos: `*.googleapis.com` y `accounts.google.com` (ya agregados el 16-oct-2026) | Ajustes de Claude |
-| Cliente OAuth "TVs y dispositivos de entrada limitada" | Proyecto de Google Cloud `clipkit-production-v1`, alcance `drive.file`, pantalla de consentimiento **En producción** (si no, el permiso caduca a los 7 días) | Google Cloud Console |
-| Credenciales | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | Secretos de GitHub (para que Actions suba el MP4) y, en una sesión de chat, se las pasa Johnny a Claude al inicio si hay que subir archivos. **Nunca en el repo ni en el Proyecto** |
-| Autorización única | `production/scripts/drive/drive_authorize.py` (flujo de dispositivo: Johnny abre google.com/device, escribe un código y toca Permitir) | Repo |
+| Red de la sesión | Configuración → Capacidades → Lista de dominios permitidos: `*.googleapis.com` y `accounts.google.com` | Ajustes de Claude |
+| Cliente OAuth "Aplicación de escritorio" | Scope `drive` completo. Mientras la pantalla de consentimiento esté en status **Testing**, solo admite **un test user a la vez** (el límite de 100 solo aplica una vez Verificada/En producción) — ver checklist de proceso en `FYR_Protocolo_De_Trabajo.md` | Google Cloud Console |
+| Cuenta dueña del Drive de FYR | `johnnyhacetrading@gmail.com` (NO `johnnybravol1995@gmail.com`) | — |
+| Credenciales | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | Secretos de GitHub (para que Actions suba el MP4 — **pendiente de confirmar si usan este mismo refresh token o uno propio sin migrar**) y, en una sesión de chat, se las pasa Johnny a Claude al inicio si hay que subir archivos. **Nunca en el repo ni en el Proyecto** |
+| Autorización única | `production/scripts/drive/drive_authorize_web.py` (flujo web/loopback: Johnny abre la URL impresa en SU navegador, inicia sesión con `johnnyhacetrading@gmail.com` y toca Permitir) | Repo |
 | Cliente | `production/scripts/drive/drive_client.py` (`upload`, `find`, `find_prefix`, `metadata`, `trash`) y su prueba `test_drive_client.py` | Repo |
 
 Toda subida se verifica: `md5Checksum` que devuelve Drive = md5 del archivo local. Si no coincide, la subida **no cuenta** y se repite.
@@ -219,7 +220,7 @@ Igual que A5, con: `Tipo de Pieza = Video`, `Duración` estimada, `ID de variant
 ### B8 — Portada compuesta
 - Claude: con `production/pieces/PZA_[tema]/portada_config.json` (`marco_grande_cuadrado`, `texto_titulo`, `texto_subtitulo`) y `imagenes.json` (la imagen 1:1): descargar con el conector y `run_pieza.py importar …`, y luego `run_pieza.py ensamblar … --config portada_config.json --portada` → `FYR_PZA_[tema]_PORTADA_9x16_v1.png`, 1080×1920.
 - Revisa la portada visualmente y la manda a Johnny para su OK **junto con la aprobación del resto** (B11 no la repite).
-- Sube la portada con la API (`drive_client.py upload <png>`, a la raíz), la mueve con el conector a `Video_Production/PZA_[tema]/` (crea la carpeta si no existe), comprueba que está, escribe su ID en el slide 1 del JSON (`asset`, `drive_id`) y quita el bloque `portada`. Commit.
+- Sube la portada con la API directo a `Video_Production/PZA_[tema]/` (`drive_client.py upload <png> <parent_id>`; crea la carpeta antes con el conector si no existe), comprueba que está, escribe su ID en el slide 1 del JSON (`asset`, `drive_id`) y quita el bloque `portada`. Commit.
 - El paso "Portada (ensamblador)" del workflow y `_ci/make_cover.py` ya fueron eliminados (14-oct-2026).
 
 ### B9 — Verificación previa al render
@@ -228,8 +229,8 @@ Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive 
 ### B10 — Render en Actions
 1. Claude hace commit a `main` del JSON y del archivo de cola `production/queue/pza-[tema].env` (`PIEZA`, `VARIANTE`, `TAIL_LAST`).
 2. Ese push dispara el workflow "Render video" (voz TTS + subtítulos palabra por palabra + render).
-3. El workflow sube el MP4 (paso `upload_mp4.py`, con los secretos `GOOGLE_OAUTH_*`) a la raíz de Drive con el nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4` (la versión sube sola) y deja el registro de la corrida, con el enlace del MP4, en `production/runs/`.
-   Claude lee el ID del enlace y mueve el MP4 con el conector (`update_file`, `parentId` = subcarpeta de fecha de `Content_Pieces`), verificando con `search_files`.
+3. El workflow sube el MP4 (paso `upload_mp4.py`, con los secretos `GOOGLE_OAUTH_*` de GitHub) con el nombre `FYR_PZA_[tema]_VIDEO_[variante]_9x16_v[n].mp4` (la versión sube sola) y deja el registro de la corrida, con el enlace del MP4, en `production/runs/`.
+   **Pendiente de verificar (16-oct-2026):** si los secretos `GOOGLE_OAUTH_*` de GitHub Actions ya apuntan al mismo client "Aplicación de escritorio" + refresh token de usuario vigente, `upload_mp4.py` puede subir directo a la subcarpeta de fecha de `Content_Pieces` igual que A11/B8 (sin paso de mover). Si Actions todavía usa credenciales viejas (`drive.file` / cuenta de servicio), sigue subiendo a la raíz y Claude debe moverlo con el conector (`update_file`, `parentId` = subcarpeta de fecha), verificando con `search_files`. No asumir uno u otro sin comprobarlo primero.
 4. Claude espera el registro de la corrida; si el workflow falla, lee el log, corrige la causa y vuelve a B9. Máximo 3 intentos; después reporta.
 
 ### B11 — Revisión y PAUSA de aprobación
