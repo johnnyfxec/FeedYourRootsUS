@@ -33,12 +33,16 @@ Uso como libreria:
   info = d.upload("local.png", parent_id="<id_carpeta>", name="FYR_PZA_1.2_S1_4x5_v1.png")
   d.find("nombre") / d.find_prefix("prefijo", parent_id) / d.metadata(id) / d.trash(id)
   d.mkdir("nombre", parent_id)  # idempotente
+  d.content_pieces_folder("PZA_4.2", "2026-10-16")  # -> id de Content_Pieces/PZA_4.2/2026-10-16/ (crea lo que falte)
+  d.video_production_folder("PZA_4.2")              # -> id de Video_Production/PZA_4.2/ (solo insumos de trabajo)
 
 Uso como CLI (para comprobar el acceso):
   python3 drive_client.py check
   python3 drive_client.py download <id> <ruta>
   python3 drive_client.py upload <ruta> [nombre] [parent_id]
   python3 drive_client.py ls [parent_id]
+  python3 drive_client.py content-pieces-folder <pieza_id> <fecha_YYYY-MM-DD>
+  python3 drive_client.py video-production-folder <pieza_id>
 """
 import hashlib
 import json
@@ -55,6 +59,14 @@ TOKEN_URL = "https://oauth2.googleapis.com/token"
 API = "https://www.googleapis.com/drive/v3/files"
 UPLOAD = "https://www.googleapis.com/upload/drive/v3/files"
 FIELDS = "id,name,mimeType,size,md5Checksum,parents,webViewLink,trashed"
+
+# IDs raiz fijos (16-oct-2026) -- evita resolverlos a mano por busqueda en cada corrida (error real: el
+# piloto de video del 16-oct subio a Video_Production/PZA_4.2/ por una confusion de carpetas; se corrigio
+# moviendolo a Content_Pieces/PZA_4.2/<fecha>/, que es el destino correcto del producto TERMINADO segun
+# knowledge/FYR_Asset_Governance_Policy.md Seccion 0.1 -- Video_Production/ es solo para insumos de trabajo
+# del video, como la portada compuesta).
+CONTENT_PIECES_ROOT_ID = "1Q7qDNWgFNFCLJM0UB2lQWVzmAwWUunEV"   # 05_Marketing_Assets/Social_Media/Content_Pieces/
+VIDEO_PRODUCTION_ROOT_ID = "14A-V2b_z5XZfcyGLFADF0mWvN1TNwd_h"  # 05_Marketing_Assets/Video_Production/
 
 
 class DriveError(RuntimeError):
@@ -176,6 +188,21 @@ class Drive:
         return self._json(f"{API}?fields={FIELDS}&supportsAllDrives=true", "POST", {
             "name": name, "mimeType": "application/vnd.google-apps.folder", "parents": [parent_id]})
 
+    def content_pieces_folder(self, pieza_id, fecha):
+        """Resuelve (creando lo que falte) Content_Pieces/<pieza_id>/<fecha>/ y devuelve su ID.
+        Destino del PRODUCTO TERMINADO (PNG de carrusel o MP4 de video) -- nunca de insumos de trabajo.
+        Idempotente: si ya existe, no duplica. `fecha` en formato YYYY-MM-DD (ver FYR_Rutas_De_Produccion.md A5/B10)."""
+        pieza = self.mkdir(pieza_id, CONTENT_PIECES_ROOT_ID)
+        dia = self.mkdir(fecha, pieza["id"])
+        return dia["id"]
+
+    def video_production_folder(self, pieza_id):
+        """Resuelve (creando si falta) Video_Production/<pieza_id>/ y devuelve su ID.
+        Destino SOLO de insumos de trabajo del video (ej. la portada compuesta de B8) -- el MP4 final
+        va a content_pieces_folder(), no aqui."""
+        pieza = self.mkdir(pieza_id, VIDEO_PRODUCTION_ROOT_ID)
+        return pieza["id"]
+
     def upload(self, path, parent_id=None, name=None):
         """Sube (multipart) y VERIFICA md5 contra lo que Drive guardo. Con el scope `drive` completo,
         `parent_id` puede ser CUALQUIER carpeta de Johnny -- no esta limitado a carpetas creadas por esta
@@ -233,6 +260,10 @@ def _cli(argv):
         parent_id = argv[2] if len(argv) > 2 else "root"
         for f in d.ls(parent_id):
             print(f["id"], f["mimeType"].split(".")[-1], f.get("size", "-"), f["name"])
+    elif cmd == "content-pieces-folder":
+        print(d.content_pieces_folder(argv[2], argv[3]))
+    elif cmd == "video-production-folder":
+        print(d.video_production_folder(argv[2]))
     else:
         print(__doc__)
         return 2

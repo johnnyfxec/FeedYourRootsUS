@@ -3,7 +3,7 @@
 
   python3 run_pieza.py importar  <dir_pieza> <trabajo> <resultado1.json> ...   # A8: valida y decodifica lo descargado con el conector de Drive
   python3 run_pieza.py ensamblar <dir_pieza> <trabajo> [--version N] [--config f.json] [--portada]   # A9
-  python3 run_pieza.py subir     <dir_pieza> <trabajo> [parent_id]                                     # A11 (directo a parent_id vía OAuth de usuario; sin parent_id va a la raíz)
+  python3 run_pieza.py subir     <dir_pieza> <trabajo> [fecha_YYYY-MM-DD] [--config f.json]           # A11 (resuelve sola Content_Pieces/<pieza_id>/<fecha>/, la crea si falta; fecha default hoy)
 
 <dir_pieza> = production/pieces/PZA_x  (config.json + imagenes.json {nombre: drive_id})
 <trabajo>   = carpeta temporal (assets/, out/, final/). Se puede borrar siempre: todo se regenera desde Drive.
@@ -91,21 +91,30 @@ def ensamblar(pieza, work, version=1, config=None, portada=False):
     print("✓ listos para revisar en", final, ":", ", ".join(nombres))
 
 
-def subir(pieza, work, parent_id=None):
-    """A11: sube los PNG finales directo a `parent_id` (carpeta de la pieza en Drive, dada por Claude segun
-    el brief), usando OAuth de usuario con scope `drive` completo (drive_client.py). Sin parent_id va a la
-    raiz de Mi unidad y hay que moverlo despues a mano / con otro paso -- siempre que se conozca el ID de la
-    carpeta de destino, pasarlo aqui evita ese paso extra."""
+def subir(pieza, work, fecha=None, config=None):
+    """A11: sube los PNG finales directo a Content_Pieces/<pieza_id>/<fecha>/ (resuelta sola, creando la
+    carpeta si falta -- ya no hace falta que alguien calcule el parent_id a mano desde afuera; ese paso
+    manual fue la causa de que el piloto de video del 16-oct subiera a la carpeta equivocada), usando OAuth
+    de usuario con scope `drive` completo (drive_client.py). `fecha` en formato YYYY-MM-DD, default hoy."""
+    import datetime
     from drive_client import Drive, link
+    cfg = json.load(open(os.path.join(pieza, config or "config.json"), encoding="utf-8"))
+    pieza_id = cfg["pieza_id"]
+    fecha = fecha or datetime.date.today().isoformat()
     d = Drive()
+    parent_id = d.content_pieces_folder(pieza_id, fecha)
     archivos = sorted(glob.glob(os.path.join(work, "final", "*.png")))
     if not archivos:
         sys.exit("No hay PNG en final/.")
     for f in archivos:
-        info = d.upload(f, parent_id=parent_id)
-        print(f"✓ {info['name']} id={info['id']} {link(info['id'])} (md5 verificado)")
-    destino = f"carpeta {parent_id}" if parent_id else "la raiz de Mi unidad"
-    print(f"{len(archivos)} PNG subidos directo a {destino}.")
+        nombre = os.path.basename(f)
+        info = d.upload(f, parent_id=parent_id, name=nombre)
+        encontrados = d.find(nombre, parent_id)
+        if not any(x["id"] == info["id"] for x in encontrados):
+            sys.exit(f"✗ VERIFICACION FALLIDA: {nombre} se subio (id {info['id']}) pero no aparece al "
+                      f"buscarlo en la carpeta destino. No continuar como si hubiera terminado bien.")
+        print(f"✓ {info['name']} id={info['id']} {link(info['id'])} (md5 verificado, presencia confirmada)")
+    print(f"{len(archivos)} PNG subidos directo a Content_Pieces/{pieza_id}/{fecha}/ (id {parent_id}).")
 
 
 if __name__ == "__main__":
@@ -117,4 +126,5 @@ if __name__ == "__main__":
     elif a[1] == "ensamblar":
         ensamblar(a[2], a[3], int(_arg(a, "--version", 1)), _arg(a, "--config"), "--portada" in a)
     else:
-        subir(a[2], a[3], a[4] if len(a) > 4 else None)
+        fecha = a[4] if len(a) > 4 and not a[4].startswith("--") else None
+        subir(a[2], a[3], fecha, _arg(a, "--config"))

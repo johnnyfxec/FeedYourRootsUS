@@ -60,6 +60,12 @@ jobs:
           echo "tail_last=${TAIL_LAST:-0.35}" >> "$GITHUB_OUTPUT"
           echo "parent_id=${PARENT_ID:-}" >> "$GITHUB_OUTPUT"
 
+      - name: Validar pieza_X.json (antes de gastar tiempo en TTS+render)
+        working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
+        run: |
+          PJ=$(ls pieza_*.json | head -1)
+          python3 ../_ci/validate_pieza.py "$PJ"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -105,9 +111,22 @@ jobs:
           FYR_TAIL_LAST: ${{ steps.p.outputs.tail_last }}
         run: node render.mjs "${{ steps.p.outputs.variante }}" 2>&1 | tee ../../../../render.log
 
+      - name: Verificar secretos de Drive
+        id: secretos
+        shell: bash
+        env:
+          REFRESH: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$REFRESH" ]; then
+            echo "::warning::Faltan los secretos GOOGLE_OAUTH_*; el MP4 queda solo como artefacto (7 dias). Esto NO falla el job -- es config pendiente, no un error de la corrida."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Subir MP4 a Drive (Content_Pieces)
         id: drive
-        continue-on-error: true
+        if: steps.secretos.outputs.ok == 'true'
         shell: bash
         working-directory: production/scripts/video/${{ steps.p.outputs.pieza }}
         env:
@@ -115,10 +134,6 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
         run: |
-          if [ -z "$GOOGLE_OAUTH_REFRESH_TOKEN" ]; then
-            echo "::warning::Faltan los secretos GOOGLE_OAUTH_*; el MP4 queda solo como artefacto (7 dias)."
-            exit 0
-          fi
           PJ=$(ls pieza_*.json | head -1)
           python3 ../_ci/upload_mp4.py "$PJ" "${{ steps.p.outputs.variante }}" "${{ steps.p.outputs.parent_id }}"
 

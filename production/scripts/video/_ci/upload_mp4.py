@@ -33,7 +33,19 @@ def main():
     info = d.upload(mp4s[0], parent_id, nombre)
     url = link(info["id"])
     destino = f"carpeta {parent_id}" if parent_id else "la raiz de Mi unidad (sin parent_id; hay que moverlo a mano)"
-    print(f"✓ subido {nombre} -> {url} (md5 verificado) directo a {destino}.")
+
+    # Verificacion real de llegada (16-oct-2026): d.upload() ya compara md5 contra lo que Drive guardo,
+    # pero esto confirma ademas que el archivo quedo DONDE se esperaba -- no basta con que el script no
+    # haya lanzado excepcion (lo que fallo en el piloto del 16-oct fue el `continue-on-error` del workflow
+    # enmascarando un paso que nunca corria por falta de secretos, no este script; esta verificacion es
+    # una segunda defensa para el caso en que la subida "funcione" pero el parent_id resulte equivocado).
+    encontrados = d.find(nombre, parent_id or "root")
+    coincide = [f for f in encontrados if f["id"] == info["id"]]
+    if not coincide:
+        sys.exit(f"✗ VERIFICACION FALLIDA: {nombre} se subio (id {info['id']}) pero no aparece al buscarlo "
+                  f"en {destino}. No continuar como si hubiera terminado bien.")
+
+    print(f"✓ subido {nombre} -> {url} (md5 verificado, presencia confirmada en {destino}).")
     if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a") as f:
             f.write(f"drive_link={url}\ndrive_name={nombre}\ndrive_id={info['id']}\n")
