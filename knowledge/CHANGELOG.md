@@ -9,6 +9,10 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-16 (continuación — Fase D)
+
+- **`FYR_Fase_D_Produccion_Recurrente_v1.md` (nuevo).** Diseño aprobado por Johnny para pasar de producción conversacional pieza-por-pieza a lotes semanales en Claude Code. Cubre: planificación semanal con 3 fuentes de contenido (banco de temas / trend-scout / actualidad) y disparo automático los lunes; formato carrusel-vs-video decidido por tipo de contenido (no forzado por plataforma — YouTube se puebla como efecto secundario de los videos que ya se producen); las 4 paradas de producción agrupadas por lote en vez de por pieza, con manejo de fallos puntuales que no detienen el lote completo; tamaño de lote a calibrar empíricamente en la primera corrida real, no fijado de antemano. Fase B (verificar app OAuth en Google) descartada por Johnny — cada proyecto nace con su propio client+test user. Fase C (alertas de Actions sin supervisión) pospuesta hasta que el modo de trabajo deje de ser síncrono. Pendiente: implementar el trigger semanal y correr el primer lote real.
+
 ## 2026-10-16
 
 - **Drive — migración de arquitectura de subida.** `FYR_Rutas_De_Produccion.md`: corregida la descripción de cómo A11/B8 suben archivos — ya no "API sube a la raíz con `drive.file`, el conector mueve", sino OAuth de usuario con scope `drive` completo por flujo web/loopback, subida directa a la carpeta final. Causa: `drive.file` + flujo de dispositivo resultó estar restringido por Google de forma no configurable (confirmado con reporte público idéntico de otro usuario); la arquitectura real quedó documentada en los docstrings de `drive_client.py`, `drive_authorize_web.py` y `drive_authorize.py` (este último obsoleto, se deja como registro). Se documenta también la cuenta dueña del Drive de FYR (`johnnyhacetrading@gmail.com`).
