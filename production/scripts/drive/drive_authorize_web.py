@@ -6,12 +6,17 @@ desde un dispositivo con navegador (su tablet, via Termux u otro). Reemplaza el 
   python3 drive_authorize_web.py
       Imprime una URL. Johnny la abre en SU PROPIO navegador (no en este sandbox), inicia sesion con la
       cuenta de Google correcta y toca "Permitir". El navegador lo redirige a http://localhost:<puerto>/...
-      -- este script levanta un servidor HTTP local en ese puerto para recibir esa redireccion, intercambia
-      el codigo por un refresh token, lo imprime y termina. Timeout: 5 minutos.
+      -- este script levanta un servidor HTTP local en un puerto libre elegido al azar para recibir esa
+      redireccion, intercambia el codigo por un refresh token, lo imprime y termina. Timeout: 5 minutos.
 
 Requiere un client ID OAuth de tipo "Aplicacion de escritorio" ("Desktop app"), NO "TV y dispositivos de
 entrada limitada" -- ese tipo es el que rechaza el scope completo. Variables de entorno:
   GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET  (del client "Desktop app")
+
+NOTA (16-oct-2026): para clientes tipo "Desktop app", Google NO exige registrar un Redirect URI en la
+consola -- acepta automaticamente cualquier `http://localhost:<puerto>/` sin configuracion previa (es la
+unica razon por la que este flujo es practico: cada corrida puede usar un puerto distinto). Por eso este
+script NO usa un puerto fijo, sino uno libre que el sistema operativo asigna solo.
 
 Alcance: `drive` completo (lectura/escritura de TODO el Drive accesible para la cuenta que autoriza, no solo
 archivos creados por esta app). Es necesario para poder subir directo dentro de carpetas que Johnny ya creo
@@ -40,7 +45,6 @@ import urllib.request
 SCOPE = "https://www.googleapis.com/auth/drive"
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
-PUERTO = 8765  # fijo: debe coincidir con el Redirect URI configurado en el client OAuth
 
 
 class _Handler(http.server.BaseHTTPRequestHandler):
@@ -81,7 +85,9 @@ def main():
         sys.exit("Faltan GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET en el entorno "
                   "(client OAuth tipo 'Aplicacion de escritorio').")
 
-    redirect_uri = f"http://localhost:{PUERTO}/"
+    server = http.server.HTTPServer(("127.0.0.1", 0), _Handler)  # puerto 0 = el SO asigna uno libre
+    puerto = server.server_address[1]
+    redirect_uri = f"http://localhost:{puerto}/"
     params = {
         "client_id": cid,
         "redirect_uri": redirect_uri,
@@ -92,10 +98,9 @@ def main():
     }
     url = AUTH_URL + "?" + urllib.parse.urlencode(params)
 
-    server = http.server.HTTPServer(("127.0.0.1", PUERTO), _Handler)
     server.timeout = 300
     print(f"ABRE ESTA URL EN TU NAVEGADOR (en tu tablet, no en esta terminal):\n\n{url}\n")
-    print(f"Esperando la autorizacion en http://localhost:{PUERTO}/ (5 min) ...", flush=True)
+    print(f"Esperando la autorizacion en http://localhost:{puerto}/ (5 min) ...", flush=True)
 
     t = threading.Thread(target=server.handle_request, daemon=True)
     t.start()
