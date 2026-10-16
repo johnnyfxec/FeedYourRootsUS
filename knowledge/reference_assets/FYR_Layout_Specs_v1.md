@@ -150,14 +150,28 @@ La proporción a pedir se elige según el hueco que la imagen va a ocupar en el 
 |---|---|---|---|
 | Portada 4:5 (`marco_grande_portada`) | ventana del marco | la de la ventana (sección 1) | llena el marco |
 | Portada 9:16 (`marco_grande_cuadrado`) | 722×728 | **1:1** | llena la ventana |
-| Marco grande 4:5 | 963×1232 | 4:5 | llena la ventana |
+| Marco grande 4:5 | 963×1232 | **0.78:1** (NO 4:5 — ver nota) | llena la ventana exacta, sin recorte |
 | Marco grande 9:16 | 938×1788 | 9:16 | llena la ventana (recorte mínimo) |
-| Doble marco | dos ventanas de ~440×590 | 4:5 | recorte mínimo |
+| Doble marco | dos ventanas de ~440×590, ratio ~0.74–0.77 | recorte mínimo con 4:5 (ver nota) | aceptable, el motor ya recorta/rota |
 | Full-bleed 4:5 | 1080×1350 | 4:5 | llena exacto, sin margen |
 | Full-bleed 9:16 | 1080×1920 | 9:16 | llena exacto, sin margen |
 | Ventana+texto 4:5 | 1080×900 (6:5) | 4:5 | 720×900 centrada, 180 px de parchment por lado (ninguna proporción estándar llena 6:5) |
 | Ventana+texto 9:16 | 1080×1440 | 3:4 | llena exacto, sin margen |
 | Texto+lateral (4:5 y 9:16) | 540×960 | 9:16 | llena exacto |
+
+### Ratio real del hueco vs. 4:5 genérico — marcos de madera (16-oct-2026)
+
+**Hallazgo (piloto PZA_1.2):** con borde de grosor uniforme en los 4 lados, un marco cuyo lienzo exterior es 4:5 (1080×1350) **nunca** puede tener un hueco interior también 4:5 exacto — es geometría, no error de medición ni de generación. Restar el mismo margen `m` a 1080 y a 1350 reduce proporcionalmente más el ancho que el alto, así que el ratio del hueco sube por encima de 0.800 con cualquier `m > 0` (se demostró algebraicamente: la única solución de `(1080-2m)/(1350-2m) = 4/5` es `m = 0`).
+
+Por eso, para `marco_grande` (grosor de borde ~59px, hueco real 963×1232 = **ratio 0.781**), **la imagen de escena debe pedirse directamente en 0.78:1, nunca en 4:5 (0.800)**. Pedirla en 4:5 fuerza al compositor a recortar la imagen para encajarla en el hueco, y ese recorte automático fue la causa del "borde doble"/espacio visible detectado en PZA_1.2 slide 3 — sumado a que, por separado, la imagen de escena traía su propio paspartú pintado (ver nota siguiente).
+
+`doble_marco` tiene el mismo efecto geométrico pero más marcado (ventanas rotadas con ratio ~0.74–0.77): como son dos ventanas por slide y de tamaño variable, no es práctico pedir el ratio exacto por generación — ese layout sigue dependiendo del recorte+rotación automático del compositor (`_paste_rotated_scene`), igual que hoy.
+
+**El marco de madera actual (`FYR_ASSET_marco-madera_4x5_v1.png`) no se regenera por esto** — su color y estilo ya están aprobados; el ajuste es solo en qué ratio se le pide a Gemini para la imagen de escena que va adentro, de aquí en adelante.
+
+### Regla "sin marco propio" — reforzada (16-oct-2026)
+
+El bloque de composición obligatorio (más abajo) ya pide *"no drawn frame, border, vignette, margins or visible paper edge"*, pero el banco de imágenes existente muestra que Gemini no siempre lo respeta (ver PZA_1.2 slides 3 y 5 — imágenes con un paspartú/borde de mapa pintado dentro de la propia ilustración). Esto es un defecto distinto al del ratio del hueco, y compone mal con cualquier layout que ya tenga marco de madera real (se ve como doble borde). No se corrige retroactivamente en el banco ya generado, pero toda generación nueva para un layout con marco interno debe reforzar esta instrucción en el prompt, no asumir que el bloque base alcanza.
 
 ### Relleno de espacios y tolerancia de ratio (11-oct-2026)
 
