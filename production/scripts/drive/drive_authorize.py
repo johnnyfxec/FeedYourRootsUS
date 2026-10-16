@@ -4,9 +4,21 @@
   python3 drive_authorize.py        # imprime un CODIGO y una direccion; Johnny la abre, escribe el codigo y toca Permitir.
                                     # El script espera (hasta 15 min) y al final imprime GOOGLE_OAUTH_REFRESH_TOKEN.
 
-Alcance: SOLO drive.file (acceso unicamente a los archivos que esta app cree). Requiere un cliente OAuth de tipo
-"TVs y dispositivos de entrada limitada" y las variables GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET.
-El refresh token NUNCA se escribe en el repo.
+Alcance: SOLO drive.file (acceso unicamente a los archivos/carpetas que esta app cree). Requiere un cliente
+OAuth de tipo "TVs y dispositivos de entrada limitada" y las variables GOOGLE_OAUTH_CLIENT_ID /
+GOOGLE_OAUTH_CLIENT_SECRET. El refresh token NUNCA se escribe en el repo.
+
+NOTA DE DISENO (16-oct-2026): se intento ampliar a drive completo porque el conector de Drive (MCP) y esta
+app OAuth son identidades de acceso SEPARADAS ante Google (aunque autentiquen la misma cuenta de Gmail): con
+drive.file, el conector no podia ni ver los archivos/carpetas creados por esta app, haciendo imposible el
+diseno original "API sube a root, conector mueve". Google RECHAZA el scope drive completo en el flujo de
+dispositivo (device flow) -- "Invalid device flow scope" -- es una restriccion de Google para este tipo de
+cliente OAuth, no configurable. Se revierte a drive.file.
+
+Diseno vigente: la API crea su PROPIA cadena de carpetas (mkdir, root -> ... -> carpeta final) y sube dentro
+de ellas -- nunca sube ni mueve a una carpeta que ya existia creada por el conector o a mano, porque esa
+carpeta es invisible para esta app. Esto deja una jerarquia de carpetas paralela a la que Johnny arma a mano
+en Drive; nomenclatura distintiva para esas carpetas automaticas: PENDIENTE DE DEFINIR CON JOHNNY.
 """
 import json
 import os
