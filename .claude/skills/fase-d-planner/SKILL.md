@@ -136,7 +136,7 @@ Por cada pieza aprobada en Parada 3:
 1. Verificar que el archivo final está en Drive en `Content_Pieces/PZA_[tema]/[fecha]/` con el nombre correcto.
 2. Actualizar `Content_Pieces.Estado Producción` → `Publicado`.
 3. Actualizar `Themes.Estado` → `Usado` + `Fecha de uso` → hoy.
-4. Si la pieza usó una señal de tendencia, escribir `PZA_[tema]` en `Trend_Signals.Content_Piece_Generada` de la fila correspondiente y cambiar `Estado` → `Usada`.
+4. Si la pieza usó una señal de tendencia: buscar en `Content_Pieces` el registro cuyo `ID Pieza = PZA_[tema]` para obtener su `recXXXXXXXXXXXXXX`; escribir ese record ID en `Trend_Signals.Content_Piece_Generada` de la fila correspondiente (`multipleRecordLinks` — nunca el string visible). Cambiar `Estado` → `Usada`. Ver `trend-scout/references/schema_trend_signals.md` para la regla completa sobre campos Link.
 
 **Cierre del lote — presentar resumen:**
 
