@@ -9,6 +9,14 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-16 (continuación — Plan de publicación automatizada)
+
+- **`FYR_Plan_Publicacion_Automatizada_v1.md` (nuevo).** Johnny trajo una investigación externa (10-oct) sobre publicación automática en 5 plataformas (Instagram, YouTube, Facebook, TikTok, Pinterest) y luego una revisión de una segunda IA sobre esa investigación (16-oct) — ninguna de las dos se tomó como verdad sin verificar. Se confirmaron 3 puntos contra documentación oficial/fuentes primarias:
+  1. **Límite real de Instagram en 24h es 50, no 100** (confirmado en la doc oficial de Meta, `content_publishing_limit.quota_total`).
+  2. **TikTok no se puede automatizar vía Buffer para carrusel** (coincide con lo que reportan terceros) — decisión de Johnny: usar la API directa de TikTok desde el inicio, ya no Buffer, para cubrir carrusel y video ahí.
+  3. **La afirmación de la 2ª IA sobre YouTube era incorrecta en el mecanismo** ("videos forzados a privado hasta auditoría de 2-4 semanas" — no hay evidencia de eso). El problema real es de **cuota**: un proyecto de Google Cloud nuevo tiene 10,000 unidades/día, `videos.insert` cuesta 1,600 → ~6 subidas/día, no 100 ni bloqueo a privado. Decisión de Johnny: no pedir el aumento de cuota todavía, solo cuando el volumen real lo exija.
+  - Documento nuevo reemplaza ambas investigaciones previas con la versión verificada; deja explícito el impacto en Fase D (Parada 4 necesita estado de publicación por plataforma, no un único "Publicado" por pieza, porque el fallo ahora puede ser de una sola plataforma sin afectar las demás). `fyr-publisher` queda como diseño, pendiente de implementar.
+
 ## 2026-10-16 (continuación — Auditoría archivo por archivo)
 
 Johnny pidió una primera pasada de auditoría de todo el repo (`knowledge/`, las 3 skills, `production/scripts/`, el workflow) buscando inconsistencias, referencias rotas y pasos que requieren intervención humana sin decirlo — motivada por los errores reales de propagación encontrados hoy mismo (ver entradas anteriores de este mismo día). Hallazgos y lo que se corrigió de inmediato (lo que no requería verificar nada contra Airtable/Drive real):
