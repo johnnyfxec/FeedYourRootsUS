@@ -13,14 +13,14 @@
     { "n": 3, "layout": "full_bleed", "asset": "STOCK-watering-seedling-tray_9x16_v1.png",
       "imagen": "img/03_riego.png",
       "texto_narrado": "They *can* water a seedling tray without drowning it. Small can, slow pour — five-year-old hands are plenty steady for that." },
-    { "n": 4, "layout": "full_bleed", "asset": "STOCK-hands-picking-cherry-tomato_9x16_v1.png",
-      "imagen": "img/04_cosecha.png",
-      "texto_narrado": "They *can* pick the low fruit clean off the vine. What they *can't* do yet is the pruning shears — that one's still yours." },
+    { "n": 4, "layout": "full_bleed", "asset": "STOCK-child-picking-green-beans_9x16_v1.png",
+      "imagen": "img/04_cosecha-frijoles.png",
+      "texto_narrado": "They *can* pick beans clean off the low vines. What they *can't* do yet is the pruning shears — that one's still yours." },
     { "n": 5, "layout": "full_bleed", "asset": "STOCK-child-pruning-shears-supervised_9x16_v1.png",
       "imagen": "img/05_tijeras-supervisado.png",
       "texto_narrado": "Not because they're not capable — because sharp tools and five-year-olds need an adult hand right there, every time." },
-    { "n": 6, "layout": "full_bleed", "asset": "STOCK-child-harvest-basket-doorway_9x16_v1.png",
-      "imagen": "img/06_canasta.png",
+    { "n": 6, "layout": "full_bleed", "asset": "STOCK-child-presenting-basket-doorway_9x16_v1.png",
+      "imagen": "img/06_entrega-cosecha.png",
       "texto_narrado": "Know the line between ready and not-yet-ready. Age-by-age garden guide, link in bio.// So how much do you actually let them do?" }
   ]
 }
