@@ -43,11 +43,26 @@ Con este cambio, Buffer Free queda en **2 canales de 3 disponibles** (Facebook +
 
 ## 4. Primeros pasos para el skill (`fyr-publisher`, no construido todavía)
 
-1. **Credenciales, las 4 vías:**
-   - Meta (Instagram): app en developers.facebook.com, modo Development, token de usuario Admin/Developer/Tester con `instagram_content_publish`.
-   - YouTube: proyecto de Google Cloud + OAuth "Desktop app" propia (distinta del service account de TTS de `fetch_assets.mjs` — ver `FYR_Rutas_De_Produccion.md` §1).
-   - Buffer: cuenta Free con Facebook + Pinterest conectados, API key.
-   - TikTok: cuenta business + app de developer de TikTok, credenciales propias para la Content Posting API (foto y video).
+### 4.0 Orden de verificación (decisión de Johnny, 17-oct-2026)
+
+La implementación y la prueba real **no se hacen las 4 vías a la vez** — se construye y se prueba una vía completa (credencial + 1 pieza real publicada + confirmación visual en la plataforma) antes de pasar a la siguiente, en este orden:
+
+1. **Instagram** (`meta-mcp`) — la vía con menos incógnitas: self-hosted, documentación oficial clara, límite ya confirmado (§1-2).
+2. **Buffer — Facebook + Pinterest** — el setup más simple (conectar 2 cuentas en la interfaz de Buffer + 1 API key, sin credenciales OAuth propias que armar).
+3. **YouTube** — requiere proyecto de Google Cloud + OAuth propia; se deja para después de validar el patrón con las vías más simples.
+4. **TikTok** — la más nueva del plan (API directa, no Buffer) y la que tiene más puntos sin verificar (§6) — va al final, con todo el aprendizaje de las 3 anteriores ya aplicado.
+
+Cada vía se considera "lista" solo cuando una pieza real publicada por ahí se ve correctamente en la plataforma (no solo que la llamada a la API devuelva éxito) — mismo principio que ya aplicamos con Drive: no confiar en el estado reportado por la API sin confirmarlo mirando el resultado real.
+
+### 4.1 Credenciales, por vía (mismo orden que arriba)
+
+- **Meta (Instagram):** app en developers.facebook.com, modo Development, token de usuario Admin/Developer/Tester con `instagram_content_publish`.
+- **Buffer:** cuenta Free con Facebook + Pinterest conectados, API key.
+- **YouTube:** proyecto de Google Cloud + OAuth "Desktop app" propia (distinta del service account de TTS de `fetch_assets.mjs` — ver `FYR_Rutas_De_Produccion.md` §1).
+- **TikTok:** cuenta business + app de developer de TikTok, credenciales propias para la Content Posting API (foto y video).
+
+### 4.2 El resto del diseño
+
 2. **Contrato con Airtable:** campo en `Content_Pieces` que marque una pieza lista para publicar, campo de plataformas destino (multiselect), y **un campo de estado por plataforma** (no uno solo genérico) — ver §5, porque el fallo ahora puede ser por plataforma individual, no por pieza completa.
 3. **`SKILL.md`** (`fyr-publisher`): cuándo se invoca, qué lee de Airtable, y la rama de despacho por plataforma Y por tipo de pieza (carrusel vs video), según la tabla de la Sección 3.
 4. **Probar cada vía suelta** con una pieza de prueba de cada tipo: un Reel y un carrusel por meta-mcp, un Short por el script de YouTube, un carrusel y un video por la API directa de TikTok, un post de cada tipo a Facebook y Pinterest vía Buffer.
