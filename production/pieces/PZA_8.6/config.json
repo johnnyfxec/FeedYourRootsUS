@@ -1,0 +1,11 @@
+{
+  "pieza_id": "PZA_8.6",
+  "aspecto": "4:5",
+  "slides": [
+    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-blank-grid-sheet_4x5_v1.png", "texto_titulo": "FROM EMPTY YARD\nTO FULL LAYOUT"},
+    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-blank-grid-closeup_4x5_v1.png", "texto_pie": "A blank grid is just... intimidating.", "ancla_recorte": "center"},
+    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-blank-grid-sheet_4x5_v1.png", "imagen_escena_2": "STOCK-plano-ideal-homestead_4x5_v1.png", "texto_pie": "Same yard. One afternoon. One plan."},
+    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-colored-pencils-grid-marking_4x5_v1.png", "texto_overlay": "Every bed on paper first.\nNo guessing once you're outside."},
+    {"numero": 5, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-plano-ideal-homestead_4x5_v1.png", "texto_pie": "The Half-Acre Blueprint template, ready when you are.", "ancla_recorte": "center"}
+  ]
+}

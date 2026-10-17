@@ -1,0 +1,26 @@
+{
+  "pieza_id": "PZA_7.1", "medio": "Video", "aspecto": "9:16",
+  "canvas": { "w": 1080, "h": 1920 }, "tema": "7.1",
+  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
+  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "slides": [
+    { "n": 1, "layout": "full_bleed", "asset": "TPL-video-cover-framed.png",
+      "imagen": "img/01_portada.png", "subtitulos": false, "movimiento": false,
+      "texto_narrado": "The way most people check if a jar sealed — listen for the pop and call it done — is the reason half their pantry doesn't make it to spring." },
+    { "n": 2, "layout": "full_bleed", "asset": "STOCK-hand-holding-jar-blank-tag_9x16_v1.png",
+      "imagen": "img/02_habito.png",
+      "texto_narrado": "I used to do the same thing. Hear the pop, stack the jar, move on." },
+    { "n": 3, "layout": "full_bleed", "asset": "STOCK-jar-lid-closeup-flex_9x16_v1.png",
+      "imagen": "img/03_problema.png",
+      "texto_narrado": "Turns out a pop just means pressure released. It doesn't mean the seal actually held." },
+    { "n": 4, "layout": "full_bleed", "asset": "STOCK-hand-holding-jar-blank-tag_9x16_v1.png",
+      "imagen": "img/04_test.png",
+      "texto_narrado": "The real test: press the center of the lid. If it flexes *at all*, it's not sealed — no matter what you heard." },
+    { "n": 5, "layout": "full_bleed", "asset": "FYR_B12_pantry-shelf-jars_9x16_v1.png",
+      "imagen": "img/05_resultado.png",
+      "texto_narrado": "My first jar that passed that test, for real, sat on this shelf for six months. Untouched. Unspoiled." },
+    { "n": 6, "layout": "full_bleed", "asset": "STOCK-jar-harvest-2023_9x16_v1.png",
+      "imagen": "img/06_cierre.png",
+      "texto_narrado": "Preservation log and troubleshooting guide, link in bio.// The way most people check a seal is the wrong way." }
+  ]
+}

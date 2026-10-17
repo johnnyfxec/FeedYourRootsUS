@@ -1,0 +1,26 @@
+{
+  "pieza_id": "PZA_9.3", "medio": "Video", "aspecto": "9:16",
+  "canvas": { "w": 1080, "h": 1920 }, "tema": "9.3",
+  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
+  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "slides": [
+    { "n": 1, "layout": "full_bleed", "asset": "TPL-video-cover-framed.png",
+      "imagen": "img/01_portada.png", "subtitulos": false, "movimiento": false,
+      "texto_narrado": "Careful what you skip ordering in January — some of it, you can't just order late and catch up." },
+    { "n": 2, "layout": "full_bleed", "asset": "STOCK-seed-catalog-notebook-january_9x16_v1.png",
+      "imagen": "img/02_lista.png",
+      "texto_narrado": "Chicks. Bees. Certain seed varieties that sell out by February. January is the deadline, not a suggestion." },
+    { "n": 3, "layout": "full_bleed", "asset": "STOCK-calendar-missed-date-circled_9x16_v1.png",
+      "imagen": "img/03_historia.png",
+      "texto_narrado": "I found out the hard way — called in March for chicks, got waitlisted until May. Lost half my growing season for eggs." },
+    { "n": 4, "layout": "full_bleed", "asset": "STOCK-action-plan-checklist-october_9x16_v1.png",
+      "imagen": "img/04_sistema.png",
+      "texto_narrado": "Now I keep one list, every October, before the catalogs even land: what sells out, and by when." },
+    { "n": 5, "layout": "full_bleed", "asset": "STOCK-mailbox-seed-package-arrival_9x16_v1.png",
+      "imagen": "img/05_resultado.png",
+      "texto_narrado": "This year's list went out in September. Everything's already on its way." },
+    { "n": 6, "layout": "full_bleed", "asset": "STOCK-seed-catalog-notebook-january_9x16_v1.png",
+      "imagen": "img/06_cierre.png",
+      "texto_narrado": "First and Second Year Action Plan, link in bio.// Careful what you skip ordering in January." }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "pieza_id": "PZA_5.3", "medio": "Video", "aspecto": "9:16",
+  "canvas": { "w": 1080, "h": 1920 }, "tema": "5.3",
+  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
+  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "slides": [
+    { "n": 1, "layout": "full_bleed", "asset": "TPL-video-cover-framed.png",
+      "imagen": "img/01_portada.png", "subtitulos": false, "movimiento": false,
+      "texto_narrado": "What nobody tells you about letting your kid loose with whatever's ready in the garden — he might actually out-cook you." },
+    { "n": 2, "layout": "full_bleed", "asset": "STOCK-harvest-zucchini-cucumber-basket_9x16_v1.png",
+      "imagen": "img/02_cosecha.png",
+      "texto_narrado": "It started with him picking whatever looked ready. No recipe in mind, just... what's out here today." },
+    { "n": 3, "layout": "full_bleed", "asset": "STOCK-child-recipe-card-handwriting_9x16_v1.png",
+      "imagen": "img/03_receta.png",
+      "texto_narrado": "Then he grabbed a card and started writing it down himself — spelling be damned, *his* recipe, *his* words." },
+    { "n": 4, "layout": "full_bleed", "asset": "STOCK-kitchen-table-harvest_9x16_v1.png",
+      "imagen": "img/04_cocina.png",
+      "texto_narrado": "We cooked it exactly the way he wrote it. No substitutions, no corrections." },
+    { "n": 5, "layout": "full_bleed", "asset": "STOCK-family-tasting-kitchen-table_9x16_v1.png",
+      "imagen": "img/05_prueba.png",
+      "texto_narrado": "And it was *good*. Not because it was perfect — because every bite was proof he'd actually been paying attention out there." },
+    { "n": 6, "layout": "full_bleed", "asset": "STOCK-child-recipe-card-handwriting_9x16_v1.png",
+      "imagen": "img/06_cierre.png",
+      "texto_narrado": "His recipe is now page one of ours. Garden-to-table family cookbook, link in bio.// Here's what nobody tells you about handing them the harvest." }
+  ]
+}
