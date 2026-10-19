@@ -2,10 +2,10 @@
   "pieza_id": "PZA_3.1",
   "aspecto": "4:5",
   "slides": [
-    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-seedbox-messy-shoebox_4x5_v1.png", "texto_titulo": "MY SEED BOX\nWAS A DISASTER"},
-    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-seedbox-unlabeled-closeup_4x5_v1.png", "texto_pie": "Half of these I couldn't even name anymore.", "ancla_recorte": "center"},
-    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-seedbox-messy-shoebox_4x5_v1.png", "imagen_escena_2": "STOCK-seedbox-organized-envelopes_4x5_v1.png", "texto_pie": "Same seeds. One system."},
-    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-seedbox-labeled-closeup_4x5_v1.png", "texto_overlay": "Sorted by season, not by chance.\nEvery packet has a home now."},
-    {"numero": 5, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-seedbox-organized-envelopes_4x5_v1.png", "texto_pie": "The full seed library, finally in order.", "ancla_recorte": "center"}
+    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-seedbox-messy-shoebox_4x5_v1.jpg", "texto_titulo": "MY SEED BOX\nWAS A DISASTER"},
+    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-seedbox-unlabeled-closeup_4x5_v1.jpg", "texto_pie": "Half of these I couldn't even name anymore.", "ancla_recorte": "center"},
+    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-seedbox-messy-shoebox_4x5_v1.jpg", "imagen_escena_2": "STOCK-seedbox-organized-envelopes_4x5_v1.jpg", "texto_pie": "Same seeds. One system."},
+    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-seedbox-labeled-closeup_4x5_v1.jpg", "texto_overlay": "Sorted by season, not by chance.\nEvery packet has a home now."},
+    {"numero": 5, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-seedbox-organized-envelopes_4x5_v1.jpg", "texto_pie": "The full seed library, finally in order.", "ancla_recorte": "center"}
   ]
 }
