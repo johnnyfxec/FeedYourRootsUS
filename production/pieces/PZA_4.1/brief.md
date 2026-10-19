@@ -29,9 +29,9 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Cuánto le est
 | 3 | CAN — riego cuidadoso | `STOCK-watering-seedling-tray_9x16_v1.png` (banco) | "They *can* water a seedling tray without drowning it. Small can, slow pour — five-year-old hands are plenty steady for that." |
 | 4 | CAN — cosecha baja | `STOCK-hands-picking-cherry-tomato_9x16_v1.png` (banco) | "They *can* pick the low fruit clean off the vine. What they *can't* do yet is the pruning shears — that one's still yours." |
 | 5 | CAN'T (nueva, el giro honesto) | `STOCK-child-pruning-shears-supervised_9x16_v1.png` **[GENERAR EN GEMINI]** | "Not because they're not capable — because sharp tools and five-year-olds need an adult hand right there, every time." |
-| 6 | Cierre + CTA + loop | `STOCK-child-harvest-basket-doorway_9x16_v1.png` (banco) | "Know the line between ready and not-yet-ready. Age-by-age garden guide, link in bio.// So how much do you actually let them do?" |
+| 6 | Cierre + CTA + loop | `STOCK-child-harvest-basket-doorway_9x16_v1.png` (banco) | "Know the line between ready and not-yet-ready. Age-by-age garden guide, link in bio.// So—" |
 
-Cierre en loop tipo B (pregunta) — reinicia hacia el tono de PZA_4.2 sin repetir su contenido exacto.
+Cierre en loop tipo A (frase cortada) — reinicia directo hacia la pregunta de apertura. **Corregido 19-oct-2026:** la versión original estaba marcada tipo B pero el cierre formulaba su PROPIA pregunta ("So how much do you actually let them do?"), que además repetía casi textual la pregunta de apertura — al reiniciar sonaba a dos preguntas seguidas, no a un loop (una pregunta respondiéndose con otra pregunta no cierra nada). Corregido a tipo A: el cierre queda en un corte limpio ("So—") y es el inicio del video — ya de por sí una pregunta — el que lo completa al reiniciar. Coherente con la regla de 19-oct-2026 de no compartir palabras con la apertura.
 
 ## Prompts nuevos a generar (2 imágenes)
 
