@@ -9,6 +9,19 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-19 (continuación — limpieza de Airtable tras la auditoría §0.8)
+
+Tras documentar `FYR_Rutas_De_Produccion.md` §0.8 (auditoría campo-por-campo del schema real contra lo que el flujo A0-B14 nombraba), quedaron 4 tareas de escritura en Airtable a cargo de Claude (Johnny no tiene tools de escritura en su sesión):
+
+- **`Themes` — limpieza de los 4 campos "Imported table"** (auditados contra el schema real con `get_table_schema`): `Imported table` (`fld9G0l383qnrch4J`) y `Imported table 4` (`fldIKJfDK1T3kECpv`) resultaron ser `multipleRecordLinks` reales — espejos inversos de `Trend_Signals.Pilar_Relacionado` y `Trend_Signals.Tema_Vinculado` respectivamente (confirmado vía `inverseLinkFieldId`), no residuo muerto. Renombrados a **"Señales (Pilar Relacionado)"** y **"Señales (Tema Vinculado)"**, con descripción explicando el espejo. Vacíos en las 10 filas actuales porque ningún tema producido hasta ahora nació de una señal de `trend-scout` (todos vinieron de la Malla de 61) — no es un hueco, es un estado real sin uso todavía. `Imported table 2` (`fldZRyyQn2OJ1k9V9`) e `Imported table 3` (`fldPdI1vgMyqkuwt7`) sí son residuo real: texto plano sin vínculo a ninguna tabla, sin ninguna referencia en ningún `SKILL.md` ni documento de `knowledge/`. Decisión: borrar. La MCP de Airtable de esta sesión no expone una herramienta de borrado de campos (solo crear/renombrar) — renombrados a `[BORRAR — Imported table 2]` / `[BORRAR — Imported table 3]` con la justificación en la descripción; Johnny los borra manualmente desde la UI (único caso de escritura en Airtable que le corresponde a él, por limitación real de herramienta, no por cambio de la regla "Claude hace todas las escrituras").
+- **`Content_Pieces.Audiencia` — descripción corregida.** Mencionaba un campo "Afiliado Destino" que ya no existe en el schema real (verificado con `get_table_schema`). Descripción reescrita para no asumir que ese campo existe; si se necesita a futuro, se documenta primero en `fyr-content/SKILL.md`.
+- **Retroactivo al lote de 7 piezas — verificado, no encontrado hueco.** `Tema Relacionado` y `Ruta JSON` ya estaban poblados correctamente en las 7 filas de `Content_Pieces` (se habían corregido en la auditoría manual previa del mismo día); se verificó también que los 7 archivos (`config.json` x3, `pieza_X.json` x4) existen de verdad en las rutas registradas.
+- **Trend Signals write-back — verificado, no aplica.** La tabla `Trend Signals` tiene una sola fila, completamente vacía (`Estado`, `Content_Piece_Generada`, `Pilar_Relacionado`, `Tema_Vinculado` sin valor) — ninguna de las 7 piezas del lote consumió una señal en A0/B0, consistente con que todas nacieron de la Malla de 61 Temas. Nada que escribir.
+
+Precedente seguido: igual que `Content_Pieces.Imported table` → `Señales_Origen` (ver entrada de este mismo changelog en la sección del piloto PZA_4.2).
+
+---
+
 ## 2026-10-16 (continuación — Plan de publicación automatizada)
 
 - **`FYR_Plan_Publicacion_Automatizada_v1.md` (nuevo).** Johnny trajo una investigación externa (10-oct) sobre publicación automática en 5 plataformas (Instagram, YouTube, Facebook, TikTok, Pinterest) y luego una revisión de una segunda IA sobre esa investigación (16-oct) — ninguna de las dos se tomó como verdad sin verificar. Se confirmaron 3 puntos contra documentación oficial/fuentes primarias:
