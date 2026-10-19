@@ -1,0 +1,10 @@
+{
+  "pieza_id": "PZA_11.2", "aspecto": "4:5",
+  "slides": [
+    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-soil-compaction-test-press_4x5_v1.png", "texto_titulo": "5 SIGNS YOUR\nSOIL IS SICK"},
+    {"numero": 2, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-standing-water-dry-crust_4x5_v1.png", "texto_overlay": "1. Water just sits on top instead of soaking in.\n2. You dig a shovel's width and find zero earthworms."},
+    {"numero": 3, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-wilted-plant-afternoon_4x5_v1.png", "texto_overlay": "3. A white crust forms on the surface after it dries.\n4. Plants wilt by afternoon even on days you watered."},
+    {"numero": 4, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-soil-turned-closeup-smell_4x5_v1.png", "texto_pie": "5. It smells like rotten eggs when you turn it over — that's the real tell.", "ancla_recorte": "center"},
+    {"numero": 5, "layout": "solo_texto", "texto_cuerpo": "Your soil's been trying to tell you. Soil health troubleshooting guide, link in bio.", "posicion_texto": "centro"}
+  ]
+}

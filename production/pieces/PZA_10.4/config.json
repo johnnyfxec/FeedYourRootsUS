@@ -1,0 +1,10 @@
+{
+  "pieza_id": "PZA_10.4", "aspecto": "4:5",
+  "slides": [
+    {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-coop-overpriced-receipt_4x5_v1.png", "texto_titulo": "I OVERPAID\nFOR MY COOP"},
+    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-receipt-total-circled-closeup_4x5_v1.png", "texto_pie": "The total didn't even look real the first time I read it.", "ancla_recorte": "center"},
+    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-coop-overpriced-receipt_4x5_v1.png", "imagen_escena_2": "STOCK-coop-modest-sourcing-guide_4x5_v1.png", "texto_pie": "Same coop. Half the price, once I actually compared."},
+    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-sourcing-guide-three-prices-compared_4x5_v1.png", "texto_overlay": "Three suppliers, three totally different prices for the same build.\nI'd only ever called the first one."},
+    {"numero": 5, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-coop-finished-modest-hens_4x5_v1.png", "texto_pie": "Same coop, same hens — just not the overpriced version.", "ancla_recorte": "center"}
+  ]
+}

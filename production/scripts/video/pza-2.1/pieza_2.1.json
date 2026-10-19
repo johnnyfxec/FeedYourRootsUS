@@ -1,0 +1,28 @@
+{
+  "pieza_id": "PZA_2.1", "medio": "Video", "aspecto": "9:16",
+  "canvas": { "w": 1080, "h": 1920 }, "tema": "2.1",
+  "voz": { "name": "en-US-Neural2-J", "speakingRate": 0.92, "pitch": -4 },
+  "fuente_subtitulos": { "family": "DM Sans", "weight": "700", "file": "fonts/DMSans.ttf" },
+  "slides": [
+    { "n": 1, "layout": "full_bleed", "asset": "FYR_PZA_2.1_PORTADA_9x16_v1.png",
+      "imagen": "img/01_portada.png", "subtitulos": false, "movimiento": false,
+      "texto_narrado": "Here's the planting mistake almost nobody questions — they follow the date on the seed packet like it's gospel.",
+      "drive_id": null },
+    { "n": 2, "layout": "full_bleed", "asset": "STOCK-frost-damaged-tomato-seedling_9x16_v1.png",
+      "drive_id": null,
+      "imagen": "img/02_helada.png",
+      "texto_narrado": "I did too. Right month, right depth, exactly what it said — and still lost half my tomato seedlings to a frost it never warned me about." },
+    { "n": 3, "layout": "full_bleed", "asset": "STOCK-seed-rack-identical-packets_9x16_v1.png",
+      "drive_id": null,
+      "imagen": "img/03_estante.png",
+      "texto_narrado": "Turns out that packet date isn't written for your yard. It's written for an entire climate zone at once, which means it's really written for *no one's* yard." },
+    { "n": 4, "layout": "full_bleed", "asset": "STOCK-personal-frost-date-journal_9x16_v1.png",
+      "drive_id": null,
+      "imagen": "img/04_diario.png",
+      "texto_narrado": "The number that actually matters is your own average last frost date — and depending where you live, that can be *weeks* off from what the packet assumes." },
+    { "n": 5, "layout": "full_bleed", "asset": "STOCK-journal-replaces-packet-closing_9x16_v1.png",
+      "drive_id": null,
+      "imagen": "img/05_cierre.png",
+      "texto_narrado": "Quick Calendar, built around your real frost dates, link in bio.// Wait, so what's actually wrong with just following the seed packet?" }
+  ]
+}
