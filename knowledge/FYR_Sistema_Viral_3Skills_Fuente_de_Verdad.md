@@ -161,6 +161,21 @@ Se había convertido a singleSelect antes de que existieran datos con los que ge
 
 Confirmado en esta sesión: las tools conectadas (`Airtable:update_field`, `get_table_schema`, `create_records_for_table`, `update_records_for_table`, `search_records`, `submit_form`, `delete_table`, `delete_records_for_table`) **no incluyen crear campo, borrar campo individual, ni editar las opciones de un singleSelect ya existente.** Cualquier cambio estructural de ese tipo requiere edición manual en la UI de Airtable — esto no es un límite de la skill, es un límite del conector MCP tal como está configurado hoy. Si en el futuro se agregan tools de creación/borrado de campo, esta nota queda obsoleta y debe eliminarse.
 
+### 5.4 Cobertura de campos — bloque máquina-legible (19-oct-2026)
+
+**Por qué vive acá y no en `FYR_Rutas_De_Produccion.md`:** `Trend Signals` la gestiona esta skill (`trend-scout`), no el flujo A0-B14 — ese documento solo la *consume* en A0/B0 (ver su Sección 0.2). El primer intento de `check_field_coverage.py` (19-oct-2026) puso el bloque de las 4 tablas junto en `FYR_Rutas_De_Produccion.md`, violando esa misma distinción que este documento ya establecía — corregido moviendo el bloque de esta tabla a su dueño real, siguiendo el mismo principio que evitó la contradicción de schema de 16-oct (dos documentos describiendo la misma tabla divergen tarde o temprano; un documento por tabla, los demás la referencian).
+
+**Pendiente de reconciliar (19-oct-2026):** CC corrió el chequeo real vía MCP contra Airtable y reportó **26 campos reales**, contra los 23 listados en la tabla de la Sección 5 de arriba. La diferencia probable son campos lookup/espejo que Airtable generó solo (`Pilar (from Pilar_Relacionado)`, mencionado en la fila de `Pilar_Relacionado` pero nunca listado como fila propia, y posiblemente 1-2 más del mismo tipo). Antes de dar este bloque por cerrado, correr `check_field_coverage.py` (vía MCP en sesión interactiva, o vía `airtable_client.py` en Actions) una vez más después de este commit y resolver cualquier huérfano que aparezca — no asumir que la lista de abajo ya es exhaustiva solo porque se escribió con cuidado.
+
+<!-- CAMPOS-DOCUMENTADOS
+Trend Signals: Signal_ID, Fecha_Deteccion, Tipo_Señal, Nombre_Señal, Plataforma, Pais,
+  Industria_CC, Curva_Momentum, Volumen_Uso, Ventana_Vida_Estimada, Score_Afinidad_Avatar,
+  Pilar_Relacionado, Pilar (from Pilar_Relacionado), Hook_CRS_Equivalente,
+  Fase_Embudo_Sugerida, Formato_Sugerido, Brief_Adaptacion, Sonido_URL_Referencia,
+  Video_Referencia_URL, Estado, Tema_Vinculado, Content_Piece_Generada, Fecha_Aprobacion,
+  Fecha_Expiracion, Resultado_Post_Uso, Notas
+-->
+
 ---
 
 ## 6. La skill `performance-lens` — diseño reservado, NO construida

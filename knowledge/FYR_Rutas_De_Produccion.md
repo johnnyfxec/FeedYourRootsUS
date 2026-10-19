@@ -132,7 +132,7 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 
 Toda subida se verifica: `md5Checksum` que devuelve Drive = md5 del archivo local. Si no coincide, la subida **no cuenta** y se repite.
 
-**Credencial adicional (19-oct-2026), independiente de Drive — gate de gobernanza:** `AIRTABLE_API_KEY` (Personal Access Token de Airtable, scope mínimo `schema.bases:read`), secreto de GitHub, usado por `production/scripts/governance/check_field_coverage.py` para leer el schema real de las 4 tablas y compararlo contra el bloque `<!-- CAMPOS-DOCUMENTADOS -->` de la Sección 3 de este documento, antes de cada lote y como step temprano de `render-video.yml`. Mientras este secreto no exista, el step de CI solo deja un warning y sigue (config pendiente, no error de la corrida) — pero el gate de Parada 0 en `fase-d-planner/SKILL.md` §2.0 sí requiere correrlo a mano con el token si Johnny lo tiene a mano en esa sesión. Nunca en el repo ni en el Proyecto.
+**Credencial adicional (19-oct-2026), independiente de Drive — gate de gobernanza:** `AIRTABLE_API_KEY` (Personal Access Token de Airtable, scope mínimo `schema.bases:read`), secreto de GitHub, usado por `production/scripts/governance/check_field_coverage.py` **solo en GitHub Actions** (sin sesión de Claude ni MCP disponible ahí) para leer el schema real de `Themes`/`Content_Pieces`/`Assets` vía API REST y compararlo contra el bloque `<!-- CAMPOS-DOCUMENTADOS -->` de la Sección 2 de este documento (`Trend Signals` vive en `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §5.4 — ver nota ahí). Mientras este secreto no exista, el step de CI solo deja un warning y sigue (config pendiente, no error de la corrida). **En una sesión interactiva (Claude Code), el mismo chequeo corre vía el MCP de Airtable ya cargado, no vía este token** — corregido 19-oct-2026 tras el primer intento real: el sandbox de la sesión interactiva bloquea salida directa a `api.airtable.com`, confirmado con 3 intentos y un cambio de allowlist que no tomó efecto en caliente (ver `check_field_coverage.py` para el detalle de por qué el canal se elige según el contexto de ejecución). Nunca en el repo ni en el Proyecto.
 
 **Canal por contexto para este gate (incidente real, 19-oct-2026):** `check_field_coverage.py` tal como está (cliente REST con `AIRTABLE_API_KEY`) funciona en GitHub Actions y en cualquier máquina con salida directa a internet (PC/Termux de Johnny) — pero **no funciona dentro de una sesión de Claude Code en el sandbox de la nube**: el proxy de egress de ese sandbox no tiene `api.airtable.com` en su lista de dominios permitidos (se asumió por mala analogía con Drive, donde `*.googleapis.com` sí está permitido — nunca se agregó Airtable). Confirmado en vivo que cambiar la política de red del entorno a mitad de sesión tampoco sirve: una sesión ya arrancada no recarga esa lista en caliente (3 intentos idénticos, mismo 403, incluido uno después del cambio de configuración). **En ese contexto específico (sesión interactiva de Claude Code), el chequeo se corre igual pero por el MCP de Airtable**, que sí funciona ahí durante toda la sesión por una vía distinta a la salida HTTP cruda del sandbox: se importan `comparar_tabla()`/`comparar_todas()`/`resumen_final()` de `check_field_coverage.py` (funciones puras de comparación, sin ningún fetch de red adentro — ver docstring del módulo), se arma `schemas_por_tabla` llamando `mcp__Airtable__get_table_schema` para las 4 tablas, y se invoca `comparar_todas()` directo. Mismo chequeo mecánico, mismo formato de salida, canal distinto según dónde corre. No se reescribe la lógica de comparación a mano en ningún contexto — siempre se importa del script.
 
@@ -288,20 +288,21 @@ Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive 
 <!-- CAMPOS-DOCUMENTADOS
 Themes: Número, Pilar, Dolor/Deseo, Formato, Medio, Título Portada, Subtítulo,
   Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Bundle Relacionado, Plataforma,
-  Prioridad, Hook Asignado, Fase Embudo, Performance, Fecha de Publicación, Link Publicación,
-  Content_Pieces
+  Prioridad, Hook Asignado, Fase Embudo, Performance, Fecha de Publicación,
+  Link Publicación FB, Link Publicación IG, Link Publicación Pinterest,
+  Link Publicación TikTok, Link Publicación YouTube,
+  Señales (Pilar Relacionado), Señales (Tema Vinculado), Content_Pieces
 Content_Pieces: ID Pieza, Tipo de Pieza, Fecha de Generación, Número de Slides, Duración,
   Copy Completo, Ruta .md, Ruta JSON, Estado Producción, Performance, Tema Relacionado,
   Assets Usados, Audiencia, Hook Usado, Señales_Origen, Carpeta Drive, ID de variante
 Assets: Nombre de archivo, Categoría, Subcategoría/Uso, Aspecto, Link Drive, Carpeta Drive,
   Descripción breve, Fecha de creación, Tags, Proyecto/Producto, Reutilizable en,
   Content_Pieces, Veces usado, Último uso, En descanso
-Trend Signals: Pilar_Relacionado, Tema_Vinculado, Content_Piece_Generada, Estado,
-  Fecha_Expiracion, Hook_CRS_Equivalente, Formato_Sugerido, Brief_Adaptacion,
-  Pilar (from Pilar_Relacionado)
 -->
 
-Nota sobre `Themes.Fecha de Publicación` y `Themes.Link Publicación`: estos nombres son los que usa este documento en prosa (0.2, A12/B13); si al correr el script contra el schema real aparecen con otro nombre exacto o separados por plataforma, el script lo va a reportar como campo real no documentado bajo ese nombre — resolver actualizando esta lista para que coincida con Airtable, nunca al revés.
+**`Trend Signals` NO se documenta en este bloque — es dueño `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §5.4, no este documento** (ver 0.2: este documento solo la *consume* en A0/B0, no la gestiona). `check_field_coverage.py` lee los dos documentos, no solo este — ver su código para la lista completa de pares tabla→documento.
+
+**Corrección 19-oct-2026 (primera corrida real del gate, vía CC):** el primer intento de este bloque tenía 2 errores reales que el gate detectó apenas se corrió por primera vez — prueba de que el mecanismo funciona. (1) `Link Publicación` estaba como un solo nombre genérico; el campo real en Airtable está separado por plataforma (5 campos). (2) Los 2 campos renombrados hoy mismo (`Imported table`→`Señales (Pilar Relacionado)`, `Imported table 4`→`Señales (Tema Vinculado)`, ver CHANGELOG) se documentaron en prosa en la Sección 0.8 pero no se actualizaron en este bloque — el script no lee la prosa, así que el renombre quedó invisible para el gate hasta esta corrección. Lección operativa: todo commit que renombra/crea/borra un campo real en Airtable **debe** tocar este bloque en el mismo commit, no solo la prosa — el checklist de cierre de cualquier tarea de Airtable debería incluir "¿este cambio afecta el bloque CAMPOS-DOCUMENTADOS de algún documento?" como pregunta explícita.
 
 ---
 
