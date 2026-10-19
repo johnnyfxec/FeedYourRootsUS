@@ -173,6 +173,20 @@ Esta regla aplica a TODA generación nueva de aquí en adelante, no solo a la es
 
 ---
 
+## 6-bis. Regla anti-desincronización Mesa ↔ `brief.md` (incidente 19-oct-2026, PZA_4.1)
+
+**Hay dos copias de la decisión de contenido de cada pieza: la Mesa de Producción (artefacto HTML, donde Johnny realmente trabaja y genera en Gemini) y `production/pieces/PZA_[tema]/brief.md` en el repo (de donde lee CC). Ninguna de las dos se actualiza sola cuando la otra cambia.** El incidente: el commit `d2afd86` cambió en `brief.md` qué assets usa PZA_4.1 (de banco-reuso a generación nueva) para resolver un riesgo de reciclaje visual con PZA_4.2 — pero ese cambio nunca se aplicó en la Mesa. Johnny, trabajando desde la Mesa (no desde git), generó y aprobó las imágenes según la versión vieja. Un Claude distinto mezcló después ambas versiones en `brief.md` sin cruzarlas contra la Mesa ni contra lo ya generado/subido, y reportó a CC un estado que no correspondía a la realidad.
+
+**Reglas obligatorias para que esto no se repita:**
+
+1. **Un cambio de CONTENIDO** (qué asset va en qué beat, qué beats existen, qué se genera vs. qué es banco) **hecho solo en `brief.md` no es válido hasta que se refleje en la Mesa**, y viceversa. Mientras no estén sincronizados, ambos deben considerarse "en conflicto" para esa pieza — nunca asumir que uno es automáticamente el correcto porque es "más reciente" en git.
+2. **Antes de reportar a CC (o a cualquiera) el estado de una pieza como "ya generada" o "lista para Airtable", quien reporta debe verificar contra la Mesa real** (captura de pantalla o lectura directa del artefacto) — nunca inferirlo solo de que `brief.md` sea internamente consistente.
+3. Si al revisar un historial de git aparece un commit de OTRA sesión que cambió contenido de un brief (identificable por un `Claude-Session:` distinto en el mensaje de commit), ese cambio **no se asume aplicado en la Mesa** — se verifica explícitamente antes de construir nada encima.
+4. Una corrección de **formato/estilo** (PNG format, bloque de estilo, separación prompt/nota) sí puede aplicarse directo en `brief.md` sin tocar la Mesa, porque no cambia qué imagen va en qué beat — pero una corrección de **contenido** (qué va en qué beat) sí requiere antes verificar/actualizar la Mesa.
+5. Si se detecta una pieza ya generada/aprobada por Johnny con una decisión de contenido distinta a la que haya quedado en `brief.md` por cualquier motivo, **gana lo ya generado/aprobado** — se corrige `brief.md` para que coincida con la realidad ejecutada, nunca al revés, salvo instrucción explícita de Johnny de regenerar.
+
+---
+
 ## 7. Registro en Airtable — tabla `Assets`
 
 **Base:** Feed Your Roots US Data Sheets (`appMy5aOwifSbBLPR`)

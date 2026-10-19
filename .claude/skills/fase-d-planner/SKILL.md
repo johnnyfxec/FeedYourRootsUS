@@ -99,6 +99,8 @@ Usar las convenciones de nomenclatura de `knowledge/FYR_Asset_Governance_Policy.
 
 **4.3 Piezas con 0% de gaps** pasan directamente a "Assets resueltos" sin acción adicional.
 
+**4.3-bis Verificación obligatoria contra la Mesa de Producción (incidente 19-oct-2026, ver `FYR_Asset_Governance_Policy.md` §6-bis):** antes de presentar la lista de gaps en la Puerta de Parada 2, para cada pieza cuyo `brief.md` haya sido tocado por un commit de OTRA sesión de Claude (distinto `Claude-Session:` en `git log`) después de que Johnny empezara a generar imágenes de esa pieza, **no asumir que `brief.md` refleja lo que Johnny realmente ve/generó** — pedir confirmación explícita (captura o descripción de la Mesa) antes de incluir esa pieza en la lista de gaps o de registrar nada en Airtable. Un `brief.md` internamente consistente no es evidencia de que esté sincronizado con la Mesa.
+
 ### 4.4 ⛔ PARADA 2 — Esperar aprobación de Johnny
 Johnny confirma la lista de imágenes a generar (o las genera en ese momento con los prompts de la tabla). Una vez todas las imágenes existen en Drive y están registradas en `Assets` con su `Link Drive`, esta parada cierra.
 
