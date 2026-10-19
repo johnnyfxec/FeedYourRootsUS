@@ -1,6 +1,6 @@
 # Brief — PZA_5.3 · "GARDEN TO TABLE: THE RECIPE MY SON INVENTED" (Video 9:16)
 
-**Estado:** brief generado en lote — Fase D, Parada 1 (primer lote real, 7 piezas).
+**Estado:** brief generado en lote — Fase D, Parada 1 (primer lote real, 7 piezas). **Corrección 18-oct-2026:** los prompts de abajo llevaban la frase obsoleta "watercolor and ink illustration style/vintage illustration" en vez del bloque de estilo real — corregido. Todo prompt de este brief usa el **bloque de estilo base** de `FYR_Asset_Governance_Policy.md` §4 (Beatrix Potter + Oatly, ver texto exacto ahí) como prefacio fijo, que no se repite abajo — cada prompt lista solo el bloque de composición (ratio/fondo) + lo específico de esa escena. **Corrección 18-oct-2026 (segunda):** `TPL-video-cover-framed.png` en el beat 1 NO es un asset listo — es solo el marco `FYR_ASSET_marco-cuadrado_9x16_v1.png` (vid y hoja ya pintadas), con una ventana interior 1:1 vacía que necesita su propia imagen de escena. Corregido abajo con el prompt de portada faltante, mismo patrón que PZA_1.1.
 
 ## Ficha
 | Campo | Valor |
@@ -20,7 +20,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué es lo que
 ## Guion por beat
 | # | Beat | Imagen (banco o nueva) | Texto narrado |
 |---|---|---|---|
-| 1 | Portada (sin subtítulos) | `TPL-video-cover-framed.png` | "What nobody tells you about letting your kid loose with whatever's ready in the garden — he might actually out-cook you." |
+| 1 | Portada (sin subtítulos) | `marco_grande_cuadrado` con `STOCK-child-harvest-basket-unplanned_1x1_v1.png` **[GENERAR EN GEMINI]** | "What nobody tells you about letting your kid loose with whatever's ready in the garden — he might actually out-cook you." |
 | 2 | Cosecha sin plan | `STOCK-harvest-zucchini-cucumber-basket_9x16_v1.png` **[GENERAR EN GEMINI]** | "It started with him picking whatever looked ready. No recipe in mind, just... what's out here today." |
 | 3 | Escribiendo la receta | `STOCK-child-recipe-card-handwriting_9x16_v1.png` **[GENERAR EN GEMINI]** | "Then he grabbed a card and started writing it down himself — spelling be damned, *his* recipe, *his* words." |
 | 4 | Cocinando juntos | `STOCK-kitchen-table-harvest_9x16_v1.png` (banco) | "We cooked it exactly the way he wrote it. No substitutions, no corrections." |
@@ -29,10 +29,14 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué es lo que
 
 Cierre en loop tipo A (frase cortada) — conecta directo con el inicio del video (la promesa del secreto se repite y reinicia el loop).
 
-## Prompts nuevos a generar (3 imágenes)
-1. **S2:** *"First-person POV, a child's hands (visible, no face) holding a small harvest basket with zucchini and cucumbers just picked, garden bed visible softly out of focus behind, warm late-afternoon light, watercolor and ink vintage illustration, forest green and terracotta tones, vertical 9:16."*
-2. **S3/S6:** *"First-person POV, kitchen counter close-up of a child's hands (visible, no face) writing on a blank recipe card with a crayon, harvested zucchini and cucumber beside the card, warm cozy kitchen light, watercolor and ink illustration style, terracotta and forest green tones, vertical 9:16."*
-3. **S5:** *"First-person POV, family hands reaching toward a shared plate of food at a kitchen table, warm evening light, watercolor and ink illustration style, forest green and gold palette, vertical 9:16."*
+## Prompts nuevos a generar (4 imágenes)
+*(Prefacio fijo omitido aquí — ver nota de arriba. Cada entrada = bloque de composición + específico, para pegar después del prefacio. Reescritos 18-oct-2026 aplicando la Regla de narrativa visual de Governance Policy §4 — ángulo con presencia implícita, contexto de uso real, variación de desgaste, detalle conectado a la intención del beat — mismo tratamiento aplicado en PZA_3.1.)*
+0. **Portada (beat 1, 1:1, ventana del marco 722×728):** mismo patrón que PZA_1.1 — va DENTRO del marco, no lo reemplaza. Concepto: cosecha recién tomada, sin plan ni receta visible todavía — promete el secreto sin revelarlo.
+*"Aspect ratio: exactly 1:1. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. First-person POV looking down at a child's hands (visible, no face, noticeably smaller and pudgier than an adult hand) just setting down a slightly battered wicker basket on a sunlit porch step, zucchini and cucumbers picked at random angles with no clear plan, one stray garden leaf still caught in the basket's weave, warm midday light, forest green and terracotta tones — the randomness of the harvest, not yet a recipe, is the open question of the hook."*
+Archivo: `STOCK-child-harvest-basket-unplanned_1x1_v1.png`, a `06_Narrative_Stock/` (insumo, no va a Content_Pieces).
+1. **S2:** *"Aspect ratio: exactly 9:16. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. First-person POV walking back from the garden rows, a child's hands (visible, no face, noticeably smaller and pudgier than an adult hand) holding a slightly battered wicker harvest basket with zucchini and cucumbers just picked, a stray leaf still clinging to one zucchini, garden bed visible softly out of focus behind, warm late-afternoon light, forest green and terracotta tones — the basket tilted a little off-balance, the way a kid actually carries one, not posed."*
+2. **S3/S6:** *"Aspect ratio: exactly 9:16. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. First-person POV, kitchen counter close-up of a child's hands (visible, no face, noticeably smaller and pudgier than an adult hand) writing on a blank recipe card with a stubby crayon, letters uneven and a crossed-out word visible, the just-harvested zucchini and cucumber still a little dirt-dusted beside the card, warm cozy kitchen light, terracotta and forest green tones — the imperfect handwriting is the point: this is the child's own recipe, not a parent's."*
+3. **S5:** *"Aspect ratio: exactly 9:16. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. First-person POV at a well-worn wooden kitchen table set for dinner, family hands of different ages and skin tones reaching in toward a shared plate of the finished dish, the handwritten recipe card from earlier propped against a water glass nearby, warm evening light, forest green and gold palette — the card visible but not the focus, a quiet callback that this meal started with a kid's own words."*
 
 Diversidad de tonos de piel en manos.
 

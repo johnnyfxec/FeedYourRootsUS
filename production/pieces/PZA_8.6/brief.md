@@ -1,6 +1,6 @@
 # Brief — PZA_8.6 · "FROM EMPTY YARD TO FULL LAYOUT IN ONE AFTERNOON" (Carrusel 4:5)
 
-**Estado:** brief generado en lote — Fase D, Parada 1 (primer lote real, 7 piezas).
+**Estado:** brief generado en lote — Fase D, Parada 1 (primer lote real, 7 piezas). **Corrección 18-oct-2026:** los prompts de abajo llevaban la frase obsoleta "watercolor and ink illustration... vintage nature-journal style" en vez del bloque de estilo real — corregido. Todo prompt de este brief usa el **bloque de estilo base** de `FYR_Asset_Governance_Policy.md` §4 (Beatrix Potter + Oatly, ver texto exacto ahí) como prefacio fijo, que no se repite abajo — cada prompt lista solo el bloque de composición (ratio/fondo) + lo específico de esa escena.
 
 ## Ficha
 | Campo | Valor |
@@ -29,9 +29,10 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué pasó ent
 Variedad: `marco_grande` 2 veces (S2, S5, dentro del límite). Sin lockup.
 
 ## Prompts nuevos a generar (3 imágenes)
-1. **S1/S3a — ANTES** (ya en la Malla 8.6, usar tal cual): *"Watercolor and ink illustration, POV of a blank grid sheet on a table, empty and intimidating, muted parchment tones, vertical 4:5."*
-2. **S2:** *"Watercolor and ink illustration, extreme close-up of an empty hand-drawn grid sheet, pencil resting on the edge untouched, muted parchment tones, vintage nature-journal style, vertical 4:5."*
-3. **S4:** *"Watercolor and ink illustration, close-up of a hand marking a grid sheet with colored pencils, a few beds already sketched in forest green and terracotta, warm afternoon light, vintage nature-journal style, vertical 4:5."*
+*(Prefacio fijo omitido aquí — ver nota de arriba. Cada entrada = bloque de composición + específico, para pegar después del prefacio. Reescritos 18-oct-2026 aplicando la Regla de narrativa visual de Governance Policy §4 — ángulo con presencia implícita, contexto de uso real, variación de desgaste, detalle conectado a la intención del slide — mismo tratamiento aplicado en PZA_3.1.)*
+1. **S1/S3a — ANTES** (portada, ventana del marco): *"Aspect ratio: exactly 0.78:1. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. Three-quarter angle view (not straight overhead) of a blank grid sheet on a weathered outdoor picnic table, a mug of coffee gone cold beside it, a pencil set down at an angle rather than in hand, the yard faintly visible blurred beyond the table edge, muted parchment tones under flat overcast light — the untouched pencil and cold coffee should read as 'sat down to plan, got stuck before starting.'"*
+2. **S2** (`marco_grande`): *"Aspect ratio: exactly 0.78:1. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: fully painted scene, no unpainted parchment margins. Three-quarter close-up of an empty hand-drawn grid sheet on the same picnic table, a pencil resting on the edge untouched, faint eraser smudges in one corner where a start was made and abandoned, muted parchment tones."*
+3. **S4** (`ventana_texto`): *"Aspect ratio: exactly 4:5. PNG format. Edge-to-edge composition, no drawn frame, border or margins. Background: plain flat warm parchment paper, uniform color #F5ECD7 reaching every edge. Close-up at a slight angle of a hand marking a grid sheet with a well-used set of colored pencils (a couple worn down short, one freshly sharpened), a few beds already sketched in forest green and terracotta, warm afternoon light — the mix of worn and sharp pencils signals an afternoon of real, ongoing work, not a single tidy sketch."*
 
 `STOCK-plano-ideal-homestead_4x5_v1.png` ya existe en `Assets` (usado en PZA_1.2) — confirmar en Parada 2 que sigue disponible y no está `En descanso`.
 
