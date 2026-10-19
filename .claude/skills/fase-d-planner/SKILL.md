@@ -78,6 +78,8 @@ Presentar la tabla resumen. Johnny aprueba en bloque o señala piezas puntuales 
 
 Escribir en `Content_Pieces` (crear la fila si no existe) con `Estado Producción = Brief Generado` para cada pieza aprobada.
 
+**Antes de cerrar esta Parada: auditoría obligatoria §9** sobre `Content_Pieces` y `Themes` (`Copy Completo`, `Ruta .md`/`Ruta JSON`, `Bundle Relacionado` y el resto de campos de la Sección 3 de `fyr-content/SKILL.md`). Reportar el resultado.
+
 ---
 
 ## 4. Parada 2 — Assets en bloque
@@ -108,6 +110,8 @@ Actualizar `Content_Pieces.Estado Producción` → `Assets en Drive` para cada p
 
 **Manejo de fallos:** si una imagen específica no se puede generar, marcar esa pieza como `necesita atención — [razón]` y continuar con las demás.
 
+**Antes de cerrar esta Parada: auditoría obligatoria §9** sobre `Assets` — especialmente si el registro ocurrió en más de una pasada (ej. assets narrativos del cuerpo en una pasada, portadas 1:1 de video en otra). Verificar campo por campo que todas las filas nuevas o tocadas tengan el mismo patrón completo (`Content_Pieces`, `Veces usado`, `Último uso`, `En descanso`), no solo los campos descriptivos. Reportar el resultado.
+
 ---
 
 ## 5. Parada 3 — Revisión visual final
@@ -131,6 +135,8 @@ Presentar **una lista del lote con links a Drive** para que Johnny revise en una
 ### 5.1 ⛔ PARADA 3 — Esperar aprobación de Johnny
 Esta es la parada de mayor atención — el producto terminado. Johnny revisa cada pieza en Drive y da OK o solicita correcciones. Piezas corregidas se re-ensamblan; el resto sigue.
 
+**Antes de cerrar esta Parada: auditoría obligatoria §9**, con atención especial a cualquier archivo que haya cambiado de ruta durante el ensamblado (ej. de `production/pieces/` a `production/scripts/video/` para video) — la `Ruta .md`/`Ruta JSON` en Airtable se actualiza en el mismo momento del movimiento, y se verifica aquí que de verdad quedó así. Reportar el resultado.
+
 ---
 
 ## 6. Parada 4 — Publicación y cierre
@@ -153,6 +159,8 @@ Documentar el **tamaño del lote** y el **tiempo aproximado de la Parada 3** en 
 
 ### 6.1 ⛔ PARADA 4 — Confirmación final de Johnny
 
+**Antes de cerrar esta Parada (y el lote completo): auditoría obligatoria §9 final**, cubriendo TODAS las filas tocadas en TODAS las Paradas del lote — esta es la última oportunidad de detectar un hueco que haya pasado las auditorías parciales de Paradas anteriores. Reportar el resultado explícitamente antes de dar el lote por cerrado.
+
 ---
 
 ## 7. Recuperación de estado entre sesiones
@@ -174,3 +182,15 @@ Si la sesión de Claude Code se interrumpe entre paradas, reconstruir el estado 
 - Esta skill no invoca a `trend-scout`, `fyr-content` ni `fyr-video-assembler` directamente — lee sus SKILL.md y sigue sus pasos, y se comunica con `trend-scout` únicamente leyendo `Trend_Signals` de Airtable.
 - Un fallo aislado nunca detiene el lote — la pieza se marca "necesita atención" y el lote sigue.
 - `typecast: true` en todas las escrituras a singleSelect/multipleSelects de Airtable.
+- **Ningún hueco de documentación queda abierto al cerrar una Parada — ver §9, auditoría obligatoria.**
+
+## 9. Auditoría obligatoria de Airtable al cierre de cada Parada (19-oct-2026, no negociable)
+
+**Por qué existe esta regla:** en el primer lote real (7 piezas), una auditoría manual pedida por Johnny al final encontró 4 tipos de huecos que llevaban abiertos desde Parada 2/3: assets de portada sin `Content_Pieces`/`Veces usado`/`Último uso`/`En descanso`, `Copy Completo` vacío en las 7 piezas desde Parada 1, `Ruta JSON` apuntando a una ruta que dejó de existir tras mover archivos, y `Bundle Relacionado` vacío en las 6 filas de `Themes` nuevas. Causa raíz: cuando el registro de una pieza ocurre en más de una pasada (ej. Parada 2 para carruseles/assets narrativos y Parada 3 Ruta B para portadas de video, en momentos distintos), es fácil llenar los campos de esa pasada específica y olvidar replicar el patrón completo que sí se aplicó en la otra pasada. Esperar a una auditoría final de "todo el lote" significa que el hueco viaja sin detectarse durante Paradas enteras.
+
+**Regla:** antes de dar CUALQUIER Parada por cerrada (no solo la última), ejecutar esta auditoría sobre todas las filas de Airtable tocadas en esa Parada — las de este lote Y cualquier fila de un lote anterior que se haya vuelto a tocar:
+
+1. **`Assets`:** toda fila creada o actualizada en esta Parada tiene `Nombre de archivo`, `Link Drive`, `Content_Pieces` (vínculo), `Veces usado`, `Último uso` y `En descanso` — los 6 campos, no solo los descriptivos. Si un asset se registra en una pasada distinta a las demás imágenes del mismo lote (como las portadas de video en Ruta B), verificar explícitamente que tenga el mismo patrón de campos que las demás, campo por campo — no asumir que "ya se aplicó antes" solo porque el resto del lote lo tiene.
+2. **`Content_Pieces`:** toda fila de esta Parada tiene `Copy Completo` (texto final, no solo referencia al archivo) y `Ruta .md`/`Ruta JSON` apuntando a la ubicación REAL del archivo en ese momento — si un archivo se movió de carpeta en cualquier commit posterior al registro inicial, la ruta en Airtable se actualiza en el mismo momento del `git mv`, nunca después, nunca "cuando se note".
+3. **`Themes`:** toda fila creada en esta Parada tiene todos sus campos de la Sección 3 de `fyr-content/SKILL.md` completos, incluido `Bundle Relacionado` — mapeado desde el pilar vía la Malla, nunca dejado vacío "para después". Si la taxonomía del campo (sus choices) no cubre el pilar real, no aproximar a la opción más cercana en silencio: crear la opción correcta con `typecast: true` (reportando a Johnny qué opción se creó) o preguntar a Johnny antes de aproximar.
+4. **Reportar la auditoría explícitamente** en el cierre de la Parada, aunque no haya encontrado nada: "Auditoría Parada N: Assets ✓, Content_Pieces ✓, Themes ✓" o el detalle de lo corregido — nunca pasar a la siguiente Parada en silencio asumiendo que todo quedó bien.
