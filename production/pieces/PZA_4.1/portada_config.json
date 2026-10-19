@@ -1,0 +1,13 @@
+{
+  "pieza_id": "PZA_4.1",
+  "aspecto": "9:16",
+  "slides": [
+    {
+      "numero": 1,
+      "layout": "marco_grande_cuadrado",
+      "imagen_escena": "STOCK-child-hands-garden-tool-reaching_1x1_v1.jpg",
+      "texto_titulo": "WHAT YOUR 5-YEAR-OLD\nCAN (AND CAN'T) DO",
+      "texto_subtitulo": "Every age has\nits own tasks."
+    }
+  ]
+}
