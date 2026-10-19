@@ -25,9 +25,33 @@
 
 | Tabla | Rol | Se crea | Se actualiza |
 |---|---|---|---|
-| `Themes` | El tema: estado, hook, fase, fecha de uso y de publicación, links de publicación | Al aprobar el brief (si no existe) | Al aprobar el brief; al publicar |
-| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook, assets usados, performance | Al aprobar el brief | En cada cambio de estado |
+| `Themes` | El tema: estado, hook, fase, fecha de uso y de publicación, links de publicación, bundle, prioridad, performance del tema | Al aprobar el brief (si no existe) | Al aprobar el brief; al publicar; al medir performance |
+| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook, assets usados, tema vinculado, señal de origen (si aplica), performance | Al aprobar el brief | En cada cambio de estado |
 | `Assets` | Cada imagen **de entrada** (escenas, marcos, botánicas) y su memoria de uso | Al subir cada imagen nueva | `Veces usado`, `Último uso`, `En descanso` |
+| `Trend Signals` | Señal de tendencia detectada por `trend-scout`; este documento solo la **consume** en A0/B0, no la gestiona — ver 0.8 | (gestionada por `trend-scout`) | `Estado` y `Content_Piece_Generada` al consumirse una señal (ver 0.8) |
+
+### 0.8 Campos de `Themes`, `Content_Pieces` y `Trend Signals` que el flujo A0-B14 no nombraba explícitamente (auditoría campo-por-campo, 19-oct-2026)
+
+**Por qué existe esta sección:** Johnny pidió, tras el hueco real de `Bundle Relacionado` (quedó vacío en 6 filas del primer lote porque ningún paso de este documento lo mencionaba), una auditoría campo-por-campo de TODO el schema real de Airtable contra lo que este documento dice llenar — no solo las tablas que se tocan en producción de imágenes. Encontró 9 campos más en la misma situación. Regla general que queda fijada aquí: **todo campo real de estas tablas tiene que aparecer en algún paso de este documento, con su valor o su regla de mapeo — un campo que "no aplica todavía" se dice explícitamente, nunca se omite en silencio.**
+
+**`Themes`:**
+- `Bundle Relacionado` (singleSelect: Starter/Family/Homestead/Homestead Complete) — se llena en A5/B5 al crear el tema, mapeado desde el **Pilar** del tema vía `FYR_Malla_60_Temas_Virales_v2.md`: pilares 4-5 → `Family`, 6-7 → `Homestead`, 8-9 → `Homestead Complete`. Si un pilar futuro no tiene opción equivalente, se crea la opción correcta con `typecast: true` (nunca se aproxima a una opción existente en silencio) y se reporta a Johnny qué opción se creó.
+- `Pilar` y `Dolor/Deseo` — se llenan en A5/B5 al crear el tema (ya se calculan en el Paso 0/A0 al elegir o crear el tema; este documento antes no los nombraba explícitamente en el paso de escritura, aunque siempre se calcularon).
+- `Performance` (el de `Themes`, distinto del `Performance` de `Content_Pieces` — son dos campos separados en dos tablas) — igual que `Content_Pieces.Performance` (ver A13/B14): hasta que exista la skill de medición, queda `Sin datos`. Cuando exista, se actualiza junto con el de `Content_Pieces` en el mismo paso de medición.
+- `Prioridad` — se llena en A0/B0 al elegir el tema, si la selección vino de una razón de prioridad explícita (cola de arranque, performance de lo publicado, mezcla de fases del mes — ver Paso 0 de `fyr-content/SKILL.md`); si el tema se eligió sin ese criterio (p. ej. Johnny pidió un número específico), se deja vacío a propósito, no es un hueco.
+- `Imported table`, `Imported table 2`, `Imported table 3`, `Imported table 4` — residuo de una importación de Airtable, vacíos en las 10 filas actuales (confirmado 19-oct-2026), sin ningún uso real documentado en ningún SKILL.md. Precedente: un campo idéntico de `Content_Pieces` (`Imported table`) se renombró a `Señales_Origen` cuando se le encontró uso real (ver `CHANGELOG.md`). Pendiente: Claude (en sesión de Airtable) audita estas 4 — a qué apuntaban los dos `multipleRecordLinks`, si algún registro los usó alguna vez — y decide borrar o renombrar cada una, documentándolo en `CHANGELOG.md` igual que la vez anterior. Mientras no se resuelva, ninguna escritura de este flujo las toca.
+
+**`Content_Pieces`:**
+- `Ruta JSON` en Ruta A (carrusel) — **antes indefinido.** Se llena en A5 con la ruta de `config.json` de la pieza (`production/pieces/PZA_[tema]/config.json`), igual patrón que `Ruta .md`. No se deja vacío para carruseles.
+- `Tema Relacionado` — se llena en A5/B5 al crear la fila, vinculando al registro de `Themes` correspondiente (existía como paso implícito pero nunca se nombraba el campo).
+- `Señales_Origen` — se llena solo cuando la pieza nace de una señal de `Trend_Signals` consumida en A0/B0 (ver 0.8 de Trend Signals abajo); vacío en cualquier otro caso, lo cual es correcto, no un hueco.
+- Nota de dato obsoleto (no es un hueco de este documento, es limpieza de Airtable pendiente): la descripción del campo `Audiencia` en Airtable menciona un campo "Afiliado Destino" para el caso de kits de afiliado — ese campo ya no existe en el schema real. Pendiente: Claude corrige esa descripción en Airtable (o la reemplaza por el campo real que corresponda si existe con otro nombre) para que no confunda a futuro.
+
+**`Assets`:**
+- `Carpeta Drive` (singleSelect) — 0.6 solo documentaba `06_Narrative_Stock/` porque es el único valor que se escribe al registrar una escena nueva. Para completar el campo: cuando (rara vez) se registra un asset nuevo de marco/plantilla o botánica (normalmente ya existen y no se vuelven a registrar), el valor es la carpeta real de 0.1 (`01_Brand_Assets/C12_Frames/`, `C13_Layout_Elements/`, `Video_Cover_Templates/`, o `03_Seed_Library/WObg/`), nunca `06_Narrative_Stock/` para esos casos.
+
+**`Trend Signals` (consumo en A0/B0, no gestión — la gestión completa es de `trend-scout/SKILL.md`):**
+- Al consumir una señal `Estado=Aprobada` vigente para montar una pieza sobre ella (A0/B0, Sección 3 de `fyr-content/SKILL.md`): al completar el registro de la pieza en Content_Pieces, **escribir de vuelta** `Trend_Signals.Content_Piece_Generada` (vínculo al `PZA_[tema]` resultante) y actualizar `Trend_Signals.Estado` para que la señal no se vuelva a ofrecer como disponible en un futuro A0/B0. Este paso se hacía por convención pero nunca estaba escrito en este documento — un lector que solo siguiera `FYR_Rutas_De_Produccion.md` no se habría enterado de que existe.
 
 ### 0.3 Dónde viven los archivos de trabajo (decisión 14-oct-2026)
 
