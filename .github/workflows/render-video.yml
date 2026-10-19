@@ -66,6 +66,16 @@ jobs:
           PJ=$(ls pieza_*.json | head -1)
           python3 ../_ci/validate_pieza.py "$PJ"
 
+      - name: Cobertura de campos de Airtable (gate de gobernanza, 19-oct-2026)
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+        run: |
+          if [ -z "$AIRTABLE_API_KEY" ]; then
+            echo "⚠ AIRTABLE_API_KEY no esta configurado como secreto -- se salta este gate (config pendiente, no error de la corrida). Ver knowledge/FYR_Rutas_De_Produccion.md Seccion 1."
+          else
+            python3 production/scripts/governance/check_field_coverage.py
+          fi
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22

@@ -132,6 +132,8 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 
 Toda subida se verifica: `md5Checksum` que devuelve Drive = md5 del archivo local. Si no coincide, la subida **no cuenta** y se repite.
 
+**Credencial adicional (19-oct-2026), independiente de Drive — gate de gobernanza:** `AIRTABLE_API_KEY` (Personal Access Token de Airtable, scope mínimo `schema.bases:read`), secreto de GitHub, usado por `production/scripts/governance/check_field_coverage.py` para leer el schema real de las 4 tablas y compararlo contra el bloque `<!-- CAMPOS-DOCUMENTADOS -->` de la Sección 3 de este documento, antes de cada lote y como step temprano de `render-video.yml`. Mientras este secreto no exista, el step de CI solo deja un warning y sigue (config pendiente, no error de la corrida) — pero el gate de Parada 0 en `fase-d-planner/SKILL.md` §2.0 sí requiere correrlo a mano con el token si Johnny lo tiene a mano en esa sesión. Nunca en el repo ni en el Proyecto.
+
 **Tercer mecanismo de acceso a Drive (solo lectura, solo dentro de Actions):** el paso "Bajar imagenes de Drive" del workflow (`production/scripts/video/_ci/fetch_assets.mjs`) NO usa el OAuth de usuario de arriba ni el conector — usa una **cuenta de servicio** de Google Cloud, vía `GoogleAuth` con scope `drive.readonly`, autenticada con el JSON de esa cuenta guardado en el secreto de GitHub `GOOGLE_CREDENTIALS_JSON` (el mismo JSON que Johnny descargó y pegó como secreto cuando esto se diseñó para correr vía PC/Git Bash; ya no hay PC, pero el mecanismo sigue siendo válido porque Actions lo necesita igual: Actions no puede usar el OAuth de usuario de arriba porque ese flujo requiere interacción humana en un navegador, y la cuenta de servicio no la requiere). Por diseño, esa cuenta solo ve lo que esté compartido con ella (rol Lector) — si falta compartir una carpeta nueva del banco de assets con esa cuenta, el paso falla de forma visible (`✗ slide N: no encuentro "..." en Drive`), nunca en silencio. Si `GOOGLE_CREDENTIALS_JSON` deja de existir como secreto o la cuenta pierde acceso a una carpeta, este es el primer lugar a revisar.
 
 Hasta que la autorización esté hecha, el carrusel y el video **se detienen en el paso de subida** y Claude lo dice; no se improvisa otra vía.
@@ -275,7 +277,33 @@ Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive 
 
 ---
 
-## 2. Qué NO se hace (para que no haya dudas)
+## 2. Cobertura de campos — bloque máquina-legible (19-oct-2026)
+
+**Por qué existe este bloque, aparte de la Sección 0.8 en prosa:** la 0.8 es para que un humano o un agente *entienda* cada campo. Este bloque es para que `production/scripts/governance/check_field_coverage.py` *verifique mecánicamente*, antes de cada lote, que todo campo real de estas 4 tablas en Airtable está nombrado aquí — sin depender de que alguien lo lea con cuidado. La lección del incidente de `Bundle Relacionado` (19-oct-2026, quedó vacío en 6 filas porque ningún documento lo mencionaba) es que la prosa sola no detecta su propio hueco: alguien tiene que pensar en comparar, y esa vez nadie lo hizo hasta que Johnny pidió la auditoría a mano. Este bloque convierte esa comparación en algo que corre solo.
+
+**Regla de mantenimiento:** cualquier edición a este documento que agregue, quite o renombre un campo de Airtable **debe** actualizar la lista de la tabla correspondiente en el mismo commit. El script no interpreta la prosa de la Sección 0.8 — solo lee esta lista. Si un campo aparece documentado en prosa pero no en esta lista, el script lo trata igual que si no existiera.
+
+<!-- CAMPOS-DOCUMENTADOS
+Themes: Número, Pilar, Dolor/Deseo, Formato, Medio, Título Portada, Subtítulo,
+  Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Bundle Relacionado, Plataforma,
+  Prioridad, Hook Asignado, Fase Embudo, Performance, Fecha de Publicación, Link Publicación,
+  Content_Pieces
+Content_Pieces: ID Pieza, Tipo de Pieza, Fecha de Generación, Número de Slides, Duración,
+  Copy Completo, Ruta .md, Ruta JSON, Estado Producción, Performance, Tema Relacionado,
+  Assets Usados, Audiencia, Hook Usado, Señales_Origen, Carpeta Drive, ID de variante
+Assets: Nombre de archivo, Categoría, Subcategoría/Uso, Aspecto, Link Drive, Carpeta Drive,
+  Descripción breve, Fecha de creación, Tags, Proyecto/Producto, Reutilizable en,
+  Content_Pieces, Veces usado, Último uso, En descanso
+Trend Signals: Pilar_Relacionado, Tema_Vinculado, Content_Piece_Generada, Estado,
+  Fecha_Expiracion, Hook_CRS_Equivalente, Formato_Sugerido, Brief_Adaptacion,
+  Pilar (from Pilar_Relacionado)
+-->
+
+Nota sobre `Themes.Fecha de Publicación` y `Themes.Link Publicación`: estos nombres son los que usa este documento en prosa (0.2, A12/B13); si al correr el script contra el schema real aparecen con otro nombre exacto o separados por plataforma, el script lo va a reportar como campo real no documentado bajo ese nombre — resolver actualizando esta lista para que coincida con Airtable, nunca al revés.
+
+---
+
+## 3. Qué NO se hace (para que no haya dudas)
 
 - No se copian escenas del banco a `Content_Pieces`.
 - No se usa Actions para carruseles, ni siquiera para ensamblar.

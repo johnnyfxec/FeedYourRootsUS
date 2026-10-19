@@ -29,6 +29,20 @@ Todo lo definido en `.claude/skills/fyr-content/SKILL.md` (IDs de tablas Airtabl
 
 Esta parada es el único output del disparo automático de los lunes. Nada más corre hasta que Johnny la apruebe.
 
+### 2.0 ⛔ Gate obligatorio, antes de proponer ningún tema: cobertura de campos
+
+**Correr primero, siempre, antes de cualquier otra cosa de esta Parada:**
+
+```
+AIRTABLE_API_KEY=<token> python3 production/scripts/governance/check_field_coverage.py
+```
+
+**Por qué va aquí y no al cierre del lote:** el incidente real que motivó esta regla (`Bundle Relacionado` vacío en 6 filas de `Themes`, 19-oct-2026) se detectó recién en una auditoría manual al final del lote completo — el hueco viajó sin detectarse durante Paradas enteras porque ninguna fila "buena" del mismo lote existía para compararla (ver §9 abajo y su límite estructural documentado ahí). Corriendo este chequeo **antes** de registrar la primera fila del lote, un campo real sin cobertura documentada detiene el lote en el primer segundo, no después de producir 7 piezas.
+
+**Si el script termina con exit code ≠ 0:** el lote NO arranca. Reportar a Johnny la lista exacta de campos que imprimió el script (huérfanos reales = Airtable tiene un campo que ningún documento nombra; huérfanos documentados = un documento nombra un campo que ya no existe así en Airtable) y esperar instrucción — normalmente actualizar `knowledge/FYR_Rutas_De_Produccion.md` (prosa en §0.8 + el bloque `<!-- CAMPOS-DOCUMENTADOS -->` en su Sección 3) antes de continuar.
+
+**Qué NO cubre este gate (para no sobre-confiar en él):** valida que todo campo real esté *nombrado* en la documentación — no valida que una fila específica de este lote lo haya *llenado* correctamente. Esa segunda verificación sigue siendo la auditoría dinámica de §9, que no se reemplaza, se complementa.
+
 ### 2.1 Señales de tendencia vigentes
 Consultar `Trend_Signals` filtrando `Estado=Aprobada` y `Fecha_Expiracion >= hoy`. Listar las disponibles con su `Hook_CRS_Equivalente` y `Fase_Embudo_Sugerida`. Si no hay ninguna vigente, la fuente "tendencia" queda en 0% para este lote.
 
