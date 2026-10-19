@@ -1,0 +1,7 @@
+node_modules/
+build/
+salida/
+img/*.png
+img/*.jpg
+fonts/*.ttf
+fonts/*.otf

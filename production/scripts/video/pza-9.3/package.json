@@ -1,0 +1,9 @@
+{
+  "name": "pza-9.3",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@clipkit/renderer": "^1.4.2",
+    "@google-cloud/text-to-speech": "^7.1.1"
+  }
+}
