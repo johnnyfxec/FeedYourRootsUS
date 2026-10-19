@@ -25,9 +25,9 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué se me va 
 | 3 | La historia (storytime) | `STOCK-calendar-missed-date-circled_9x16_v1.png` **[GENERAR EN GEMINI]** | "I found out the hard way — called in March for chicks, got waitlisted until May. Lost half my growing season for eggs." |
 | 4 | El sistema nuevo | `STOCK-action-plan-checklist-october_9x16_v1.png` **[GENERAR EN GEMINI]** | "Now I keep one list, every October, before the catalogs even land: what sells out, and by when." |
 | 5 | El resultado | `STOCK-mailbox-seed-package-arrival_9x16_v1.png` **[GENERAR EN GEMINI]** | "This year's list went out in September. Everything's already on its way." |
-| 6 | Cierre + CTA + loop | `STOCK-seed-catalog-notebook-january_9x16_v1.png` (reuso S2) | "First and Second Year Action Plan, link in bio.// Careful what you skip ordering in January." |
+| 6 | Cierre + CTA + loop | `STOCK-seed-catalog-notebook-january_9x16_v1.png` (reuso S2) | "First and Second Year Action Plan, link in bio.// So yeah—" |
 
-Cierre en loop tipo A (frase cortada/repetida) — la advertencia se repite al reiniciar, coherente con el hook.
+Cierre en loop tipo A (frase cortada) — conecta con la advertencia del inicio. **Corregido 19-oct-2026:** la versión original repetía literalmente, palabra por palabra, la frase completa de apertura ("Careful what you skip ordering in January") — no era un corte, era una repetición lisa, y sonó claramente como error en TTS real, no como loop. Corregido a un corte conversacional ("So yeah—") que no repite ninguna palabra del inicio.
 
 ## Prompts nuevos a generar (5 imágenes)
 *(Prefacio fijo omitido aquí — ver nota de arriba. Cada entrada = bloque de composición + específico, para pegar después del prefacio. Reescritos 18-oct-2026 aplicando la Regla de narrativa visual de Governance Policy §4 — ángulo con presencia implícita, contexto de uso real, variación de desgaste, detalle conectado a la intención del beat — mismo tratamiento aplicado en PZA_3.1.)*

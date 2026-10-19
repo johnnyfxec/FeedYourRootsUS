@@ -25,9 +25,9 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Estoy comproba
 | 3 | El problema (nueva) | `STOCK-jar-lid-closeup-flex_9x16_v1.png` **[GENERAR EN GEMINI]** | "Turns out a pop just means pressure released. It doesn't mean the seal actually held." |
 | 4 | El test real | `STOCK-hand-holding-jar-blank-tag_9x16_v1.png` (reuso, crop distinto) | "The real test: press the center of the lid. If it flexes *at all*, it's not sealed — no matter what you heard." |
 | 5 | El resultado | `FYR_B12_pantry-shelf-jars_9x16_v1.png` (banco) | "My first jar that passed that test, for real, sat on this shelf for six months. Untouched. Unspoiled." |
-| 6 | Cierre + CTA + loop | `STOCK-jar-harvest-2023_9x16_v1.png` (banco) | "Preservation log and troubleshooting guide, link in bio.// The way most people check a seal is the wrong way." |
+| 6 | Cierre + CTA + loop | `STOCK-jar-harvest-2023_9x16_v1.png` (banco) | "Preservation log and troubleshooting guide, link in bio.// Because, real talk—" |
 
-Cierre en loop tipo A (frase cortada) — conecta con el hook negativo del inicio.
+Cierre en loop tipo A (frase cortada) — conecta con el hook negativo del inicio. **Corregido 19-oct-2026:** la versión original casi repetía la frase de apertura ("The way most people check a seal...") en vez de cortarla — sonaba repetido/robótico en TTS real. Corregido a un corte conversacional ("Because, real talk—") que no repite palabras del inicio.
 
 ## Prompts nuevos a generar (2 imágenes)
 

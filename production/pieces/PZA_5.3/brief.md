@@ -25,9 +25,9 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué es lo que
 | 3 | Escribiendo la receta | `STOCK-child-recipe-card-handwriting_9x16_v1.png` **[GENERAR EN GEMINI]** | "Then he grabbed a card and started writing it down himself — spelling be damned, *his* recipe, *his* words." |
 | 4 | Cocinando juntos | `STOCK-kitchen-table-harvest_9x16_v1.png` (banco) | "We cooked it exactly the way he wrote it. No substitutions, no corrections." |
 | 5 | Probando en familia | `STOCK-family-tasting-kitchen-table_9x16_v1.png` **[GENERAR EN GEMINI]** | "And it was *good*. Not because it was perfect — because every bite was proof he'd actually been paying attention out there." |
-| 6 | Cierre + CTA + loop | `STOCK-child-recipe-card-handwriting_9x16_v1.png` (reuso S3, crop distinto) | "His recipe is now page one of ours. Garden-to-table family cookbook, link in bio.// Here's what nobody tells you about handing them the harvest." |
+| 6 | Cierre + CTA + loop | `STOCK-child-recipe-card-handwriting_9x16_v1.png` (reuso S3, crop distinto) | "His recipe is now page one of ours. Garden-to-table family cookbook, link in bio.// And honestly?" |
 
-Cierre en loop tipo A (frase cortada) — conecta directo con el inicio del video (la promesa del secreto se repite y reinicia el loop).
+Cierre en loop tipo A (frase cortada) — conecta directo con el inicio del video. **Corregido 19-oct-2026:** la versión original terminaba repitiendo casi textual la frase de apertura ("Here's what nobody tells you about...") en vez de dejarla inconclusa — sonaba a error, no a loop, al escucharlo en TTS real. Corregido a un corte conversacional ("And honestly?") que no repite palabras del inicio y fluye hacia él de forma natural, no tipo fórmula de copywriting.
 
 ## Prompts nuevos a generar (4 imágenes)
 *(Prefacio fijo omitido aquí — ver nota de arriba. Cada entrada = bloque de composición + específico, para pegar después del prefacio. Reescritos 18-oct-2026 aplicando la Regla de narrativa visual de Governance Policy §4 — ángulo con presencia implícita, contexto de uso real, variación de desgaste, detalle conectado a la intención del beat — mismo tratamiento aplicado en PZA_3.1.)*
