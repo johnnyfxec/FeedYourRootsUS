@@ -93,7 +93,7 @@ Un único listado de todas las imágenes que NO existen y deben generarse en Gem
 | PZA | Slide # | Descripción del contenido | Prompt Gemini (listo para pegar) | Aspecto | Nombre de archivo destino |
 |---|---|---|---|---|---|
 
-Usar las convenciones de nomenclatura de `knowledge/FYR_Asset_Governance_Policy.md`.
+Usar las convenciones de nomenclatura de `knowledge/FYR_Asset_Governance_Policy.md`. **El "Prompt Gemini (listo para pegar)" de cada fila debe cumplir las reglas de `fyr-content/SKILL.md` y de `FYR_Asset_Governance_Policy.md` §4** (bloque de estilo base textual, línea de output con PNG + ratio correcto por layout, nunca texto editorial/operacional dentro del prompt citado) — no reconstruir el prompt de memoria ni tomar como referencia un brief anterior sin verificar que ya tenga estas reglas aplicadas.
 
 **4.3 Piezas con 0% de gaps** pasan directamente a "Assets resueltos" sin acción adicional.
 
