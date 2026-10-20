@@ -16,3 +16,11 @@ production/pieces/*/_trabajo/
 pdfs_normalized/
 tts.log
 render.log
+
+# Secretos locales (20-oct-2026): credenciales OAuth/API que drive_client.py y otros
+# clientes leen de variables de entorno -- viven SOLO en un .env fuera del repo en Termux,
+# nunca aqui. Esta regla es un cinturon de seguridad extra (defense in depth): si alguna
+# vez por error se crea un .env dentro del repo, esto evita que git lo suba.
+.env
+.env.*
+!.env.example
