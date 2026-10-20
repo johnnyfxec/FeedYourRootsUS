@@ -175,7 +175,7 @@ Hasta que la autorización esté hecha, el carrusel y el video **se detienen en 
 Claude escribe, en este orden:
 1. **Drive:** crea `Content_Pieces/PZA_[tema]/` si no existe y la subcarpeta `[fecha de hoy]/` dentro.
 2. **Themes:** crea o actualiza el tema: `Estado = Usado`, `Fecha de uso`, `Hook Asignado`, `Fase Embudo`, Título/Subtítulo/Prompt, CTA, Plataforma.
-3. **Content_Pieces:** crea la fila: `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Carrusel`, `Fecha de Generación`, `Número de Slides`, `Copy Completo` (slides + caption), `Ruta .md`, `Ruta JSON`, `Tema Relacionado`, `Hook Usado` (nombre completo), `Audiencia = Propia`, `Carpeta Drive` (URL de la subcarpeta de fecha), `Assets Usados` (los del banco), **`Estado Producción = Brief Generado`**.
+3. **Content_Pieces:** crea la fila: `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Carrusel`, `Fecha de Generación`, `Número de Slides`, `Copy Completo` (slides + caption), `Ruta .md`, `Ruta JSON`, `Tema Relacionado`, `Hook Usado` (nombre completo), `Audiencia = Propia`, `Assets Usados` (los del banco), **`Estado Producción = Brief Generado`**. **`Carpeta Drive` NO se escribe aquí** (corrección 20-oct-2026 — ver nota en A11): la subcarpeta de fecha que el paso 1 de arriba crea es solo el destino previsto, y puede no ser la carpeta real donde termine subiendo el contenido terminado si pasa más de un día entre esta Apertura y A11 (pasó dos veces de forma independiente en el primer lote real — PZA_10.4 y PZA_11.2 — por esta misma razón). Escribir el campo temprano con un valor que después puede quedar obsoleto es peor que dejarlo vacío hasta tener el dato real.
 4. **Assets (del banco):** memoria de uso según 0.7.
 5. Commit del brief y config a `main`.
 
@@ -204,7 +204,7 @@ Claude escribe, en este orden:
 ### A11 — Subida y verificación
 - Claude: `python3 production/scripts/assemble/run_pieza.py subir production/pieces/PZA_[tema] <trabajo> [fecha]`. El script resuelve solo `Content_Pieces/PZA_[tema]/<fecha>/` (`Drive.content_pieces_folder`, la crea si falta — ya no requiere que Claude calcule ni pase el `parent_id` a mano), sube cada PNG directo ahí (reemplaza si ya existían, sin duplicar), verifica el checksum, y además confirma con `find()` que cada archivo aparece en esa carpeta con ese ID exacto — si no, el script falla explícitamente en vez de reportar éxito.
 - Claude confirma además con el conector (`search_files`, parentId = esa carpeta) que la cuenta de archivos coincide con `Número de Slides`. Las versiones anteriores de la carpeta se mandan a la papelera con `trash_file`.
-- Airtable: **`Estado Producción = Ensamblado`**, `Carpeta Drive` confirmada.
+- Airtable: **`Estado Producción = Ensamblado`**, `Carpeta Drive` = la URL real de la carpeta que `content_pieces_folder()` acaba de resolver en este paso (primera escritura del campo, no una confirmación de lo que A5 haya puesto — A5 ya no escribe este campo, ver nota ahí).
 - Claude entrega a Johnny: link de la carpeta + caption final.
 
 ### A12 — Publicación (Johnny)

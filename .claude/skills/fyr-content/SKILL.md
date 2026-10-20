@@ -26,14 +26,21 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Título Portada | `fldCVVfapSEX9W91G` | multilineText |
 | Subtítulo | `fldDMjUCQPjWQuloZ` | multilineText |
 | Prompt Imagen | `fldaDHMXne92KYFxV` | multilineText |
-| Estado | `fldzY0QnfpqGQ3430` | singleSelect (Pendiente/Usado/Descartado) |
+| Estado | `fldzY0QnfpqGQ3430` | singleSelect (Pendiente/Usado — "Descartado" documentado antes aquí no existe como choice real en el schema a 20-oct-2026; si hace falta, crearlo explícitamente antes de usarlo, no asumir que ya está) |
 | Fecha de uso | `fld4kEWvpINR87HIG` | dateTime |
+| Fecha de Publicación | `fldTT0GvT0011QOFW` | dateTime (añadido 20-oct-2026 — existía en el schema real y en el flujo del Paso 6 de abajo, "Al publicar: ... Fecha de Publicación ... en Themes", pero faltaba en esta tabla; una skill que solo leyera esta tabla no tenía cómo saber el fieldId) |
+| Performance | `fldC18ydh8h11osSd` | singleSelect (añadido 20-oct-2026, mismo motivo — hoy solo tiene la opción "Sin datos" cargada) |
 | CTA Sugerido | `fld1NGli5eaExrV99` | multilineText |
 | Bundle Relacionado | `fldT0UBdIsexJIT4i` | singleSelect |
 | Plataforma | `fldTHMGY0eb93rtqA` | multipleSelects |
 | Prioridad | `fld9t1dYpz4AfB1vJ` | singleSelect |
 | Hook Asignado | `fldZwv8371fG270a7` | singleSelect ("01 Negativo"…"20 Revelación") |
 | Fase Embudo | `fld46rAo9PUiyXTRF` | singleSelect (F1-F4) |
+| Link Publicación IG | `fldOZdILh0xljxfbR` | url (añadido 20-oct-2026) |
+| Link Publicación TikTok | `fldBCKYVZcSw7qDxl` | url (añadido 20-oct-2026) |
+| Link Publicación Pinterest | `fldL2vGT3RCneoGfc` | url (añadido 20-oct-2026) |
+| Link Publicación FB | `fldGD1gRPwHkNeftA` | url (añadido 20-oct-2026) |
+| Link Publicación YouTube | `fldxQtchK6hbqC0Y3` | multilineText (añadido 20-oct-2026 — tipo inconsistente con los otros 4 "Link Publicación", que son url; no corregido aquí porque cambiar el tipo de un campo en Airtable con datos ya escritos requiere decisión explícita de Johnny, no una skill) |
 | Content_Pieces | `fldTOvVnXFjnT0SLk` | link inverso |
 
 ### Tabla `Content_Pieces` — `tblevmNSbGTzdjuDF`
@@ -179,7 +186,7 @@ Solo lo que falte lleva un prompt de generación nuevo marcado como `[GENERAR EN
 3. **PAUSA — Aprobación del usuario.** El brief puede cambiar aquí; si cambia, patch quirúrgico, nunca regenerar desde cero. Solo se avanza cuando el usuario confirma explícitamente.
 4. **Apertura de la pieza (Claude, automática al aprobar):** crear en Drive `Content_Pieces/PZA_[tema]/[fecha]/` (verificando si `PZA_[tema]/` ya existe), crear/actualizar el tema en `Themes` (`Estado = Usado`, `Fecha de uso`, hook y fase), crear la fila en `Content_Pieces` (`Estado Producción = Brief Generado`, `Tema Relacionado`, `Assets Usados` del banco, `Hook Usado` con nombre completo, `Audiencia`, `Carpeta Drive`, `Ruta .md`, `Ruta JSON`; video: `Tipo de Pieza = Video`, `ID de variante`, tipo de cierre al inicio de `Copy Completo`) y aplicar la memoria de uso en `Assets` (`Veces usado` +1, `Último uso`, `En descanso` marcado; desmarcar los que ya descansaron). Claude hace estas escrituras.
 5. **Generación manual + espera.** Solo si el brief marcó `[GENERAR]`: el usuario genera en Gemini con el prompt del brief (un prompt a la vez), lo exporta a `06_Narrative_Stock/` **con el nombre exacto** y avisa. Claude lista la carpeta, cruza por nombre exacto, descarga, mide la proporción real, crea la fila en `Assets` (campos exactos en `FYR_Rutas_De_Produccion.md` §0.6), la linkea en `Assets Usados`, completa `imagenes.json` y pone `Estado Producción = Assets en Drive`. La skill NO continúa hasta que el usuario confirma que ya subió.
-6. **Producción del archivo final** — según la Ruta A (carrusel: descargar con el conector → `run_pieza.py importar` y `ensamblar` → revisión visual y aprobación → `run_pieza.py subir` y mover con el conector a `Content_Pieces` → `Ensamblado`) o la Ruta B (video: portada compuesta → verificación → push de la cola → Actions → revisión → `Ensamblado`). Al publicar: `Publicado`, `Fecha de Publicación` y link en `Themes`, `Último uso` corregido a la fecha de publicación.
+6. **Producción del archivo final** — según la Ruta A (carrusel: descargar con el conector → `run_pieza.py importar` y `ensamblar` → revisión visual y aprobación → `run_pieza.py subir` y mover con el conector a `Content_Pieces` → `Ensamblado`) o la Ruta B (video: portada compuesta → verificación → push de la cola → Actions → revisión → `Ensamblado`). Al publicar: `Publicado`, `Fecha de Publicación` en `Themes`, `Último uso` corregido a la fecha de publicación, y el link en el campo `Link Publicación [red]` de `Themes` que corresponda a dónde se publicó (`IG`/`TikTok`/`Pinterest`/`FB`/`YouTube` — campos separados por red, no un único "link"; si se publica en varias redes, llenar cada campo correspondiente).
 
 **Verificación final de cada pieza:** brief y config en el repo + config válido (carrusel: `config_loader.py` lo acepta; video: JSON válido y cada escena existe en `Assets`) + carpeta de Drive con los archivos terminados (cuenta y checksum) + registro Airtable con `Carpeta Drive`, `Assets Usados`, `Hook Usado` y estado correctos. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
 
