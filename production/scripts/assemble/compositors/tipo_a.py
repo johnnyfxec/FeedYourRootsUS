@@ -4,7 +4,7 @@
 # portadas marco_grande_portada / marco_grande_cuadrado).
 
 import os
-from PIL import Image, ImageDraw
+from PIL import Image
 
 from layout_specs import (
     CANVAS, ASSETS, WINDOWS, ROTATED_WINDOWS, BBOX, PORTADA_WIDTHS, TYPOGRAPHY, usable_zone,
@@ -114,6 +114,7 @@ def _paste_rotated_scene(canvas, scene_img, window_spec, ancla="center"):
     margin = 1.03
     cropped = crop_to_fill(scene_img, round(w * margin), round(h * margin), anchor=ancla).convert("RGBA")
     rotated = cropped.rotate(-angle, expand=True, resample=Image.BICUBIC)
+
     paste_x = round(cx - rotated.width / 2)
     paste_y = round(cy - rotated.height / 2)
     canvas.alpha_composite(rotated, (paste_x, paste_y))
@@ -134,11 +135,20 @@ def _compose_doble_marco(canvas, slide, aspecto, assets_dir):
     scene1 = _load_scene(img1, assets_dir)
     scene2 = _load_scene(img2, assets_dir)
 
+    # ORDEN DE CAPAS (corregido 20-oct-2026, defecto real en PZA_10.4 S3 detectado por
+    # Johnny): antes las dos escenas se pegaban ANTES que el frame_asset, asi que cualquier
+    # parte de la escena TRASERA que no quedaba cubierta por su propio marco (overflow del
+    # recorte+rotacion) se veia "flotando" encima del fondo, invadiendo visualmente la zona
+    # del marco FRONTAL. Arreglo pedido por Johnny -- simple, sin mascaras: escena trasera
+    # al fondo, el PNG del marco (con su propia transparencia) en medio, y la escena FRONTAL
+    # pegada AL FINAL, encima de todo. Asi el marco tapa cualquier sobrante de la escena
+    # trasera, y la escena frontal siempre gana sobre el marco.
     _paste_rotated_scene(canvas, scene1, windows["trasero"], ancla)
-    _paste_rotated_scene(canvas, scene2, windows["frontal"], ancla)
 
     frame_asset = _load_asset("doble_marco", aspecto, assets_dir)
     canvas.alpha_composite(frame_asset, (0, 0))
+
+    _paste_rotated_scene(canvas, scene2, windows["frontal"], ancla)
 
     # Pie opcional (`texto_pie`, rol subtitulo) en la franja libre sobre los
     # marcos: desde el margen superior hasta el borde de contenido del asset
