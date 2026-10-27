@@ -60,6 +60,20 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Audiencia | `fldXC1j4yq3ITULYz` | singleSelect (Propia/Afiliado) |
 | Hook Usado | `fldmaZNxsUpRxBGmC` | singleSelect, nombre completo ("01 Negativo"…"20 Revelación", igual que `Hook Asignado`); las opciones sueltas "04", "07", "17" son restos, no usar |
 | Carpeta Drive | `fldpu7xim0PtA1tJS` | url (subcarpeta de fecha en `Content_Pieces`) |
+| Plataformas Destino | `fldoL0WzNyw2X8xHx` | multipleSelects (Instagram/Facebook/Pinterest/YouTube/TikTok; añadido 27-oct-2026 para `fyr-publisher`) |
+| Estado IG | `flddWeWxcaWk0t3x2` | singleSelect (No aplica/Pendiente/Publicado/Fallido; añadido 27-oct-2026) |
+| Estado FB | `fldS2HHRyr6UpdzSr` | singleSelect (mismas opciones que Estado IG; añadido 27-oct-2026) |
+| Estado Pinterest | `fldzqxnaZ6DrurRHh` | singleSelect (mismas opciones; añadido 27-oct-2026) |
+| Estado YouTube | `fldgZJ6eZ05oxPe7H` | singleSelect (mismas opciones; añadido 27-oct-2026) |
+| Estado TikTok | `fldOM7Y83b4QAWTS7` | singleSelect (mismas opciones; añadido 27-oct-2026) |
+| Post ID IG | `fld9MaAJxssTiUT7p` | texto (ID del media/post publicado, para auditar o borrar después; añadido 27-oct-2026) |
+| Post ID FB | `fldA6Naoeg9je6uZb` | texto (añadido 27-oct-2026) |
+| Post ID Pinterest | `fldMCih6SCcaadTKU` | texto (añadido 27-oct-2026) |
+| Post ID YouTube | `fld0pgXfKXLhiUdj8` | texto (añadido 27-oct-2026) |
+| Post ID TikTok | `fldublvHckaVEsYNs` | texto (añadido 27-oct-2026) |
+| Fecha Publicación Programada | `fldrMl8gQKUBa7j1T` | date (fecha en que `fyr-publisher` debe publicar la pieza — distinta de `Fecha de Generación`, que es cuando se generó el brief; añadido 27-oct-2026) |
+
+**Nota de solape (27-oct-2026):** `Themes` ya tenía campos `Link Publicación IG/TikTok/Pinterest/FB/YouTube` (tipo url, §Themes arriba) pensados para guardar el link público del post. Los `Post ID X` de aquí son el ID crudo de la plataforma (lo que devuelve la API al publicar), no el link — `fyr-publisher` escribe el ID aquí porque es lo que necesita para operaciones posteriores (borrar, verificar status); si se quiere también el link público visible para humanos, calcularlo a partir del ID y escribirlo en el campo correspondiente de `Themes` es un paso aparte, no asumido como automático todavía.
 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
 Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~240 registros con link Drive verificado.
