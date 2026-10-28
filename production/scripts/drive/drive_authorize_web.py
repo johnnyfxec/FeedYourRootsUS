@@ -98,7 +98,14 @@ def main():
         "response_type": "code",
         "scope": SCOPE,
         "access_type": "offline",
-        "prompt": "consent",  # fuerza que Google SIEMPRE devuelva refresh_token, incluso en re-autorizaciones
+        # "consent" fuerza que Google SIEMPRE devuelva refresh_token, incluso en re-autorizaciones.
+        # "select_account" fuerza que vuelva a mostrar la pantalla de seleccion de cuenta/canal --
+        # necesario cuando la cuenta de Google administra mas de un canal de YouTube (ej. un canal
+        # personal + una Brand Account): sin esto, Google puede saltarse esa pantalla y el token
+        # queda ligado al canal que haya quedado "activo" de una sesion anterior, no al que se
+        # quiere usar (confirmado 28-oct-2026: asi fue como un refresh token quedo ligado al canal
+        # personal en vez de a la Brand Account de Feed Your Roots).
+        "prompt": "consent select_account",
     }
     url = AUTH_URL + "?" + urllib.parse.urlencode(params)
 
