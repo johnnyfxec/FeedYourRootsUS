@@ -98,7 +98,7 @@ jobs:
               print("LS ROOT FALLO:", e)
           PYEOF
 
-      - name: Subir los 16 archivos de avatares (solo si modo=subir)
+      - name: Subir todos los archivos de avatares (solo si modo=subir)
         if: ${{ inputs.modo == 'subir' }}
         working-directory: production/scripts/drive
         run: |
