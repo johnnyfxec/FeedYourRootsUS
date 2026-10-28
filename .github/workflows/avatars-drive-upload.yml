@@ -7,7 +7,11 @@ name: Avatares - subida a Drive (C14_Brand_Mark)
 # No requiere credenciales nuevas ni tocar nada fuera de esa carpeta.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'diagnostico (solo listar/buscar) o subir (ejecutar la subida real)'
+        default: 'diagnostico'
 
 permissions:
   contents: read
@@ -28,11 +32,39 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verificar acceso a Drive
+      - name: Verificar acceso a Drive (cuenta conectada)
         working-directory: production/scripts/drive
         run: python3 drive_client.py check
 
-      - name: Subir los 16 archivos de avatares
+      - name: Diagnostico - metadata directa del folder C14
+        working-directory: production/scripts/drive
+        run: |
+          python3 - <<'PYEOF'
+          import sys, json
+          sys.path.insert(0, ".")
+          from drive_client import Drive, DriveError
+          d = Drive()
+          try:
+              meta = d.metadata("1isrlluED4Ro36HyCP_wgndx2pAOOFvJS")
+              print("METADATA OK:", json.dumps(meta, indent=1))
+          except DriveError as e:
+              print("METADATA FALLO:", e)
+          print("--- buscando por nombre 'C14_Brand_Mark' en todo el Drive accesible ---")
+          try:
+              hits = d.find("C14_Brand_Mark")
+              print(json.dumps(hits, indent=1))
+          except DriveError as e:
+              print("BUSQUEDA FALLO:", e)
+          print("--- buscando '01_Brand_Assets' ---")
+          try:
+              hits = d.find("01_Brand_Assets")
+              print(json.dumps(hits, indent=1))
+          except DriveError as e:
+              print("BUSQUEDA FALLO:", e)
+          PYEOF
+
+      - name: Subir los 16 archivos de avatares (solo si modo=subir)
+        if: ${{ inputs.modo == 'subir' }}
         working-directory: production/scripts/drive
         run: |
           set -e
@@ -42,6 +74,7 @@ jobs:
             python3 drive_client.py upload "$f" "$name" "$C14_FOLDER_ID"
           done
 
-      - name: Listar resultado en C14_Brand_Mark
+      - name: Listar resultado en C14_Brand_Mark (solo si modo=subir)
+        if: ${{ inputs.modo == 'subir' }}
         working-directory: production/scripts/drive
         run: python3 drive_client.py ls "$C14_FOLDER_ID"
