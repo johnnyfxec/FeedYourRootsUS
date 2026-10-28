@@ -9,6 +9,16 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-27/28 — Rediseño de campos Themes/Content_Pieces (Route B) y auditoría completa repo vs Proyecto de claude.ai
+
+**Migración de campos (Route B):** 11 campos de ejecución de pieza migrados de `Themes` a `Content_Pieces` (Formato, Título Portada, Subtítulo, Prompt Imagen, CTA Sugerido, Fase Embudo, Fecha de Publicación, 5x Link Publicación [red]); campo `Themes.Estado` eliminado por completo — el link inverso `Themes.Content_Pieces` ya responde "¿este tema se produjo?" sin necesidad de un campo de estado separado, y permite además responder "qué tema + qué approach tuvo mejor performance" cruzando con `Content_Pieces.Performance`/`Hook Usado` sin ningún campo nuevo. 13 registros existentes migrados sin pérdida de datos. `fyr-content/SKILL.md`, `FYR_Rutas_De_Produccion.md` y `fyr-video-assembler/SKILL.md` actualizados para escribir en `Content_Pieces`, no en `Themes`.
+
+**Incidente real y causa raíz:** al documentar la migración, se editó por error la copia de `FYR_Rutas_De_Produccion.md` en el Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`) creyendo que era la única fuente, sin notar que el repo tenía una copia distinta y más avanzada. El bloque `<!-- CAMPOS-DOCUMENTADOS -->` que `check_field_coverage.py` realmente lee (en `knowledge/FYR_Rutas_De_Produccion.md`) nunca se tocó — el gate de gobernanza habría fallado (exit 1) en la siguiente corrida.
+
+**Auditoría completa (22 documentos, repo vs Proyecto):** a pedido de Johnny, se comparó cada documento de gobernanza del repo contra su copia en el Proyecto de claude.ai. Resultado: 11 idénticos; 6 con el repo adelante (Proyecto desactualizado, resincronizado hoy: `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md`, `CHANGELOG.md`, `fyr-content/SKILL.md`, `fyr-video-assembler/SKILL.md`, `FYR_Layout_Specs_v1.md`, `FYR_Protocolo_Edicion_Video.md`); 1 con el Proyecto adelante (`FYR_Asset_Governance_Policy.md` — número de versión del repo corregido de 2.4 a 2.7, y se encontró y corrigió una regresión real en `fyr-video-assembler/SKILL.md` que seguía escribiendo en `Themes.Estado` tras la migración); 3 documentos sin contraparte en el repo (`FYR_Plan_Publicacion_Automatizada_v2.md`, `Manual_Outreach_Creadores_FYR.md`, `FYR_Reporte_Campos_Post_Specific_Themes_vs_ContentPieces.md` — los dos últimos se borran del Proyecto por decisión de Johnny, ya cumplieron su función).
+
+**Regla nueva fijada en `FYR_Protocolo_De_Trabajo.md`:** gate obligatorio — antes de editar cualquier documento de gobernanza, verificar primero (búsqueda real, no memoria de la conversación) que no exista otra copia divergente en el otro lado (repo vs. Proyecto).
+
 ## 2026-10-19 (continuación — limpieza de Airtable tras la auditoría §0.8)
 
 Tras documentar `FYR_Rutas_De_Produccion.md` §0.8 (auditoría campo-por-campo del schema real contra lo que el flujo A0-B14 nombraba), quedaron 4 tareas de escritura en Airtable a cargo de Claude (Johnny no tiene tools de escritura en su sesión):
