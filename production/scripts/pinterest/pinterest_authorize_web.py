@@ -43,7 +43,11 @@ import urllib.request
 PUERTO_FIJO = 8787  # DEBE coincidir exacto con el Redirect URI registrado en developers.pinterest.com
 REDIRECT_URI = f"http://localhost:{PUERTO_FIJO}/"
 
-SCOPES = ["boards:read", "pins:write"]
+SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write"]
+# boards:write y pins:read se agregaron el 28-oct-2026 -- confirmado por error real de la API
+# ("code":3, Missing: ['boards:write','pins:read']) al intentar crear un pin con solo
+# boards:read+pins:write. La doc de Pinterest no deja claro de antemano que crear un pin
+# requiera tambien leer pines y escribir en el board -- quedo confirmado empiricamente.
 SCOPE = ",".join(SCOPES)
 
 AUTH_URL = "https://www.pinterest.com/oauth/"
