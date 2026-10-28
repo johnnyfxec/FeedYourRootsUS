@@ -40,27 +40,62 @@ jobs:
         working-directory: production/scripts/drive
         run: |
           python3 - <<'PYEOF'
-          import sys, json
+          import sys, json, urllib.parse
           sys.path.insert(0, ".")
-          from drive_client import Drive, DriveError
+          from drive_client import Drive, DriveError, API
+
           d = Drive()
+
+          def busqueda_amplia(nombre):
+              """Busca por nombre SIN filtrar por carpeta padre, incluyendo unidades compartidas
+              y archivos compartidos conmigo (no solo 'Mi unidad')."""
+              q = "name contains '%s' and trashed = false" % nombre.replace("'", "\\'")
+              url = (f"{API}?q={urllib.parse.quote(q)}&fields=files(id,name,mimeType,parents,driveId,shared,"
+                     "owners(emailAddress))&pageSize=50&supportsAllDrives=true&includeItemsFromAllDrives=true"
+                     "&corpora=allDrives")
+              return d._json(url).get("files", [])
+
           try:
               meta = d.metadata("1isrlluED4Ro36HyCP_wgndx2pAOOFvJS")
               print("METADATA OK:", json.dumps(meta, indent=1))
           except DriveError as e:
               print("METADATA FALLO:", e)
-          print("--- buscando por nombre 'C14_Brand_Mark' en todo el Drive accesible ---")
+
+          print("--- busqueda AMPLIA (allDrives) por 'C14_Brand_Mark' ---")
           try:
-              hits = d.find("C14_Brand_Mark")
-              print(json.dumps(hits, indent=1))
+              print(json.dumps(busqueda_amplia("C14_Brand_Mark"), indent=1))
           except DriveError as e:
               print("BUSQUEDA FALLO:", e)
-          print("--- buscando '01_Brand_Assets' ---")
+
+          print("--- busqueda AMPLIA por 'Brand_Mark' (por si el nombre exacto difiere) ---")
           try:
-              hits = d.find("01_Brand_Assets")
-              print(json.dumps(hits, indent=1))
+              print(json.dumps(busqueda_amplia("Brand_Mark"), indent=1))
           except DriveError as e:
               print("BUSQUEDA FALLO:", e)
+
+          print("--- busqueda AMPLIA por '01_Brand_Assets' ---")
+          try:
+              print(json.dumps(busqueda_amplia("01_Brand_Assets"), indent=1))
+          except DriveError as e:
+              print("BUSQUEDA FALLO:", e)
+
+          print("--- busqueda AMPLIA por 'Brand_Assets' ---")
+          try:
+              print(json.dumps(busqueda_amplia("Brand_Assets"), indent=1))
+          except DriveError as e:
+              print("BUSQUEDA FALLO:", e)
+
+          print("--- busqueda AMPLIA por 'logo-frasco' (deberia existir si la cuenta ve lo correcto) ---")
+          try:
+              print(json.dumps(busqueda_amplia("logo-frasco"), indent=1))
+          except DriveError as e:
+              print("BUSQUEDA FALLO:", e)
+
+          print("--- raiz de Mi unidad (primeros items) ---")
+          try:
+              print(json.dumps(d.ls("root")[:30], indent=1))
+          except DriveError as e:
+              print("LS ROOT FALLO:", e)
           PYEOF
 
       - name: Subir los 16 archivos de avatares (solo si modo=subir)
