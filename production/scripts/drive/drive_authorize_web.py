@@ -42,7 +42,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-SCOPE = "https://www.googleapis.com/auth/drive"
+SCOPES = [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/youtube.upload",
+]
+SCOPE = " ".join(SCOPES)
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 
