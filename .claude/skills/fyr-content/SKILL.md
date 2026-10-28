@@ -16,32 +16,17 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 **Base Airtable:** `appMy5aOwifSbBLPR` (Feed Your Roots US Data Sheets)
 
 ### Tabla `Themes` — `tblRggZtw1E38ZQJs`
+**Rediseño 28-oct-2026:** `Themes` guarda solo la definición del tema, no la ejecución de ninguna pieza concreta. Se eliminaron los campos que eran de ejecución (Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, CTA Sugerido, Plataforma, Fase Embudo, Fecha de uso, Fecha de Publicación, los 5 `Link Publicación X`) y el campo `Estado` (Pendiente/Usado, eliminado — era redundante con el link `Content_Pieces`, ver abajo); todos migraron o quedan cubiertos en `Content_Pieces`. Detalle completo en `knowledge/claude/FYR_Reporte_Campos_Post_Specific_Themes_vs_ContentPieces.md`.
+
 | Campo | fieldId | Tipo |
 |---|---|---|
 | Número (primary) | `fld6BnujxYXzxfmOb` | number (ej. 1.1, 11.8) |
 | Pilar | `fldBPnwVI3SuxXa7m` | singleSelect |
 | Dolor/Deseo | `fldfdZoX3D1oIlakE` | multilineText |
-| Formato | `fldT5oVcwdPIbUtUs` | singleSelect (POV/Antes-Después/Countdown/Storytime) |
-| Medio | `fldTenGEKEdNeXZvK` | singleSelect (Video/Carrusel) |
-| Título Portada | `fldCVVfapSEX9W91G` | multilineText |
-| Subtítulo | `fldDMjUCQPjWQuloZ` | multilineText |
-| Prompt Imagen | `fldaDHMXne92KYFxV` | multilineText |
-| Estado | `fldzY0QnfpqGQ3430` | singleSelect (Pendiente/Usado — "Descartado" documentado antes aquí no existe como choice real en el schema a 20-oct-2026; si hace falta, crearlo explícitamente antes de usarlo, no asumir que ya está) |
-| Fecha de uso | `fld4kEWvpINR87HIG` | dateTime |
-| Fecha de Publicación | `fldTT0GvT0011QOFW` | dateTime (añadido 20-oct-2026 — existía en el schema real y en el flujo del Paso 6 de abajo, "Al publicar: ... Fecha de Publicación ... en Themes", pero faltaba en esta tabla; una skill que solo leyera esta tabla no tenía cómo saber el fieldId) |
-| Performance | `fldC18ydh8h11osSd` | singleSelect (añadido 20-oct-2026, mismo motivo — hoy solo tiene la opción "Sin datos" cargada) |
-| CTA Sugerido | `fld1NGli5eaExrV99` | multilineText |
-| Bundle Relacionado | `fldT0UBdIsexJIT4i` | singleSelect |
-| Plataforma | `fldTHMGY0eb93rtqA` | multipleSelects |
 | Prioridad | `fld9t1dYpz4AfB1vJ` | singleSelect |
-| Hook Asignado | `fldZwv8371fG270a7` | singleSelect ("01 Negativo"…"20 Revelación") |
-| Fase Embudo | `fld46rAo9PUiyXTRF` | singleSelect (F1-F4) |
-| Link Publicación IG | `fldOZdILh0xljxfbR` | url (añadido 20-oct-2026) |
-| Link Publicación TikTok | `fldBCKYVZcSw7qDxl` | url (añadido 20-oct-2026) |
-| Link Publicación Pinterest | `fldL2vGT3RCneoGfc` | url (añadido 20-oct-2026) |
-| Link Publicación FB | `fldGD1gRPwHkNeftA` | url (añadido 20-oct-2026) |
-| Link Publicación YouTube | `fldxQtchK6hbqC0Y3` | multilineText (añadido 20-oct-2026 — tipo inconsistente con los otros 4 "Link Publicación", que son url; no corregido aquí porque cambiar el tipo de un campo en Airtable con datos ya escritos requiere decisión explícita de Johnny, no una skill) |
-| Content_Pieces | `fldTOvVnXFjnT0SLk` | link inverso |
+| Hook Asignado | `fldZwv8371fG270a7` | singleSelect ("01 Negativo"…"20 Revelación") — propuesta inicial para el tema; lo que de verdad se usó en cada pieza va en `Content_Pieces.Hook Usado` |
+| Content_Pieces | `fldTOvVnXFjnT0SLk` | link inverso (múltiple) — **fuente de verdad de si el tema ya se produjo**: vacío = disponible; 1+ piezas vinculadas = ya trabajado. Reemplaza al antiguo campo `Estado` |
+| Performance | `fldC18ydh8h11osSd` | singleSelect — campo heredado sin uso real, solo tiene "Sin datos" cargado; pendiente de decidir con Johnny si se elimina (no es urgente, no se escribe en ningún paso) |
 
 ### Tabla `Content_Pieces` — `tblevmNSbGTzdjuDF`
 | Campo | fieldId | Tipo |
@@ -72,8 +57,22 @@ Cada pieza existe para vender desde la autoridad. El hook no es el intro: es la 
 | Post ID YouTube | `fld0pgXfKXLhiUdj8` | texto (añadido 27-oct-2026) |
 | Post ID TikTok | `fldublvHckaVEsYNs` | texto (añadido 27-oct-2026) |
 | Fecha Publicación Programada | `fldrMl8gQKUBa7j1T` | date (fecha en que `fyr-publisher` debe publicar la pieza — distinta de `Fecha de Generación`, que es cuando se generó el brief; añadido 27-oct-2026) |
+| Formato | `fldQvG5T4NkambfVK` | singleSelect (Countdown/Antes-Después/POV/Storytime; añadido 28-oct-2026, migrado desde `Themes`) |
+| Título Portada | `fldR5k4mI7UWDrDsY` | multilineText (añadido 28-oct-2026, migrado desde `Themes`) |
+| Subtítulo | `fld1iK04YprHgEU6A` | multilineText (añadido 28-oct-2026, migrado desde `Themes`) |
+| Prompt Imagen | `fldE9R35NZzVTrP58` | multilineText (añadido 28-oct-2026, migrado desde `Themes`) |
+| CTA Sugerido | `fldkxIDePMy7FxI3y` | multilineText (añadido 28-oct-2026, migrado desde `Themes`) |
+| Fase Embudo | `fldVTuJvItUgc2LYK` | singleSelect (F1-F4; añadido 28-oct-2026, migrado desde `Themes`) |
+| Fecha de Publicación | `fldzLDKI8biRw0uHZ` | dateTime (añadido 28-oct-2026, migrado desde `Themes`) |
+| Link Publicación IG | `fldu6AfhLCgiP7fJS` | url (añadido 28-oct-2026, migrado desde `Themes`) |
+| Link Publicación Pinterest | `fldbRm70Tldl2uUDq` | url (añadido 28-oct-2026, migrado desde `Themes`) |
+| Link Publicación FB | `fldwjD1AKiJYW9mM0` | url (añadido 28-oct-2026, migrado desde `Themes`) |
+| Link Publicación YouTube | `fldTGJPY0YBEGrE9U` | url (añadido 28-oct-2026, migrado desde `Themes`) |
+| Link Publicación TikTok | `fldsTZkJA9jW8mb8W` | url (añadido 28-oct-2026, migrado desde `Themes`) |
 
-**Nota de solape (27-oct-2026):** `Themes` ya tenía campos `Link Publicación IG/TikTok/Pinterest/FB/YouTube` (tipo url, §Themes arriba) pensados para guardar el link público del post. Los `Post ID X` de aquí son el ID crudo de la plataforma (lo que devuelve la API al publicar), no el link — `fyr-publisher` escribe el ID aquí porque es lo que necesita para operaciones posteriores (borrar, verificar status); si se quiere también el link público visible para humanos, calcularlo a partir del ID y escribirlo en el campo correspondiente de `Themes` es un paso aparte, no asumido como automático todavía.
+**Nota de rediseño (28-oct-2026):** los 11 campos marcados "migrado desde `Themes`" son el resultado de mover a `Content_Pieces` todo lo que describe la ejecución concreta de una pieza, en vez de la definición general del tema (que se quedó en `Themes`, ver tabla arriba). Antes, cuando se producía una segunda pieza del mismo tema, estos valores se sobrescribían en `Themes` sin dejar registro de la primera pieza — ver `knowledge/claude/FYR_Reporte_Campos_Post_Specific_Themes_vs_ContentPieces.md` para el análisis completo. `Medio` no se migró como campo separado: ya existe `Tipo de Pieza` (Carrusel/Video) cumpliendo la misma función.
+
+**Nota de solape con `fyr-publisher` (27-oct-2026, sigue vigente):** los `Post ID X` son el ID crudo de la plataforma (lo que devuelve la API al publicar, para borrar o verificar status), distinto de `Link Publicación X` (el link público legible). Ambos viven ahora en `Content_Pieces`.
 
 ### Tabla `Assets` — `tblkzOtjS4KK5B2Xn`
 Campos clave: `Nombre de archivo` (`fldX3gsT4b6dkzIvg`), `Link Drive` (`fldMWMX97UDujzVgB`), `Tags` (`fldvq3RMSkUIR1Od4`), `Reutilizable en` (`fldxD7IhRHFI7f2XJ`). ~240 registros con link Drive verificado.
@@ -114,7 +113,7 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 
 **Dos lugares, dos funciones (no confundirlos):**
 - **Banco de temas** = la Malla (`knowledge/FYR_Malla_60_Temas_Virales_v2.md`, 61 temas semilla `X.Y`) + los temas nuevos que se extraigan de los PDFs. Es donde se *elige* qué producir. NO está cargado en Airtable y no se carga en bloque.
-- **Tabla `Themes`** = solo los temas que ya se han producido (o están en producción). Es el registro: estado, fecha, hook, piezas. Un tema entra a `Themes` en el momento de producirlo (Paso 5.6), nunca antes.
+- **Tabla `Themes`** = solo los temas que ya se han producido (o están en producción). Guarda únicamente la definición del tema (Número, Pilar, Dolor/Deseo, Prioridad, Hook Asignado) — desde 28-oct-2026 ya no guarda estado de uso, fechas ni datos de ninguna pieza concreta; eso vive en `Content_Pieces` (ver Paso 5.6 y Paso 5 sub-paso 4). Un tema entra a `Themes` en el momento de producirlo (Paso 5.6), nunca antes.
 
 **Temas nuevos desde los PDFs (la fuente de contenido es ilimitada).** Cada parte de un recurso (sección, tabla, lista, error común, caso del PDF) puede convertirse en un tema que impulse recordación o ventas:
 1. Leer el PDF del pilar en el Proyecto (los 10 recursos de la carpeta de producto; el Core Bundle y los demás bundles están en la lista de archivos del Proyecto) y elegir un fragmento concreto: una cifra, un error, una tabla, un procedimiento.
@@ -124,16 +123,16 @@ Rutas relativas a la raíz del repo (`~/FeedYourRootsUS`). Si un archivo no exis
 5. Asignar **Fase Embudo** (dolor sin mencionar el producto → F1; mostrar alternativa → F2; destruir objeción → F3; resultado/demostración del recurso → F4; verificar que la mezcla mensual se acerque a 40/27/20/13) y **Hook Asignado** (Fase + Formato con la tabla de compatibilidad del CRS, Parte 2; el hook Mito (11) es el de mayor conversión para creencias arraigadas como "autosuficiencia = mucho terreno y dinero").
 6. Mostrar el tema nuevo al usuario y esperar su OK antes de continuar al Paso 1.
 
-**Alta en `Themes` (Paso 5.6):** si el tema no existe en `Themes`, crearlo con todos sus campos (Número, Pilar, Dolor/Deseo, Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Fase Embudo, Hook Asignado, CTA Sugerido, Plataforma) y `typecast: true`; si ya existe, actualizarlo. Verificar antes de crear que el Número no exista ya (fail loudly si hay duplicado).
+**Alta en `Themes` (Paso 5.6):** si el tema no existe en `Themes`, crearlo SOLO con sus campos propios (Número, Pilar, Dolor/Deseo, Prioridad, Hook Asignado) y `typecast: true`. **Si ya existe, no se toca** — desde 28-oct-2026, `Themes` nunca se actualiza con datos de una pieza concreta (Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Fase Embudo, CTA Sugerido, Plataforma viven en `Content_Pieces`, ver Paso 5 sub-paso 4). Verificar antes de crear que el Número no exista ya (fail loudly si hay duplicado). Ver `knowledge/claude/FYR_Reporte_Campos_Post_Specific_Themes_vs_ContentPieces.md` para el porqué de este rediseño.
 
 ## 4. Flujo de producción por pieza
 
 ### Paso 0 — Selección de tema
 **Chequeo previo, siempre primero (opcional, nunca bloqueante):** consultar `Trend_Signals` (tabla `tblxdaRsgEy8CHvV9`) filtrando `Estado=Aprobada` y `Fecha_Expiracion >= hoy`. Si hay resultados, ofrecer al usuario producir la pieza montada sobre esa señal — usando su `Hook_CRS_Equivalente`, `Formato_Sugerido` y `Brief_Adaptacion` como punto de partida del Paso 1 en vez de partir de cero. Si el usuario acepta, al completar el Paso 5 escribir el `PZA_[tema]` resultante de vuelta en `Content_Piece_Generada` de esa fila. Si no hay señales aprobadas vigentes, o el usuario declina, continuar normal con los 3 caminos de siempre:
-- Usuario pide tema específico (`X.Y`) → buscar primero en `Themes`; si no está, tomarlo de la Malla (banco semilla) tal cual. Si el número no existe en ninguno de los dos, decirlo y detenerse. Nunca seleccionar uno ya `Usado` sin confirmación explícita.
-- Usuario pide "el siguiente" → elegir del banco (Malla + temas nuevos) los temas que NO estén en `Themes` como `Usado`. **Cola de arranque** (primeras 8 piezas): selección deliberadamente diversa, un pilar distinto cada vez y cubriendo las 4 fases, para tener señal real de qué convierte antes de escalar. Después de 8 piezas: priorizar por performance de lo ya publicado (`Performance`) y por la mezcla de fases del mes cerca de 40/27/20/13.
+- Usuario pide tema específico (`X.Y`) → buscar primero en `Themes`; si no está, tomarlo de la Malla (banco semilla) tal cual. Si el número no existe en ninguno de los dos, decirlo y detenerse. Nunca seleccionar un tema que ya tiene al menos una `Content_Pieces` vinculada (ver `Themes.Content_Pieces`) sin confirmación explícita.
+- Usuario pide "el siguiente" → elegir del banco (Malla + temas nuevos) los temas que NO tengan ninguna `Content_Pieces` vinculada en `Themes.Content_Pieces` (desde 28-oct-2026 ya no existe el campo `Estado`; el link a `Content_Pieces` es la fuente de verdad de si un tema ya se produjo). **Cola de arranque** (primeras 8 piezas): selección deliberadamente diversa, un pilar distinto cada vez y cubriendo las 4 fases, para tener señal real de qué convierte antes de escalar. Después de 8 piezas: priorizar por performance de lo ya publicado (`Content_Pieces.Performance`) y por la mezcla de fases del mes cerca de 40/27/20/13.
 - Usuario pide un tema nuevo "desde el PDF de [pilar]" o describe un ángulo libremente, SIN número → **búsqueda semántica obligatoria, siempre, sin excepción**: comparar su dolor/deseo contra los temas de la Malla del mismo pilar y contra `Dolor/Deseo` + `Título Portada` de todo `Themes`, evaluando conceptualmente (no por texto exacto). Coincidencia real → usar el existente y avisar cuál y por qué. Sin coincidencia → crear el tema nuevo siguiendo la Sección 3 (numeración, Fase, Hook) y esperar el OK del usuario antes de continuar.
-- El estado de un tema lo decide `Themes`, no la Malla: un tema de la Malla que no está en `Themes` está disponible.
+- El estado de un tema lo decide el link `Themes.Content_Pieces`, no la Malla: un tema de la Malla que no está en `Themes`, o que está sin ninguna pieza vinculada, está disponible.
 - **Cobertura del banco (regla de reutilización, 11-oct-2026):** al proponer o confirmar un tema, calcular cuántos de sus slides pueden salir de escenas ya existentes en `Assets` (libres, sin `En descanso`) y decirlo. Si dos temas empatan, preferir el de mayor cobertura. Camino alterno, "desde el banco": si el usuario lo pide o el banco tiene escenas sin usar, partir de los assets con `Veces usado` bajo y proponer temas de la Malla (o nuevos desde los PDFs) que los aprovechen. El inventario y el informe de cobertura viven en `knowledge/FYR_Plan_Reutilizacion_y_Serie_Botanica.md`.
 
 ### Paso 1 — Question Test (bloqueante)
@@ -198,9 +197,9 @@ Solo lo que falte lleva un prompt de generación nuevo marcado como `[GENERAR EN
    - **Video:** `production/scripts/video/pza-[tema]/pieza_[tema].json` (contrato de `FYR_Protocolo_Edicion_Video.md` §2) + `production/pieces/PZA_[tema]/portada_config.json` + `imagenes.json` de la imagen 1:1 de la portada.
    Si el brief cambia en la pausa del sub-paso 3, el config se parchea con el brief; nunca queda desfasado.
 3. **PAUSA — Aprobación del usuario.** El brief puede cambiar aquí; si cambia, patch quirúrgico, nunca regenerar desde cero. Solo se avanza cuando el usuario confirma explícitamente.
-4. **Apertura de la pieza (Claude, automática al aprobar):** crear en Drive `Content_Pieces/PZA_[tema]/[fecha]/` (verificando si `PZA_[tema]/` ya existe), crear/actualizar el tema en `Themes` (`Estado = Usado`, `Fecha de uso`, hook y fase), crear la fila en `Content_Pieces` (`Estado Producción = Brief Generado`, `Tema Relacionado`, `Assets Usados` del banco, `Hook Usado` con nombre completo, `Audiencia`, `Carpeta Drive`, `Ruta .md`, `Ruta JSON`; video: `Tipo de Pieza = Video`, `ID de variante`, tipo de cierre al inicio de `Copy Completo`) y aplicar la memoria de uso en `Assets` (`Veces usado` +1, `Último uso`, `En descanso` marcado; desmarcar los que ya descansaron). Claude hace estas escrituras.
+4. **Apertura de la pieza (Claude, automática al aprobar):** crear en Drive `Content_Pieces/PZA_[tema]/[fecha]/` (verificando si `PZA_[tema]/` ya existe); crear el tema en `Themes` SOLO si no existe (Número, Pilar, Dolor/Deseo, Prioridad, Hook Asignado) — si ya existe, no se toca; crear la fila en `Content_Pieces` (`Estado Producción = Brief Generado`, `Tema Relacionado`, `Assets Usados` del banco, `Hook Usado` con nombre completo, `Formato`, `Fase Embudo`, `Título Portada`, `Subtítulo`, `Prompt Imagen`, `CTA Sugerido`, `Audiencia`, `Carpeta Drive`, `Ruta .md`, `Ruta JSON`; video: `Tipo de Pieza = Video`, `ID de variante`, tipo de cierre al inicio de `Copy Completo`) y aplicar la memoria de uso en `Assets` (`Veces usado` +1, `Último uso`, `En descanso` marcado; desmarcar los que ya descansaron). Claude hace estas escrituras.
 5. **Generación manual + espera.** Solo si el brief marcó `[GENERAR]`: el usuario genera en Gemini con el prompt del brief (un prompt a la vez), lo exporta a `06_Narrative_Stock/` **con el nombre exacto** y avisa. Claude lista la carpeta, cruza por nombre exacto, descarga, mide la proporción real, crea la fila en `Assets` (campos exactos en `FYR_Rutas_De_Produccion.md` §0.6), la linkea en `Assets Usados`, completa `imagenes.json` y pone `Estado Producción = Assets en Drive`. La skill NO continúa hasta que el usuario confirma que ya subió.
-6. **Producción del archivo final** — según la Ruta A (carrusel: descargar con el conector → `run_pieza.py importar` y `ensamblar` → revisión visual y aprobación → `run_pieza.py subir` y mover con el conector a `Content_Pieces` → `Ensamblado`) o la Ruta B (video: portada compuesta → verificación → push de la cola → Actions → revisión → `Ensamblado`). Al publicar: `Publicado`, `Fecha de Publicación` en `Themes`, `Último uso` corregido a la fecha de publicación, y el link en el campo `Link Publicación [red]` de `Themes` que corresponda a dónde se publicó (`IG`/`TikTok`/`Pinterest`/`FB`/`YouTube` — campos separados por red, no un único "link"; si se publica en varias redes, llenar cada campo correspondiente).
+6. **Producción del archivo final** — según la Ruta A (carrusel: descargar con el conector → `run_pieza.py importar` y `ensamblar` → revisión visual y aprobación → `run_pieza.py subir` y mover con el conector a `Content_Pieces` → `Ensamblado`) o la Ruta B (video: portada compuesta → verificación → push de la cola → Actions → revisión → `Ensamblado`). Al publicar (desde 28-oct-2026, todo en `Content_Pieces`, ya no en `Themes`): `Estado Producción = Publicado`, `Fecha de Publicación`, `Último uso` de los assets corregido a la fecha de publicación, y el link en el campo `Link Publicación [red]` de `Content_Pieces` que corresponda a dónde se publicó (`IG`/`TikTok`/`Pinterest`/`FB`/`YouTube` — campos separados por red, no un único "link"; si se publica en varias redes, llenar cada campo correspondiente).
 
 **Verificación final de cada pieza:** brief y config en el repo + config válido (carrusel: `config_loader.py` lo acepta; video: JSON válido y cada escena existe en `Assets`) + carpeta de Drive con los archivos terminados (cuenta y checksum) + registro Airtable con `Carpeta Drive`, `Assets Usados`, `Hook Usado` y estado correctos. Reportar los cuatro checks al usuario. Si cualquiera falla, decirlo — nunca declarar éxito parcial como éxito.
 
