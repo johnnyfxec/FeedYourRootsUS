@@ -2,6 +2,8 @@
 
 **Versión 1.0 — 14-oct-2026.** Fuente de verdad del paso a paso de cada formato. Está escrito para que Claude (aquí o en Claude Code, desde la tablet) lo ejecute sin ambigüedades: cada paso dice **quién actúa, dónde, qué se escribe en Airtable y cómo se comprueba**.
 
+**⚠️ ÚNICA fuente de verdad (regla fijada 27-oct-2026, tras un incidente real):** este archivo, `knowledge/FYR_Rutas_De_Produccion.md` en el repo, es el único que se edita. `production/scripts/governance/check_field_coverage.py` lee literalmente este archivo, no ninguna otra copia. Existe una copia de solo-lectura en el Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`) para que Johnny la consulte desde la app sin entrar al repo — esa copia se resincroniza desde este archivo después de cada edición de fondo, nunca al revés, y nunca se edita directamente. Si alguna vez diverge, este archivo gana siempre.
+
 **Regla de oro:** las dos rutas **no se mezclan**. El carrusel **nunca** toca GitHub Actions. El video **solo** se renderiza en GitHub Actions. Lo único común es la Sección 0 (dónde vive cada cosa) y la Sección 1 (acceso a Drive).
 
 ---
@@ -25,8 +27,8 @@
 
 | Tabla | Rol | Se crea | Se actualiza |
 |---|---|---|---|
-| `Themes` | El tema: estado, hook, fase, fecha de uso y de publicación, links de publicación, bundle, prioridad, performance del tema | Al aprobar el brief (si no existe) | Al aprobar el brief; al publicar; al medir performance |
-| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook, assets usados, tema vinculado, señal de origen (si aplica), performance | Al aprobar el brief | En cada cambio de estado |
+| `Themes` | La idea reutilizable: número, pilar, dolor/deseo, bundle relacionado, prioridad, hook asignado (propuesta) — y el link `Content_Pieces` dice si ya se produjo. **Ya no guarda estado de uso, fase, fechas, links de publicación ni performance — eso se movió a `Content_Pieces` (migración Route B, 27-oct-2026, ver corrección 2 de la Sección 2)** | Al aprobar el brief, solo si el tema no existe aún | Normalmente nunca más (es la idea, no la ejecución); solo si el tema mismo cambia |
+| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook usado (ejecución real), formato, fase embudo, CTA, assets usados, tema vinculado, señal de origen (si aplica), performance, y todos los campos de publicación por plataforma (estado, post ID, link, fecha) | Al aprobar el brief | En cada cambio de estado; al publicar; al medir performance |
 | `Assets` | Cada imagen **de entrada** (escenas, marcos, botánicas) y su memoria de uso | Al subir cada imagen nueva | `Veces usado`, `Último uso`, `En descanso` |
 | `Trend Signals` | Señal de tendencia detectada por `trend-scout`; este documento solo la **consume** en A0/B0, no la gestiona — ver 0.8 | (gestionada por `trend-scout`) | `Estado` y `Content_Piece_Generada` al consumirse una señal (ver 0.8) |
 
@@ -34,16 +36,16 @@
 
 **Por qué existe esta sección:** Johnny pidió, tras el hueco real de `Bundle Relacionado` (quedó vacío en 6 filas del primer lote porque ningún paso de este documento lo mencionaba), una auditoría campo-por-campo de TODO el schema real de Airtable contra lo que este documento dice llenar — no solo las tablas que se tocan en producción de imágenes. Encontró 9 campos más en la misma situación. Regla general que queda fijada aquí: **todo campo real de estas tablas tiene que aparecer en algún paso de este documento, con su valor o su regla de mapeo — un campo que "no aplica todavía" se dice explícitamente, nunca se omite en silencio.**
 
-**`Themes`:**
-- `Bundle Relacionado` (singleSelect: Starter/Family/Homestead/Homestead Complete) — se llena en A5/B5 al crear el tema, mapeado desde el **Pilar** del tema vía `FYR_Malla_60_Temas_Virales_v2.md`: pilares 4-5 → `Family`, 6-7 → `Homestead`, 8-9 → `Homestead Complete`. Si un pilar futuro no tiene opción equivalente, se crea la opción correcta con `typecast: true` (nunca se aproxima a una opción existente en silencio) y se reporta a Johnny qué opción se creó.
-- `Pilar` y `Dolor/Deseo` — se llenan en A5/B5 al crear el tema (ya se calculan en el Paso 0/A0 al elegir o crear el tema; este documento antes no los nombraba explícitamente en el paso de escritura, aunque siempre se calcularon).
-- `Performance` (el de `Themes`, distinto del `Performance` de `Content_Pieces` — son dos campos separados en dos tablas) — igual que `Content_Pieces.Performance` (ver A13/B14): hasta que exista la skill de medición, queda `Sin datos`. Cuando exista, se actualiza junto con el de `Content_Pieces` en el mismo paso de medición.
+**`Themes`:** (sección histórica, 19-oct-2026 — leer con la corrección 2 de la Sección 2: desde el 27-oct-2026 `Themes` solo guarda la idea, no la ejecución)
+- `Bundle Relacionado` (singleSelect: Starter/Family/Core/Homestead/Homestead Complete) — se llena en A5/B5 **solo al crear el tema por primera vez** (ya no se actualiza en cada pieza — `Themes` no se reescribe tras su creación), mapeado desde el **Pilar** del tema vía `FYR_Malla_60_Temas_Virales_v2.md`: pilares 4-5 → `Family`, 6-7 → `Homestead`, 8-9 → `Homestead Complete`. Si un pilar futuro no tiene opción equivalente, se crea la opción correcta con `typecast: true` (nunca se aproxima a una opción existente en silencio) y se reporta a Johnny qué opción se creó.
+- `Pilar` y `Dolor/Deseo` — se llenan en A5/B5 al crear el tema por primera vez (se calculan en el Paso 0/A0 al elegir o crear el tema).
+- `Performance` — **este campo ya no existe en `Themes`** (borrado en la migración Route B del 27-oct-2026). La pregunta "qué tema + qué approach tuvo mejor performance" se responde cruzando `Content_Pieces.Performance` con `Content_Pieces.Tema Relacionado` y `Content_Pieces.Hook Usado` — ver diseño de `performance-lens` en `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §6, que ya lee de `Content_Pieces`, no de `Themes`.
 - `Prioridad` — se llena en A0/B0 al elegir el tema, si la selección vino de una razón de prioridad explícita (cola de arranque, performance de lo publicado, mezcla de fases del mes — ver Paso 0 de `fyr-content/SKILL.md`); si el tema se eligió sin ese criterio (p. ej. Johnny pidió un número específico), se deja vacío a propósito, no es un hueco.
-- `Imported table`, `Imported table 2`, `Imported table 3`, `Imported table 4` — residuo de una importación de Airtable, vacíos en las 10 filas actuales (confirmado 19-oct-2026), sin ningún uso real documentado en ningún SKILL.md. Precedente: un campo idéntico de `Content_Pieces` (`Imported table`) se renombró a `Señales_Origen` cuando se le encontró uso real (ver `CHANGELOG.md`). Pendiente: Claude (en sesión de Airtable) audita estas 4 — a qué apuntaban los dos `multipleRecordLinks`, si algún registro los usó alguna vez — y decide borrar o renombrar cada una, documentándolo en `CHANGELOG.md` igual que la vez anterior. Mientras no se resuelva, ninguna escritura de este flujo las toca.
+- `Imported table`, `Imported table 2`, `Imported table 3` — **confirmado 27-oct-2026, vía `get_table_schema`: ya no existen en `Themes`.** El schema real actual son exactamente 9 campos: `Número, Pilar, Dolor/Deseo, Bundle Relacionado, Prioridad, Content_Pieces, Hook Asignado, Señales (Pilar Relacionado), Señales (Tema Vinculado)` — igual que el bloque `CAMPOS-DOCUMENTADOS` de la Sección 2. No queda ningún residuo de importación pendiente de resolver.
 
 **`Content_Pieces`:**
 - `Ruta JSON` en Ruta A (carrusel) — **antes indefinido.** Se llena en A5 con la ruta de `config.json` de la pieza (`production/pieces/PZA_[tema]/config.json`), igual patrón que `Ruta .md`. No se deja vacío para carruseles.
-- `Tema Relacionado` — se llena en A5/B5 al crear la fila, vinculando al registro de `Themes` correspondiente (existía como paso implícito pero nunca se nombraba el campo).
+- `Tema Relacionado` — se llena en A5/B5 al crear la fila, vinculando al registro de `Themes` correspondiente. Es el campo que hoy permite responder "qué tema tuvo mejor performance" sin que `Themes` necesite su propio campo de estado o performance (ver nota de `Themes.Performance` arriba).
 - `Señales_Origen` — se llena solo cuando la pieza nace de una señal de `Trend_Signals` consumida en A0/B0 (ver 0.8 de Trend Signals abajo); vacío en cualquier otro caso, lo cual es correcto, no un hueco.
 - Nota de dato obsoleto (no es un hueco de este documento, es limpieza de Airtable pendiente): la descripción del campo `Audiencia` en Airtable menciona un campo "Afiliado Destino" para el caso de kits de afiliado — ese campo ya no existe en el schema real. Pendiente: Claude corrige esa descripción en Airtable (o la reemplaza por el campo real que corresponda si existe con otro nombre) para que no confunda a futuro.
 
@@ -70,7 +72,7 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 | Brief Generado | Brief aprobado, pieza registrada | Existe fila, brief y config en el repo, carpeta de Drive creada |
 | Assets en Drive | **Todas** las imágenes de entrada existen en Drive y están en `Assets` | Cada slide tiene ID de Drive resuelto y verificado |
 | Ensamblado | El producto final está terminado y aprobado por Johnny, subido a `Content_Pieces` | Carpeta con N archivos, checksum igual al local |
-| Publicado | Publicado en la red | `Fecha de Publicación` y link en `Themes` |
+| Publicado | Publicado en la red | `Content_Pieces.Fecha de Publicación` y el `Link Publicación X` de la plataforma correspondiente (ya no vive en `Themes` — ver corrección 2 de la Sección 2) |
 
 ### 0.5 Reglas transversales de escritura en Airtable
 
@@ -149,7 +151,7 @@ Hasta que la autorización esté hecha, el carrusel y el video **se detienen en 
 
 ### A0 — Selección del tema
 - Claude: revisa `Trend_Signals` aprobadas vigentes; si Johnny dio número `X.Y`, lo busca en `Themes` y luego en la Malla; si dijo "el siguiente", elige por cobertura del banco y mezcla de fases; si es tema nuevo, búsqueda semántica obligatoria (Sección 3 de `fyr-content`).
-- Un tema `Usado` no se repite sin confirmación de Johnny.
+- Un tema que ya tiene piezas en su link `Themes.Content_Pieces` no se repite sin confirmación de Johnny (ya no existe `Themes.Estado` — ver corrección 2 de la Sección 2; el link a `Content_Pieces` es la señal de "ya producido").
 - Airtable: solo lectura.
 - Salida: tema elegido + cuántos slides salen del banco.
 
@@ -174,8 +176,8 @@ Hasta que la autorización esté hecha, el carrusel y el video **se detienen en 
 ### A5 — Apertura de la pieza (tras la aprobación)
 Claude escribe, en este orden:
 1. **Drive:** crea `Content_Pieces/PZA_[tema]/` si no existe y la subcarpeta `[fecha de hoy]/` dentro.
-2. **Themes:** crea o actualiza el tema: `Estado = Usado`, `Fecha de uso`, `Hook Asignado`, `Fase Embudo`, Título/Subtítulo/Prompt, CTA, Plataforma.
-3. **Content_Pieces:** crea la fila: `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Carrusel`, `Fecha de Generación`, `Número de Slides`, `Copy Completo` (slides + caption), `Ruta .md`, `Ruta JSON`, `Tema Relacionado`, `Hook Usado` (nombre completo), `Audiencia = Propia`, `Assets Usados` (los del banco), **`Estado Producción = Brief Generado`**. **`Carpeta Drive` NO se escribe aquí** (corrección 20-oct-2026 — ver nota en A11): la subcarpeta de fecha que el paso 1 de arriba crea es solo el destino previsto, y puede no ser la carpeta real donde termine subiendo el contenido terminado si pasa más de un día entre esta Apertura y A11 (pasó dos veces de forma independiente en el primer lote real — PZA_10.4 y PZA_11.2 — por esta misma razón). Escribir el campo temprano con un valor que después puede quedar obsoleto es peor que dejarlo vacío hasta tener el dato real.
+2. **Themes:** crea el tema solo si no existe aún: `Número`, `Pilar`, `Dolor/Deseo`, `Bundle Relacionado`, `Prioridad`, `Hook Asignado` (la propuesta). Si ya existe, no se actualiza — `Themes` es la idea, no la ejecución (ver corrección 2 de la Sección 2).
+3. **Content_Pieces:** crea la fila: `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Carrusel`, `Fecha de Generación`, `Número de Slides`, `Copy Completo` (slides + caption), `Ruta .md`, `Ruta JSON`, `Tema Relacionado`, `Hook Usado` (nombre completo, puede diferir del `Hook Asignado` del tema), `Formato`, `Fase Embudo`, `Título Portada`, `Subtítulo`, `Prompt Imagen`, `CTA Sugerido`, `Audiencia = Propia`, `Assets Usados` (los del banco), **`Estado Producción = Brief Generado`**. Todos estos campos de ejecución viven en `Content_Pieces`, no en `Themes` (migración Route B, 27-oct-2026). **`Carpeta Drive` NO se escribe aquí** (corrección 20-oct-2026 — ver nota en A11): la subcarpeta de fecha que el paso 1 de arriba crea es solo el destino previsto, y puede no ser la carpeta real donde termine subiendo el contenido terminado si pasa más de un día entre esta Apertura y A11 (pasó dos veces de forma independiente en el primer lote real — PZA_10.4 y PZA_11.2 — por esta misma razón). Escribir el campo temprano con un valor que después puede quedar obsoleto es peor que dejarlo vacío hasta tener el dato real.
 4. **Assets (del banco):** memoria de uso según 0.7.
 5. Commit del brief y config a `main`.
 
@@ -209,7 +211,7 @@ Claude escribe, en este orden:
 
 ### A12 — Publicación (Johnny)
 - Johnny publica y avisa plataforma, fecha y link.
-- Claude: `Content_Pieces.Estado Producción = Publicado`; `Themes`: `Fecha de Publicación` y el campo `Link Publicación` de la plataforma; `Assets`: `Último uso` = fecha de publicación (0.7).
+- Claude: `Content_Pieces.Estado Producción = Publicado`; `Content_Pieces.Fecha de Publicación` y el `Link Publicación` de la plataforma correspondiente (ya no en `Themes` — ver corrección 2 de la Sección 2); `Assets`: `Último uso` = fecha de publicación (0.7).
 
 ### A13 — Medición
 - La skill de performance actualiza `Content_Pieces.Performance`. Hasta que exista, `Sin datos`.
@@ -242,7 +244,7 @@ Claude escribe, en este orden:
 ### B4 — PAUSA: aprobación del brief (Johnny). Igual que A4.
 
 ### B5 — Apertura de la pieza
-Igual que A5, con: `Tipo de Pieza = Video`, `Duración` estimada, `ID de variante`, tipo de cierre al inicio de `Copy Completo`, `Ruta JSON` = ruta del `pieza_[tema].json`. `Estado = Brief Generado`.
+Igual que A5 (ya corregida: `Themes` solo se crea si no existe, sin actualizar estado; todos los campos de ejecución van a `Content_Pieces`), con: `Tipo de Pieza = Video`, `Duración` estimada, `ID de variante`, tipo de cierre al inicio de `Copy Completo`, `Ruta JSON` = ruta del `pieza_[tema].json`. `Content_Pieces.Estado Producción = Brief Generado`.
 
 ### B6 y B7 — Generar y registrar lo nuevo
 - Igual que A6 y A7 (proporciones: 9:16 ≈ 0.5625, 1:1 = 1.0; ±2 %). `Estado = Assets en Drive`.
@@ -286,15 +288,17 @@ Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive 
 **Regla de mantenimiento:** cualquier edición a este documento que agregue, quite o renombre un campo de Airtable **debe** actualizar la lista de la tabla correspondiente en el mismo commit. El script no interpreta la prosa de la Sección 0.8 — solo lee esta lista. Si un campo aparece documentado en prosa pero no en esta lista, el script lo trata igual que si no existiera.
 
 <!-- CAMPOS-DOCUMENTADOS
-Themes: Número, Pilar, Dolor/Deseo, Formato, Medio, Título Portada, Subtítulo,
-  Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Bundle Relacionado, Plataforma,
-  Prioridad, Hook Asignado, Fase Embudo, Performance, Fecha de Publicación,
-  Link Publicación FB, Link Publicación IG, Link Publicación Pinterest,
-  Link Publicación TikTok, Link Publicación YouTube,
-  Señales (Pilar Relacionado), Señales (Tema Vinculado), Content_Pieces
+Themes: Número, Pilar, Dolor/Deseo, Bundle Relacionado, Prioridad, Content_Pieces,
+  Hook Asignado, Señales (Pilar Relacionado), Señales (Tema Vinculado)
 Content_Pieces: ID Pieza, Tipo de Pieza, Fecha de Generación, Número de Slides, Duración,
-  Copy Completo, Ruta .md, Ruta JSON, Estado Producción, Performance, Tema Relacionado,
-  Assets Usados, Audiencia, Hook Usado, Señales_Origen, Carpeta Drive, ID de variante
+  Copy Completo, Ruta .md, Ruta JSON, Estado Producción, Carpeta Drive, Performance,
+  Tema Relacionado, Assets Usados, Audiencia, Hook Usado, Señales_Origen, ID de variante,
+  Plataformas Destino, Estado IG, Estado FB, Estado Pinterest, Estado YouTube, Estado TikTok,
+  Post ID IG, Post ID FB, Post ID Pinterest, Post ID YouTube, Post ID TikTok,
+  Fecha Publicación Programada, Formato, Título Portada, Subtítulo, Prompt Imagen,
+  CTA Sugerido, Fase Embudo, Fecha de Publicación, Link Publicación IG,
+  Link Publicación Pinterest, Link Publicación FB, Link Publicación YouTube,
+  Link Publicación TikTok
 Assets: Nombre de archivo, Categoría, Subcategoría/Uso, Aspecto, Link Drive, Carpeta Drive,
   Descripción breve, Fecha de creación, Tags, Proyecto/Producto, Reutilizable en,
   Content_Pieces, Veces usado, Último uso, En descanso
@@ -303,6 +307,8 @@ Assets: Nombre de archivo, Categoría, Subcategoría/Uso, Aspecto, Link Drive, C
 **`Trend Signals` NO se documenta en este bloque — es dueño `FYR_Sistema_Viral_3Skills_Fuente_de_Verdad.md` §5.4, no este documento** (ver 0.2: este documento solo la *consume* en A0/B0, no la gestiona). `check_field_coverage.py` lee los dos documentos, no solo este — ver su código para la lista completa de pares tabla→documento.
 
 **Corrección 19-oct-2026 (primera corrida real del gate, vía CC):** el primer intento de este bloque tenía 2 errores reales que el gate detectó apenas se corrió por primera vez — prueba de que el mecanismo funciona. (1) `Link Publicación` estaba como un solo nombre genérico; el campo real en Airtable está separado por plataforma (5 campos). (2) Los 2 campos renombrados hoy mismo (`Imported table`→`Señales (Pilar Relacionado)`, `Imported table 4`→`Señales (Tema Vinculado)`, ver CHANGELOG) se documentaron en prosa en la Sección 0.8 pero no se actualizaron en este bloque — el script no lee la prosa, así que el renombre quedó invisible para el gate hasta esta corrección. Lección operativa: todo commit que renombra/crea/borra un campo real en Airtable **debe** tocar este bloque en el mismo commit, no solo la prosa — el checklist de cierre de cualquier tarea de Airtable debería incluir "¿este cambio afecta el bloque CAMPOS-DOCUMENTADOS de algún documento?" como pregunta explícita.
+
+**Corrección 2 (27-oct-2026 — incidente real, no simulado):** se hizo una migración completa de campos de ejecución de pieza desde `Themes` hacia `Content_Pieces` (Route B, ver `claude/FYR_Reporte_Campos_Post_Specific_Themes_vs_ContentPieces.md` en el Proyecto) — se borraron de `Themes` los campos `Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Plataforma, Fase Embudo, Performance, Fecha de Publicación` y los 5 `Link Publicación X`; se crearon en `Content_Pieces` sus equivalentes más `Plataformas Destino` y los 12 campos de `fyr-publisher` (`Estado IG/FB/Pinterest/YouTube/TikTok`, `Post ID` x5, `Fecha Publicación Programada`). **Este bloque no se actualizó en el mismo commit — se editó en cambio la copia de este documento que vive en el Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`), creyendo por error que era la única fuente de verdad, sin notar que ya existían dos copias divergentes.** El gate habría fallado (exit 1) en la siguiente corrida si Johnny no lo hubiera detectado primero. Corregido el mismo día verificando el schema real vía `get_table_schema`/`list_tables_for_base` campo por campo (no de memoria) antes de reescribir este bloque. Regla añadida para que esto no se repita: **este archivo del repo (`knowledge/FYR_Rutas_De_Produccion.md`) es la única fuente de verdad para `check_field_coverage.py` y para la operación real.** La copia del Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`) es solo una referencia de lectura rápida para Johnny desde la app — cualquier edición de fondo se hace aquí primero, y la copia del Proyecto se sincroniza después, nunca al revés.
 
 ---
 
