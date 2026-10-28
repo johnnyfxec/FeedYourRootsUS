@@ -1,5 +1,5 @@
 # Feed Your Roots — Política de Gestión de Assets
-**Versión 2.4 — 10 de octubre 2026**
+**Versión 2.7 — 19 de octubre 2026** (corregido 27-oct-2026: el número de versión del encabezado se había quedado en 2.4 pese a que el contenido ya incluía todas las correcciones del 18/19-oct — la copia del Proyecto de claude.ai sí tenía el número actualizado a 2.6 pero le faltaba contenido real del 19-oct que el repo ya tenía, ver §4 y §6-bis; ambos problemas se resolvieron en la misma auditoría cruzada)
 **Propósito:** que cualquier persona o agente que cree, nombre, ubique o registre un asset nuevo lo haga sin tener que reconstruir esta lógica desde cero.
 
 ---
