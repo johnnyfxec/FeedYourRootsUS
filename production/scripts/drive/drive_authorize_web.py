@@ -107,7 +107,7 @@ def main():
         # "El servicio no esta disponible" en algunos casos -- probado y descartado el mismo dia.
         # Si "select_account" solo no devuelve refresh_token (porque ya se autorizo antes), revocar
         # el acceso en https://myaccount.google.com/permissions y reintentar con "consent" solo.
-        "prompt": "select_account",
+        "prompt": "consent",
     }
     url = AUTH_URL + "?" + urllib.parse.urlencode(params)
 
