@@ -1,6 +1,8 @@
 # FYR — Banco de Cierres / CTA — v1
 
-**Origen (27-oct-2026):** Johnny identificó que toda pieza de FYR termina en el mismo patrón — nombrar el recurso/bundle del tema (campo `CTA Sugerido` en `Content_Pieces`; Johnny lo describió como "Bundle Relacionado", nombre del campo en el esquema anterior a la migración Route B) y decir "link in bio" — sin importar la fase del embudo. Esto se siente como venta dura incluso en piezas F1/F2 donde Morgan todavía ni sabe que tiene el problema. La corrección no es "vender menos" en abstracto: es tener más de un tipo de cierre disponible, y elegir el correcto según qué tan lista está la persona para comprar algo.
+**Origen (27-oct-2026):** Johnny identificó que toda pieza de FYR termina en el mismo patrón — nombrar el recurso/bundle del tema (campo `CTA Sugerido` en `Content_Pieces`, texto libre) y decir "link in bio" — sin importar la fase del embudo. Esto se siente como venta dura incluso en piezas F1/F2 donde Morgan todavía ni sabe que tiene el problema. La corrección no es "vender menos" en abstracto: es tener más de un tipo de cierre disponible, y elegir el correcto según qué tan lista está la persona para comprar algo.
+
+**Corrección 27-oct-2026 (más tarde el mismo día):** la versión original de este documento decía que "Bundle Relacionado" era el nombre histórico de `CTA Sugerido`, migrado/renombrado en Route B. Eso era falso — verificado contra `get_table_schema` en vivo: `Themes.Bundle Relacionado` (singleSelect: Starter/Family/Core/Homestead/Homestead Complete) sigue existiendo hoy, nunca lo tocó Route B, y es un campo DISTINTO de `Content_Pieces.CTA Sugerido`. El error no cambia nada de la lógica de este documento (las 3 familias de cierre y el mapeo por fase son correctos), pero sí importa para quien escriba el cierre: el recurso que se nombra en un cierre A puede venir del `Bundle Relacionado` del tema (la opción "canónica" por pilar) o del `CTA Sugerido` de la pieza (más específico, puede variar de la canónica si el brief lo justifica) — ver `fyr-content/SKILL.md` §1 para ambos campos.
 
 **Principio rector:** el cierre no es el "parche de monetización" al final de la pieza — es la continuación lógica de lo que la pieza ya hizo. Si la pieza dio valor real, el cierre correcto casi nunca es "compra esto". Casi siempre es "sigue la conversación que ya empezamos" o, en las fases donde sí corresponde vender, nombrar la solución como consecuencia natural de la objeción que la pieza acaba de resolver.
 
@@ -75,9 +77,9 @@
 
 ---
 
-## Efecto sobre `CTA Sugerido`
+## Efecto sobre `CTA Sugerido` y `Bundle Relacionado`
 
-El campo `CTA Sugerido` en `Content_Pieces` deja de ser una instrucción obligatoria ("esta pieza SIEMPRE cierra nombrando este recurso") y pasa a ser **la opción de venta disponible**, que el Paso 3 de `fyr-content/SKILL.md` usa solo cuando la Fase Embudo de la pieza dice que corresponde cierre A. En F1 ese campo simplemente no se consulta para el cierre. No requiere cambio de esquema en Airtable — solo cambia cómo el SKILL decide usarlo.
+Ambos campos (`Content_Pieces.CTA Sugerido`, texto libre por pieza; `Themes.Bundle Relacionado`, singleSelect canónico por tema) dejan de ser una instrucción obligatoria ("esta pieza/tema SIEMPRE cierra nombrando este recurso") y pasan a ser **la opción de venta disponible**, que el Paso 3 de `fyr-content/SKILL.md` usa solo cuando la Fase Embudo de la pieza dice que corresponde cierre A. En F1 ninguno de los dos se consulta para el cierre. No requiere cambio de esquema en Airtable — solo cambia cómo el SKILL decide usarlos.
 
 ---
 

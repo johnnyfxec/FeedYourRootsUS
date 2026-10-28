@@ -18,7 +18,7 @@ Se importa desde `Trend_Signals_Airtable_Import.csv` una sola vez (o se crea man
 | Pilar_Relacionado | **Link to another record → Themes** (`multipleRecordLinks`, confirmado contra Airtable real 16-oct-2026) | Escribir el `recXXXXXXXXXXXXXX` del registro de `Themes`, no el nombre del pilar como texto. Existe además un campo de solo lectura `Pilar (from Pilar_Relacionado)` (`fldh3ZbVcWWSZAVUa`, lookup automático) que muestra el nombre sin tener que resolverlo a mano. Vacío si no aplica a ningún pilar. |
 | Hook_CRS_Equivalente | singleSelect | Uno de los 20 hooks verbales, mismo formato que `Hook Asignado` en `Themes` (ej. "11. Mito"). Este es el campo puente hacia `fyr-content`. |
 | Fase_Embudo_Sugerida | singleSelect | F1/F2/F3/F4 |
-| Formato_Sugerido | singleSelect | POV / Antes-Después / Countdown / Storytime — mismo vocabulario que `Themes.Formato` |
+| Formato_Sugerido | singleSelect | POV / Antes-Después / Countdown / Storytime — mismo vocabulario que `Content_Pieces.Formato` (migrado desde `Themes.Formato` en Route B, 28-oct-2026, ver `fyr-content/SKILL.md` §1) |
 | Brief_Adaptacion | Texto largo | 2-4 frases: qué hace viral a esta señal y cómo se traduce a la voz/avatar de la marca. Este es el output central de la skill. |
 | Sonido_URL_Referencia | URL | Link al sonido original en la plataforma, si aplica. |
 | Video_Referencia_URL | URL | Link al video líder deconstruido (si se hizo deconstrucción). |
