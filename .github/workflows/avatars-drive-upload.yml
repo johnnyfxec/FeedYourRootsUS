@@ -1,0 +1,47 @@
+name: Avatares - subida a Drive (C14_Brand_Mark)
+
+# Workflow ad-hoc (no recurrente): sube los 16 archivos de assets/brand/avatars/ (8 PNG + 8 SVG,
+# familia avatar-symbol + avatar-lockup-vertical, circle-safe) a la carpeta de Drive
+# 01_Brand_Assets/C14_Brand_Mark/, usando el cliente OAuth de usuario ya existente
+# (production/scripts/drive/drive_client.py) y los secrets GOOGLE_OAUTH_* ya configurados.
+# No requiere credenciales nuevas ni tocar nada fuera de esa carpeta.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+      GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+      C14_FOLDER_ID: "1isrlluED4Ro36HyCP_wgndx2pAOOFvJS"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verificar acceso a Drive
+        working-directory: production/scripts/drive
+        run: python3 drive_client.py check
+
+      - name: Subir los 16 archivos de avatares
+        working-directory: production/scripts/drive
+        run: |
+          set -e
+          for f in ../../../assets/brand/avatars/*; do
+            name=$(basename "$f")
+            echo "Subiendo: $name"
+            python3 drive_client.py upload "$f" "$name" "$C14_FOLDER_ID"
+          done
+
+      - name: Listar resultado en C14_Brand_Mark
+        working-directory: production/scripts/drive
+        run: python3 drive_client.py ls "$C14_FOLDER_ID"
