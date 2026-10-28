@@ -28,7 +28,7 @@
 | Tabla | Rol | Se crea | Se actualiza |
 |---|---|---|---|
 | `Themes` | La idea reutilizable: número, pilar, dolor/deseo, bundle relacionado, prioridad, hook asignado (propuesta) — y el link `Content_Pieces` dice si ya se produjo. **Ya no guarda estado de uso, fase, fechas, links de publicación ni performance — eso se movió a `Content_Pieces` (migración Route B, 27-oct-2026, ver corrección 2 de la Sección 2)** | Al aprobar el brief, solo si el tema no existe aún | Normalmente nunca más (es la idea, no la ejecución); solo si el tema mismo cambia |
-| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook usado (ejecución real), formato, fase embudo, CTA, assets usados, tema vinculado, señal de origen (si aplica), performance, y todos los campos de publicación por plataforma (estado, post ID, link, fecha) | Al aprobar el brief | En cada cambio de estado; al publicar; al medir performance |
+| `Content_Pieces` | La pieza: estado, copy, rutas del brief/JSON, carpeta de Drive, hook usado (ejecución real), formato, fase embudo, CTA, assets usados, tema vinculado, señal de origen (si aplica), performance, y todos los campos de publicación por plataforma (estado, post ID, link, fecha) — estos últimos son dominio exclusivo de `fyr-publisher` (no existe todavía, corrección 28-oct-2026): ninguna skill de producción (`fyr-content`, `fyr-video-assembler`, `fase-d-planner`) los lee ni escribe | Al aprobar el brief | En cada cambio de estado hasta `Ensamblado`; al publicar (`fyr-publisher`, futuro); al medir performance |
 | `Assets` | Cada imagen **de entrada** (escenas, marcos, botánicas) y su memoria de uso | Al subir cada imagen nueva | `Veces usado`, `Último uso`, `En descanso` |
 | `Trend Signals` | Señal de tendencia detectada por `trend-scout`; este documento solo la **consume** en A0/B0, no la gestiona — ver 0.8 | (gestionada por `trend-scout`) | `Estado` y `Content_Piece_Generada` al consumirse una señal (ver 0.8) |
 
@@ -74,9 +74,11 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 | Ensamblado | El producto final está terminado y aprobado por Johnny, subido a `Content_Pieces` | Carpeta con N archivos, checksum igual al local |
 | Publicado | Publicado en la red | `Content_Pieces.Fecha de Publicación` y el `Link Publicación X` de la plataforma correspondiente (ya no vive en `Themes` — ver corrección 2 de la Sección 2) |
 
+**Corrección 28-oct-2026 (Johnny) — `Ensamblado` es el techo real de las skills de producción.** Ninguna skill existente (`fyr-content`, `fyr-video-assembler`, `fase-d-planner`) escribe `Publicado` ni ninguno de los campos de publicación (`Fecha de Publicación`, `Fecha Publicación Programada`, `Estado IG/FB/Pinterest/YouTube/TikTok`, `Post ID [red]`, `Link Publicación [red]`), ni como paso automático ni como paso manual. Ese salto es dominio exclusivo de `fyr-publisher`, una skill que no existe todavía (diseño en `FYR_Plan_Publicacion_Automatizada_v1.md`/`v2.md`). Hasta que esa skill esté construida y conectada a las redes sociales, ninguna pieza debe quedar marcada `Publicado` por ningún medio — si una fila real de Airtable lo está sin que `fyr-publisher` exista, es un dato incorrecto que hay que corregir, no una señal de que el flujo ya llega hasta ahí.
+
 ### 0.5 Reglas transversales de escritura en Airtable
 
-- Claude hace **todas** las escrituras. Johnny no edita Airtable.
+- Claude hace **todas** las escrituras que correspondan al estado actual del sistema (hasta `Ensamblado`). Johnny no edita Airtable. Los campos de publicación (ver nota arriba) no los escribe nadie todavía.
 - **Actualizar no es agregar al final:** si un dato cambió, se reescribe en su sitio.
 - `Hook Usado` y `Hook Asignado` siempre con el **nombre completo** de la opción (`07 Contraste/Versus`). Las opciones sueltas `04`, `07`, `17` son restos viejos: no se usan.
 - Selects: escribir el nombre de la opción; `typecast: true` solo si la opción de verdad es nueva y está justificada.
@@ -104,7 +106,7 @@ La sesión de Claude corre en un contenedor que se borra. Por eso **todo lo que 
 ### 0.7 Memoria de uso (`Veces usado`, `Último uso`, `En descanso`)
 
 - Al **aprobar el brief**: cada asset de escena de la pieza (no marcos ni plantillas) → `Veces usado` +1, `Último uso` = fecha del brief, `En descanso` = marcado.
-- Al **publicar**: `Último uso` se corrige a la fecha de publicación.
+- **Corrección 28-oct-2026 (Johnny):** no existe un paso de "corregir a la fecha de publicación" — ninguna skill de producción sabe cuándo se publica una pieza (eso es dominio de `fyr-publisher`, que no existe todavía). `Último uso` se queda en la fecha del brief/ensamblado y no se vuelve a tocar por este motivo.
 - Al **aprobar el siguiente brief**: se desmarca `En descanso` de todo asset cuya última pieza no sea una de las **dos piezas más recientes**.
 - Al buscar escenas (Paso 4 de `fyr-content`) se descartan las que tienen `En descanso` marcado y se prefiere la de menor `Veces usado`.
 
@@ -209,9 +211,7 @@ Claude escribe, en este orden:
 - Airtable: **`Estado Producción = Ensamblado`**, `Carpeta Drive` = la URL real de la carpeta que `content_pieces_folder()` acaba de resolver en este paso (primera escritura del campo, no una confirmación de lo que A5 haya puesto — A5 ya no escribe este campo, ver nota ahí).
 - Claude entrega a Johnny: link de la carpeta + caption final.
 
-### A12 — Publicación (Johnny)
-- Johnny publica y avisa plataforma, fecha y link.
-- Claude: `Content_Pieces.Estado Producción = Publicado`; `Content_Pieces.Fecha de Publicación` y el `Link Publicación` de la plataforma correspondiente (ya no en `Themes` — ver corrección 2 de la Sección 2); `Assets`: `Último uso` = fecha de publicación (0.7).
+**A11 es el último paso de este flujo.** Corrección 28-oct-2026 (Johnny): no existe un paso A12 de "publicación" que Claude ejecute, ni automático ni manual (ni siquiera a partir de que Johnny avise plataforma/fecha/link). `Estado Producción = Publicado`, `Fecha de Publicación` y `Link Publicación [red]` son dominio exclusivo de `fyr-publisher` (no existe todavía). Mientras esa skill no esté construida y conectada a las redes, ninguna pieza se marca `Publicado` por ningún medio.
 
 ### A13 — Medición
 - La skill de performance actualiza `Content_Pieces.Performance`. Hasta que exista, `Sin datos`.
@@ -274,8 +274,10 @@ Claude comprueba, con el conector (`get_file_metadata`), que **cada ID de Drive 
 - Airtable: **`Estado Producción = Ensamblado`**, `Duración` real, `ID de variante`, `Carpeta Drive`.
 - Claude entrega el link y el caption.
 
-### B13 y B14 — Publicación y medición
-- Igual que A12 y A13.
+**B12 es el último paso de este flujo** — igual que A11 en la Ruta A, ver corrección 28-oct-2026 ahí: no existe un paso de "publicación" que Claude ejecute, ni automático ni manual.
+
+### B13 — Medición
+- Igual que A13.
 
 **Verificación final:** brief y JSON en el repo · IDs verificados · registro de la corrida · MP4 en Drive con checksum · fila de Airtable correcta.
 
@@ -293,7 +295,7 @@ Themes: Número, Pilar, Dolor/Deseo, Bundle Relacionado, Prioridad, Content_Piec
 Content_Pieces: ID Pieza, Tipo de Pieza, Fecha de Generación, Número de Slides, Duración,
   Copy Completo, Ruta .md, Ruta JSON, Estado Producción, Carpeta Drive, Performance,
   Tema Relacionado, Assets Usados, Audiencia, Hook Usado, Señales_Origen, ID de variante,
-  Plataformas Destino, Estado IG, Estado FB, Estado Pinterest, Estado YouTube, Estado TikTok,
+  Estado IG, Estado FB, Estado Pinterest, Estado YouTube, Estado TikTok,
   Post ID IG, Post ID FB, Post ID Pinterest, Post ID YouTube, Post ID TikTok,
   Fecha Publicación Programada, Formato, Título Portada, Subtítulo, Prompt Imagen,
   CTA Sugerido, Fase Embudo, Fecha de Publicación, Link Publicación IG,
@@ -308,7 +310,7 @@ Assets: Nombre de archivo, Categoría, Subcategoría/Uso, Aspecto, Link Drive, C
 
 **Corrección 19-oct-2026 (primera corrida real del gate, vía CC):** el primer intento de este bloque tenía 2 errores reales que el gate detectó apenas se corrió por primera vez — prueba de que el mecanismo funciona. (1) `Link Publicación` estaba como un solo nombre genérico; el campo real en Airtable está separado por plataforma (5 campos). (2) Los 2 campos renombrados hoy mismo (`Imported table`→`Señales (Pilar Relacionado)`, `Imported table 4`→`Señales (Tema Vinculado)`, ver CHANGELOG) se documentaron en prosa en la Sección 0.8 pero no se actualizaron en este bloque — el script no lee la prosa, así que el renombre quedó invisible para el gate hasta esta corrección. Lección operativa: todo commit que renombra/crea/borra un campo real en Airtable **debe** tocar este bloque en el mismo commit, no solo la prosa — el checklist de cierre de cualquier tarea de Airtable debería incluir "¿este cambio afecta el bloque CAMPOS-DOCUMENTADOS de algún documento?" como pregunta explícita.
 
-**Corrección 2 (27-oct-2026 — incidente real, no simulado):** se hizo una migración completa de campos de ejecución de pieza desde `Themes` hacia `Content_Pieces` (Route B; el documento de análisis previo a esta migración vivió temporalmente en el Proyecto de claude.ai y se borró el 27-oct-2026 tras cumplir su función, ya no existe en ningún lado — este bloque es la referencia vigente) — se borraron de `Themes` los campos `Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Plataforma, Fase Embudo, Performance, Fecha de Publicación` y los 5 `Link Publicación X`; se crearon en `Content_Pieces` sus equivalentes más `Plataformas Destino` y los 12 campos de `fyr-publisher` (`Estado IG/FB/Pinterest/YouTube/TikTok`, `Post ID` x5, `Fecha Publicación Programada`). **Este bloque no se actualizó en el mismo commit — se editó en cambio la copia de este documento que vive en el Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`), creyendo por error que era la única fuente de verdad, sin notar que ya existían dos copias divergentes.** El gate habría fallado (exit 1) en la siguiente corrida si Johnny no lo hubiera detectado primero. Corregido el mismo día verificando el schema real vía `get_table_schema`/`list_tables_for_base` campo por campo (no de memoria) antes de reescribir este bloque. Regla añadida para que esto no se repita: **este archivo del repo (`knowledge/FYR_Rutas_De_Produccion.md`) es la única fuente de verdad para `check_field_coverage.py` y para la operación real.** La copia del Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`) es solo una referencia de lectura rápida para Johnny desde la app — cualquier edición de fondo se hace aquí primero, y la copia del Proyecto se sincroniza después, nunca al revés.
+**Corrección 2 (27-oct-2026 — incidente real, no simulado):** se hizo una migración completa de campos de ejecución de pieza desde `Themes` hacia `Content_Pieces` (Route B; el documento de análisis previo a esta migración vivió temporalmente en el Proyecto de claude.ai y se borró el 27-oct-2026 tras cumplir su función, ya no existe en ningún lado — este bloque es la referencia vigente) — se borraron de `Themes` los campos `Formato, Medio, Título Portada, Subtítulo, Prompt Imagen, Estado, Fecha de uso, CTA Sugerido, Plataforma, Fase Embudo, Performance, Fecha de Publicación` y los 5 `Link Publicación X`; se crearon en `Content_Pieces` sus equivalentes más `Plataformas Destino` (eliminado el 28-oct-2026 — era 100% derivable de `Tipo de Pieza`, Carrusel→4 redes fijas/Video→5, no aportaba nada guardarlo) y los 12 campos de `fyr-publisher` (`Estado IG/FB/Pinterest/YouTube/TikTok`, `Post ID` x5, `Fecha Publicación Programada`). **Este bloque no se actualizó en el mismo commit — se editó en cambio la copia de este documento que vive en el Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`), creyendo por error que era la única fuente de verdad, sin notar que ya existían dos copias divergentes.** El gate habría fallado (exit 1) en la siguiente corrida si Johnny no lo hubiera detectado primero. Corregido el mismo día verificando el schema real vía `get_table_schema`/`list_tables_for_base` campo por campo (no de memoria) antes de reescribir este bloque. Regla añadida para que esto no se repita: **este archivo del repo (`knowledge/FYR_Rutas_De_Produccion.md`) es la única fuente de verdad para `check_field_coverage.py` y para la operación real.** La copia del Proyecto de claude.ai (`claude/FYR_Rutas_De_Produccion.md`) es solo una referencia de lectura rápida para Johnny desde la app — cualquier edición de fondo se hace aquí primero, y la copia del Proyecto se sincroniza después, nunca al revés.
 
 ---
 

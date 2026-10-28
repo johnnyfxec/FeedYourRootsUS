@@ -192,7 +192,7 @@ El paso a paso completo, con el registro en Airtable en cada etapa, está en `kn
 ## 10. Registro en el sistema
 
 - **Drive:** el MP4 final vive junto a las imágenes de la pieza, en `Content_Pieces/PZA_[tema]/[fecha]/`. Los WAV y `timings.json` son intermedios regenerables: no se suben.
-- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `Assets en Drive` → `Ensamblado` = MP4 renderizado y aprobado → `Publicado`), `Ruta JSON` (ruta del `pieza_X.json` en el repo). `ID de variante` (`voz|subtítulo|cierre`). Todas las escrituras en Airtable las hace Claude en el paso correspondiente de la skill; Johnny no las hace a mano.
+- **Airtable (`Content_Pieces`):** `ID Pieza = PZA_[tema]`, `Tipo de Pieza = Video`, `Duración` (segundos), `Assets Usados`, `Estado Producción` (`Brief Generado` → `Assets en Drive` → `Ensamblado` = MP4 renderizado y aprobado — este es el último estado que `fyr-video-assembler`/`fyr-content` escriben; `Publicado` es dominio de una skill de publicación que no existe todavía, ver `fyr-content/SKILL.md` Paso 5 sub-paso 6, corrección 28-oct-2026), `Ruta JSON` (ruta del `pieza_X.json` en el repo). `ID de variante` (`voz|subtítulo|cierre`). Todas las escrituras en Airtable las hace Claude en el paso correspondiente de la skill; Johnny no las hace a mano.
 - **Skill:** `fyr-video-assembler` (`.claude/skills/fyr-video-assembler/SKILL.md`) guía a Claude para escribir el JSON de pieza y entregar los bloques de comandos de este procedimiento. Se comunica con `fyr-content` a través de Airtable y de los archivos del repo, nunca invocándola.
 
 ---

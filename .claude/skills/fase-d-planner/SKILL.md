@@ -153,21 +153,23 @@ Esta es la parada de mayor atención — el producto terminado. Johnny revisa ca
 
 ---
 
-## 6. Parada 4 — Publicación y cierre
+## 6. Parada 4 — Cierre del lote (NO es publicación)
+
+**Corrección 28-oct-2026 (Johnny):** esta Parada terminaba antes en "publicar" como si fuera un paso que `fase-d-planner` ejecuta — no lo es. Ninguna skill de FYR publica en redes sociales hoy, ni de forma automática ni manual: esa responsabilidad es de una skill futura (`fyr-publisher`, diseño en `knowledge/FYR_Plan_Publicacion_Automatizada_v1.md`/`v2.md`, no construida). `fase-d-planner` cierra el lote en `Ensamblado`, no en `Publicado`.
 
 Por cada pieza aprobada en Parada 3:
 
-1. Verificar que el archivo final está en Drive en `Content_Pieces/PZA_[tema]/[fecha]/` con el nombre correcto.
-2. Actualizar `Content_Pieces.Estado Producción` → `Publicado`.
-3. Actualizar `Content_Pieces.Fecha de Publicación` → hoy, y el campo `Content_Pieces.Link Publicación [red]` que corresponda a dónde se publicó (`IG`/`TikTok`/`Pinterest`/`FB`/`YouTube` — son 5 campos url separados, no uno solo; llenar el de cada red donde se publicó). **`Themes` no se toca en esta Parada** — desde el rediseño Route B (28-oct-2026), `Themes` ya no guarda estado de uso ni datos de ninguna pieza concreta (se eliminó el campo `Estado`; `Fecha de Publicación` y los 5 `Link Publicación [red]` migraron a `Content_Pieces`, ver `fyr-content/SKILL.md` §1). La señal de "este tema ya se produjo" es el link `Themes.Content_Pieces` (inverso), que se llena solo en el momento en que se crea la fila de `Content_Pieces` (Apertura de la pieza, Parada 1/2 al aprobar el brief) — nunca algo que Parada 4 deba poner o corregir.
-   *(Nota histórica — ya no aplica, se deja por trazabilidad: antes de Route B esta sección instruía actualizar `Themes.Fecha de Publicación`/`Themes.Link Publicación [red]` y advertía no tocar `Themes.Estado` aquí porque se marcaba `Usado` al abrir la pieza, no al publicarla. Esos campos de `Themes` ya no existen — ver `fyr-content/SKILL.md` §1, "Rediseño 28-oct-2026".)*
-4. Si la pieza usó una señal de tendencia: buscar en `Content_Pieces` el registro cuyo `ID Pieza = PZA_[tema]` para obtener su `recXXXXXXXXXXXXXX`; escribir ese record ID en `Trend_Signals.Content_Piece_Generada` de la fila correspondiente (`multipleRecordLinks` — nunca el string visible). Cambiar `Estado` → `Usada`. Ver `trend-scout/references/schema_trend_signals.md` para la regla completa sobre campos Link.
+1. Verificar que el archivo final está en Drive en `Content_Pieces/PZA_[tema]/[fecha]/` con el nombre correcto, y que `Content_Pieces.Estado Producción = Ensamblado` (ya escrito en Parada 3 — esta Parada no lo cambia).
+2. **No tocar ninguno de estos campos:** `Estado Producción = Publicado`, `Fecha de Publicación`, `Fecha Publicación Programada`, `Estado IG/FB/Pinterest/YouTube/TikTok`, `Post ID [red]`, `Link Publicación [red]`. Pertenecen al dominio de `fyr-publisher`, que no existe todavía.
+3. Si la pieza usó una señal de tendencia: buscar en `Content_Pieces` el registro cuyo `ID Pieza = PZA_[tema]` para obtener su `recXXXXXXXXXXXXXX`; escribir ese record ID en `Trend_Signals.Content_Piece_Generada` de la fila correspondiente (`multipleRecordLinks` — nunca el string visible). Cambiar `Estado` → `Usada` (esto registra que la señal se usó para producir, no que la pieza se publicó). Ver `trend-scout/references/schema_trend_signals.md` para la regla completa sobre campos Link.
+
+**`Themes` no se toca en esta Parada** — desde el rediseño Route B (28-oct-2026), `Themes` ya no guarda estado de uso ni datos de ninguna pieza concreta (se eliminó el campo `Estado`). La señal de "este tema ya se produjo" es el link `Themes.Content_Pieces` (inverso), que se llena en el momento en que se crea la fila de `Content_Pieces` (Apertura de la pieza, Parada 1/2 al aprobar el brief) — nunca algo que Parada 4 deba poner o corregir.
 
 **Cierre del lote — presentar resumen:**
 
 | Resultado | Piezas | Detalle |
 |---|---|---|
-| ✓ Publicadas | N | Lista de PZAs |
+| ✓ Ensambladas, listas para publicar | N | Lista de PZAs |
 | ⚠ Necesita atención | N | Lista de PZAs con razón → pasan a cola semana siguiente |
 
 Documentar el **tamaño del lote** y el **tiempo aproximado de la Parada 3** en `knowledge/FYR_Fase_D_Produccion_Recurrente_v1.md` §2.3 si es la primera corrida real.
@@ -211,5 +213,5 @@ Si la sesión de Claude Code se interrumpe entre paradas, reconstruir el estado 
 2. **Para cada fila tocada, comparar contra ese patrón:** ¿tiene valor en todos los campos que el patrón dice que debería tener? Una fila con un campo vacío que SÍ está lleno en las demás filas del mismo tipo (misma tabla, mismo lote, mismo tipo de pieza — video vs. carrusel si aplica) es un hueco, sin importar qué campo sea.
 3. **Atención especial cuando el registro de una pieza ocurrió en más de una pasada** (ej. assets del cuerpo en Parada 2, portada en Ruta B de Parada 3): comparar la fila de esa pasada tardía contra el patrón de la pasada temprana, no asumir que "ya se aplicó antes" solo porque el resto del lote lo tiene.
 4. **Atención especial a rutas de archivo** (`Ruta .md`, `Ruta JSON`, `Link Drive`): si un archivo cambió de ubicación en cualquier commit posterior a su registro inicial, verificar que la ruta en Airtable sea la REAL en este momento, no la de cuando se escribió por primera vez.
-5. **Si la taxonomía de un campo (sus choices de singleSelect/multipleSelects) no cubre un valor real** (como pasó con el campo que entonces se llamaba `Bundle Relacionado` —hoy migrado a `Content_Pieces.CTA Sugerido`, texto libre, ver `fyr-content/SKILL.md` §1— y los pilares 6-9): no aproximar a la opción más cercana en silencio — crear la opción correcta con `typecast: true` (reportando a Johnny qué opción se creó) o preguntar antes de aproximar.
+5. **Si la taxonomía de un campo (sus choices de singleSelect/multipleSelects) no cubre un valor real** (ej. un pilar nuevo sin opción de `Bundle Relacionado` equivalente en `Themes`, ver `fyr-content/SKILL.md` §1 — y `Bundle Relacionado` es un campo real y propio, DISTINTO de `Content_Pieces.CTA Sugerido`, corrección 27/28-oct-2026, no confundirlos): no aproximar a la opción más cercana en silencio — crear la opción correcta con `typecast: true` (reportando a Johnny qué opción se creó) o preguntar antes de aproximar.
 6. **Reportar la auditoría explícitamente** en el cierre de la Parada, aunque no haya encontrado nada — nombrando qué tablas y qué patrón de campos se verificó, no solo "todo bien": nunca pasar a la siguiente Parada en silencio asumiendo que quedó completo.
