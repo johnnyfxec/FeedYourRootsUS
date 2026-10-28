@@ -1,0 +1,55 @@
+name: Pinterest demo - TTS narration
+
+# Workflow ad-hoc (no recurrente): genera la voz narrada en ingles para el video de
+# demo requerido por Pinterest para pasar de Trial a Standard access. A diferencia de
+# render-video.yml (pipeline recurrente de piezas de contenido), este solo sintetiza
+# audio con Google Cloud TTS a partir de production/scripts/video/pinterest-demo/
+# narration_segments.json -- el ffmpeg compositing sobre el video ya grabado
+# (demo_raw.mp4) se hace fuera de este workflow, en el entorno de Claude, porque
+# ffmpeg no requiere credenciales.
+#
+# Reusa la credencial GOOGLE_CREDENTIALS_JSON ya configurada para render-video.yml.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.gcp-key.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Credenciales de Google
+        env:
+          KEY: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          [ -n "$KEY" ] || { echo "Falta el secreto GOOGLE_CREDENTIALS_JSON"; exit 1; }
+          printf '%s' "$KEY" > "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Instalar dependencias
+        working-directory: production/scripts/video/pinterest-demo
+        run: npm install --no-audit --no-fund
+
+      - name: Generar voz narrada
+        working-directory: production/scripts/video/pinterest-demo
+        run: node tts.mjs
+
+      - name: Guardar audio + timings (artefacto)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinterest-demo-tts
+          path: |
+            production/scripts/video/pinterest-demo/build/audio/*.wav
+            production/scripts/video/pinterest-demo/build/timings.json
+          retention-days: 7
+          if-no-files-found: error
