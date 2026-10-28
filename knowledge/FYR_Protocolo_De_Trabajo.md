@@ -12,6 +12,8 @@ Este documento existe para que cualquier sesión de Claude (chat o Claude Code) 
 
 **Actualizar un documento significa revisarlo y reescribir lo que quedó viejo en su lugar** — no anexar un parche al final. Un documento de política debe leerse como la realidad actual, sin capas históricas contradictorias.
 
+**⛔ Gate obligatorio antes de escribir en CUALQUIER documento de gobernanza o conocimiento (`knowledge/`, skills, `claude/*.md` del Proyecto): verificar primero, con una búsqueda real (`find`/`grep` en el repo, y `Projects`/listado del Proyecto del lado de claude.ai), que no existe otra copia del mismo documento en el otro lado antes de editar ninguna.** No alcanza con "recordar" dónde vive un archivo porque se tocó antes en la misma conversación — la familiaridad con la conversación es precisamente la trampa: lleva a escribir desde memoria en vez de verificar el sistema de archivos real. Si aparece en más de un lugar y los contenidos no son idénticos, detenerse y preguntar a Johnny cuál es la fuente real antes de tocar cualquiera de las dos. Incidente real que motivó esta regla (27-oct-2026): se editó la copia de `FYR_Rutas_De_Produccion.md` en el Proyecto de claude.ai asumiendo que era la única, sin notar que el repo tenía una copia distinta y más avanzada — la copia que `check_field_coverage.py` realmente lee nunca se actualizó, y el gate de gobernanza habría fallado en la siguiente corrida si Johnny no lo hubiera detectado primero.
+
 **Qué sigue haciendo Johnny (lo que Claude no puede):** generar las imágenes en Gemini y exportarlas a Drive, aprobar briefs y piezas terminadas, publicar, y crear/aprobar cosas en cuentas de terceros (credenciales, secretos de GitHub). No hay PC: el render de video corre en GitHub Actions y todo lo demás en la sesión de Claude. El detalle por formato está en `knowledge/FYR_Rutas_De_Produccion.md`.
 
 ### Dónde escribe Claude
@@ -48,9 +50,9 @@ La PC con Windows (VSCodium + Git Bash) dejó de usarse el 14-oct-2026: no hay m
 
 ---
 
-## Respaldo: edición por comando (Termux, PC o cuando Claude no tiene el repo clonado)
+## Respaldo: edición por comando (histórico — ya no es el modo de trabajo actual)
 
-Todo lo que sigue hasta «Reglas de comportamiento» aplica solo cuando Johnny debe pegar comandos él mismo. Si Claude tiene el repo clonado, edita directo y nada de esto es necesario.
+**Nota 27-oct-2026: esta sección entera describe el modo de trabajo de cuando Johnny pegaba comandos a mano en Termux/PC, antes del 10-oct-2026.** Hoy Claude Code tiene el repo clonado en sesión y edita directo (Regla de oro arriba) — este modo de respaldo prácticamente no se usa. Se mantiene documentado por si alguna vez vuelve a hacer falta (Termux sigue existiendo como clon de respaldo), pero no se trata como el flujo normal, y "lo que sigue hasta «Reglas de comportamiento»" ya no aplica a la operación diaria.
 
 
 Para cualquier edición a un archivo ya existente en el repo:
