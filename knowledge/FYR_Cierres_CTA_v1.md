@@ -81,6 +81,8 @@
 
 Ambos campos (`Content_Pieces.CTA Sugerido`, texto libre por pieza; `Themes.Bundle Relacionado`, singleSelect canónico por tema) dejan de ser una instrucción obligatoria ("esta pieza/tema SIEMPRE cierra nombrando este recurso") y pasan a ser **la opción de venta disponible**, que el Paso 3 de `fyr-content/SKILL.md` usa solo cuando la Fase Embudo de la pieza dice que corresponde cierre A. En F1 ninguno de los dos se consulta para el cierre. No requiere cambio de esquema en Airtable — solo cambia cómo el SKILL decide usarlos.
 
+**Corrección 28-oct-2026 (consenso con Johnny) — la opcionalidad empieza antes del cierre, en la creación misma del tema:** no todo tema debe quedar ligado a un bundle específico. `Themes.Bundle Relacionado` se llena al crear el tema SOLO si el Pilar tiene un mapeo obvio a un bundle (ver `fyr-content/SKILL.md` §1 y Paso 5.6/5.4, y `FYR_Rutas_De_Produccion.md` §0.8); si no hay mapeo claro, se deja vacío a propósito desde el momento de creación — no es un hueco que haya que llenar después, y no bloquea que la pieza use cierre A más adelante (en ese caso el cierre A se apoya en `Content_Pieces.CTA Sugerido`, específico de la pieza, en vez del bundle canónico del tema).
+
 ---
 
 *Documento v1 — 27-oct-2026. Complementa `hooks_verbales_20_v2.md` (que rige la apertura) y el Paso 3 de `fyr-content/SKILL.md` (que rige el cierre). Próxima revisión: cuando haya suficientes piezas publicadas con este sistema para medir si el engagement real (comentarios) sube en F1/F2.*
