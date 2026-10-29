@@ -20,17 +20,19 @@ Uso:
 
     Minimo 2 imagenes, maximo 10 (limite de Instagram para carruseles).
 
-Variables de entorno requeridas (ya documentadas en .env.example, mismas que usa el resto
-del repo -- no se necesita ninguna variable nueva):
-  META_USER_ACCESS_TOKEN -- el mismo token de .env, generado en el Explorador de la API
-                            Graph (ver .env.example para el procedimiento completo).
+Variables de entorno requeridas (ya en el .env real de Johnny, ninguna nueva que generar):
+  META_SYSTEM_USER_TOKEN -- token MAESTRO generado en Business Manager > Configuracion del
+                            negocio > Usuarios del sistema (NO el Explorador de la API Graph
+                            -- ese da un token de usuario normal, de corta duracion). Este
+                            NUNCA expira (expires_at=0, data_access_expires_at=0). Publica
+                            directo en Instagram via graph.facebook.com.
+  META_IG_BUSINESS_ID    -- ID de la cuenta de Instagram Business, ya resuelto de antemano
+                            (GET /<META_PAGE_ID>?fields=instagram_business_account). NO es
+                            el mismo ID que se ve en graph.instagram.com.
 
-El IG User ID NO se pide como variable: este script lo resuelve solo en cada corrida via
-GET /me/accounts -> GET /<page_id>?fields=instagram_business_account, igual que se hizo a
-mano el 26-oct para la publicacion de prueba. Si la cuenta de Meta tiene mas de una Pagina
-de Facebook vinculada, usa la primera que tenga instagram_business_account -- si eso no
-calza con la cuenta real, pasar el ID a mano por variable de entorno META_IG_USER_ID lo
-salta (atajo opcional, no obligatorio).
+Si por algun motivo META_IG_BUSINESS_ID no estuviera en el entorno, este script lo resuelve
+el mismo via META_PAGE_ID (tambien ya en .env) -> instagram_business_account, pero el camino
+normal es que ya este puesto y no haga falta resolver nada en cada corrida.
 """
 import json
 import os
@@ -80,27 +82,19 @@ def _fail_if_error(resp, contexto):
         sys.exit(f"{contexto} fallo: {json.dumps(resp)[:600]}")
 
 
-def _resolve_ig_user_id(token):
-    """Resuelve el Instagram Business/Creator ID solo, sin pedirlo como variable nueva --
-    mismo camino que se siguio a mano el 26-oct: /me/accounts -> instagram_business_account."""
-    accounts = _get(f"{GRAPH_BASE}/me/accounts", token)
-    _fail_if_error(accounts, "/me/accounts")
-    pages = accounts.get("data", [])
-    if not pages:
+def _resolve_ig_business_id(token, page_id):
+    """Fallback solamente -- el camino normal es que META_IG_BUSINESS_ID ya este en .env."""
+    if not page_id:
         sys.exit(
-            "/me/accounts no devolvio ninguna Pagina de Facebook -- el token no tiene "
-            "pages_show_list, o la cuenta no administra ninguna Pagina."
+            "Faltan META_IG_BUSINESS_ID Y META_PAGE_ID en el entorno -- no hay forma de "
+            "resolver la cuenta de Instagram. Revisa el .env."
         )
-    for page in pages:
-        page_id = page.get("id")
-        detail = _get(f"{GRAPH_BASE}/{page_id}", token, {"fields": "instagram_business_account"})
-        ig = detail.get("instagram_business_account")
-        if ig and ig.get("id"):
-            return ig["id"], page.get("name", page_id)
-    sys.exit(
-        "Ninguna de las Paginas de Facebook del token tiene una cuenta de Instagram "
-        "Business/Creator vinculada (instagram_business_account vacio en todas)."
-    )
+    detail = _get(f"{GRAPH_BASE}/{page_id}", token, {"fields": "instagram_business_account"})
+    _fail_if_error(detail, f"resolver instagram_business_account de la Pagina {page_id}")
+    ig = detail.get("instagram_business_account")
+    if not ig or not ig.get("id"):
+        sys.exit(f"La Pagina {page_id} no tiene una cuenta de Instagram Business vinculada.")
+    return ig["id"]
 
 
 def main():
@@ -119,15 +113,15 @@ def main():
             f"{len(image_urls)}."
         )
 
-    token = os.environ.get("META_USER_ACCESS_TOKEN")
+    token = os.environ.get("META_SYSTEM_USER_TOKEN")
     if not token:
-        sys.exit("Falta META_USER_ACCESS_TOKEN en el entorno (ver .env.example).")
+        sys.exit("Falta META_SYSTEM_USER_TOKEN en el entorno (ver .env).")
 
-    ig_user_id = os.environ.get("META_IG_USER_ID")  # atajo opcional, ver docstring
+    ig_user_id = os.environ.get("META_IG_BUSINESS_ID")
     if not ig_user_id:
-        print("Resolviendo Instagram Business Account via /me/accounts ...")
-        ig_user_id, page_name = _resolve_ig_user_id(token)
-        print(f"  -> IG User ID: {ig_user_id} (Pagina: {page_name})")
+        print("META_IG_BUSINESS_ID no esta en el entorno -- resolviendolo via META_PAGE_ID ...")
+        ig_user_id = _resolve_ig_business_id(token, os.environ.get("META_PAGE_ID"))
+        print(f"  -> IG Business ID: {ig_user_id}")
 
     media_url = f"{GRAPH_BASE}/{ig_user_id}/media"
 
