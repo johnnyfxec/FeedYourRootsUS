@@ -20,13 +20,17 @@ Uso:
 
     Minimo 2 imagenes, maximo 10 (limite de Instagram para carruseles).
 
-Variables de entorno requeridas:
-  META_IG_ACCESS_TOKEN  -- token de acceso (page access token o user token con los
-                           scopes instagram_basic + instagram_content_publish +
-                           pages_show_list, segun como se haya generado)
-  META_IG_USER_ID       -- ID numerico de la cuenta de Instagram Business/Creator
-                           (no el @username) -- obtenerlo una vez via
-                           GET /me/accounts y luego GET /<page_id>?fields=instagram_business_account
+Variables de entorno requeridas (ya documentadas en .env.example, mismas que usa el resto
+del repo -- no se necesita ninguna variable nueva):
+  META_USER_ACCESS_TOKEN -- el mismo token de .env, generado en el Explorador de la API
+                            Graph (ver .env.example para el procedimiento completo).
+
+El IG User ID NO se pide como variable: este script lo resuelve solo en cada corrida via
+GET /me/accounts -> GET /<page_id>?fields=instagram_business_account, igual que se hizo a
+mano el 26-oct para la publicacion de prueba. Si la cuenta de Meta tiene mas de una Pagina
+de Facebook vinculada, usa la primera que tenga instagram_business_account -- si eso no
+calza con la cuenta real, pasar el ID a mano por variable de entorno META_IG_USER_ID lo
+salta (atajo opcional, no obligatorio).
 """
 import json
 import os
@@ -76,6 +80,29 @@ def _fail_if_error(resp, contexto):
         sys.exit(f"{contexto} fallo: {json.dumps(resp)[:600]}")
 
 
+def _resolve_ig_user_id(token):
+    """Resuelve el Instagram Business/Creator ID solo, sin pedirlo como variable nueva --
+    mismo camino que se siguio a mano el 26-oct: /me/accounts -> instagram_business_account."""
+    accounts = _get(f"{GRAPH_BASE}/me/accounts", token)
+    _fail_if_error(accounts, "/me/accounts")
+    pages = accounts.get("data", [])
+    if not pages:
+        sys.exit(
+            "/me/accounts no devolvio ninguna Pagina de Facebook -- el token no tiene "
+            "pages_show_list, o la cuenta no administra ninguna Pagina."
+        )
+    for page in pages:
+        page_id = page.get("id")
+        detail = _get(f"{GRAPH_BASE}/{page_id}", token, {"fields": "instagram_business_account"})
+        ig = detail.get("instagram_business_account")
+        if ig and ig.get("id"):
+            return ig["id"], page.get("name", page_id)
+    sys.exit(
+        "Ninguna de las Paginas de Facebook del token tiene una cuenta de Instagram "
+        "Business/Creator vinculada (instagram_business_account vacio en todas)."
+    )
+
+
 def main():
     if len(sys.argv) < 4:
         sys.exit(
@@ -92,12 +119,15 @@ def main():
             f"{len(image_urls)}."
         )
 
-    token = os.environ.get("META_IG_ACCESS_TOKEN")
-    ig_user_id = os.environ.get("META_IG_USER_ID")
+    token = os.environ.get("META_USER_ACCESS_TOKEN")
     if not token:
-        sys.exit("Falta META_IG_ACCESS_TOKEN en el entorno.")
+        sys.exit("Falta META_USER_ACCESS_TOKEN en el entorno (ver .env.example).")
+
+    ig_user_id = os.environ.get("META_IG_USER_ID")  # atajo opcional, ver docstring
     if not ig_user_id:
-        sys.exit("Falta META_IG_USER_ID en el entorno.")
+        print("Resolviendo Instagram Business Account via /me/accounts ...")
+        ig_user_id, page_name = _resolve_ig_user_id(token)
+        print(f"  -> IG User ID: {ig_user_id} (Pagina: {page_name})")
 
     media_url = f"{GRAPH_BASE}/{ig_user_id}/media"
 
