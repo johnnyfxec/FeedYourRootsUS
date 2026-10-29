@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Publica un Pin de imagen en Pinterest via API v5 (Standard access, produccion).
 
-NOTA IMPORTANTE (29-oct-2026): el cuerpo del POST /v5/pins y el listado de boards via
-GET /v5/boards estan confirmados contra la documentacion oficial de Pinterest
-(developers.pinterest.com/docs/content/update/ + referencia del SDK oficial), pero a
-diferencia de meta_publish_carousel.py y tiktok_publish_video.py, este script NO fue
-probado todavia contra la API real -- Standard access recien se aprobo hoy y no hubo
-tiempo de correrlo en vivo. Primera corrida real: revisar el mensaje de error con
-cuidado si algo falla, puede haber un campo exigido que la doc no deja claro de
-antemano (como paso con boards:write/pins:read el 28-oct) -- documentarlo aqui apenas
-se confirme.
+CONFIRMADO EN PRODUCCION (29-oct-2026): primer Pin real publicado con exito --
+pin_id 1151725304742928915, board "Backyard Chickens & Bees Integration", imagen de
+PZA_10.4 S5. El cuerpo del POST /v5/pins y GET /v5/boards funcionan tal como estaban
+documentados (developers.pinterest.com/docs/content/update/ + referencia del SDK).
+
+UNICA correccion real necesaria: Pinterest NO sigue redirects al leer media_source.url.
+Un link de Drive tipo "drive.google.com/uc?export=download&id=X" responde 303 (redirige
+a drive.usercontent.google.com/download?id=X&export=download) -- Meta SI sigue ese
+redirect, Pinterest no, y falla con {"code":1,"message":"Sorry we could not fetch the
+image."}. Este script ahora normaliza esa forma de URL automaticamente a la version
+final (usercontent) antes de mandarla a la API, asi que no hace falta pensarlo en cada
+corrida -- pero si se usa otra fuente de imagenes que tambien redirija, el mismo error
+va a volver a aparecer.
 
 Flujo:
   1. (si no se pasa --board-id) GET /v5/boards -> lista los boards de la cuenta,
@@ -36,11 +40,27 @@ Variables de entorno requeridas (ya en el .env real de Johnny, ninguna nueva):
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
 
 API_BASE = "https://api.pinterest.com/v5"
+
+_DRIVE_UC_RE = re.compile(r"^https://drive\.google\.com/uc\?export=download&id=([^&]+)$")
+
+
+def _normalize_image_url(url):
+    """Pinterest no sigue el 303 redirect de drive.google.com/uc?export=download --
+    reescribe esa forma a la URL final (drive.usercontent.google.com) antes de usarla.
+    Cualquier otra URL se deja tal cual."""
+    m = _DRIVE_UC_RE.match(url)
+    if not m:
+        return url
+    file_id = m.group(1)
+    nueva = f"https://drive.usercontent.google.com/download?id={file_id}&export=download"
+    print(f"(normalizando URL de Drive para evitar el redirect que Pinterest no sigue: {nueva})")
+    return nueva
 
 
 def _request(method, path, token, body=None):
@@ -78,6 +98,7 @@ def list_boards(token):
 
 
 def create_pin(token, board_id, title, description, image_url, link):
+    image_url = _normalize_image_url(image_url)
     body = {
         "board_id": board_id,
         "title": title,
