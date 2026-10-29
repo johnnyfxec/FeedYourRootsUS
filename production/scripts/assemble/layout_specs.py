@@ -8,7 +8,27 @@ CANVAS = {
 
 # Zona segura (fracciones del alto)
 SAFE_HARD = {"top": 0.125, "bottom": 0.833}
-SAFE_PRACTICAL = {"top": 0.152, "bottom": 0.865}
+
+# CORREGIDO 29-oct-2026: SAFE_PRACTICAL protegia solo contra el recorte de
+# grid de perfil (3:4 sobre 9:16), no contra la interfaz superpuesta durante
+# reproduccion activa en TikTok/Reels/Shorts -- confirmado el texto tapado
+# en un video ya publicado. Un solo render sirve para las 3 plataformas
+# (decision de Johnny, 29-oct-2026: no renderizar por plataforma), asi que
+# el margen debe proteger contra el peor caso de cada borde entre las tres:
+#   - top: Shorts es el mas restrictivo (~20% superior, boton de suscripcion
+#     con posicion variable por A/B testing de YouTube)
+#   - bottom: tope deliberado de 25% (decision de Johnny, 29-oct-2026) --
+#     el consenso de industria para Reels (~35-40%) se descarta como
+#     sobre-restrictivo: usar solo ~45% del canvas deja la pieza con
+#     aspecto vacio, y la intencion de diseno es ocupar toda la pantalla.
+#     25% cubre el peor caso medido a mano por Johnny en iPhone 11 Pro Max
+#     real para TikTok (~17-27% segun largo del caption). Si el margen de
+#     Reels en la practica resulta mayor a esto, se acepta que el caption/
+#     nav de Reels pueda superponerse en el peor caso -- decision consciente,
+#     no un descuido.
+# Fuente completa: knowledge/reference_assets/FYR_Layout_Specs_v1.md
+# Seccion 15 "Safe zones por plataforma de destino".
+SAFE_PRACTICAL = {"top": 0.20, "bottom": 0.75}
 
 # Margen minimo puramente estetico para 4:5 -- NO es zona de seguridad.
 # El 4:5 (carrusel de feed) no tiene reproductor de video recortando nada,

@@ -194,6 +194,71 @@ Aspect ratio: exactly {RATIO}. Edge-to-edge composition: the artwork fills the w
 
 ---
 
+## 15. Safe zones por plataforma de destino — NUEVO 29-oct-2026
+
+**Por qué existe esta sección:** hasta hoy el motor componía un único layout por pieza y lo reutilizaba para todas las plataformas de salida (TikTok, Reels, Shorts, Feed de Instagram, Pinterest). Cada plataforma tapa con su propia interfaz una zona DISTINTA del lienzo — un título bien centrado para TikTok queda bajo los iconos en Reels, y bajo el nombre de cuenta en Pinterest. Confirmado el 29-oct-2026 al detectar texto tapado en un video ya publicado.
+
+**Metodología:** para video (TikTok/Reels/Shorts) no existe spec oficial pública de safe zone para contenido orgánico — solo para anuncios. Las cifras de abajo son consenso de industria (agencias de diseño/marketing, 2025-2026), consistentes entre sí pero no verificadas por declaración oficial de cada plataforma. Pinterest sí publica cifras oficiales de safe zone (vía sus specs de creative/ads, aplicables también a Pin orgánico). Si se necesita más precisión en el futuro, validar con capturas reales de cada app antes de confiar ciegamente en estos porcentajes.
+
+### TikTok — video 9:16 (1080×1920)
+
+| Zona | Ubicación | % del lienzo | Qué la ocupa |
+|---|---|---|---|
+| Top | 0–190px aprox. | ~8-13% superior | Barra "Siguiendo/Para ti" |
+| Right rail | ~120-150px de ancho | ~11-14% del ancho derecho | Perfil, like, comentar, guardar, compartir |
+| Bottom | ~300-400px inferior | ~16-21% inferior | @usuario, caption, disco de sonido |
+| Lados | 60-90px c/lado | ~6-8% | Margen de seguridad general |
+| **Safe zone** | centrado | **x: ~6-14% a 86-94% / y: ~8-13% a 79-87%** | Zona recomendada para texto/título crítico |
+
+### Instagram Reels — video 9:16 (1080×1920)
+
+| Zona | Ubicación | % del lienzo | Qué la ocupa |
+|---|---|---|---|
+| Top | ~270px | ~14% superior | @usuario, etiqueta de audio |
+| Right rail | ~84-230px de ancho | ~8-21% del ancho derecho | Like, comentar, compartir, guardar, perfil |
+| Bottom | ~670-770px inferior | **~35-40% inferior (consenso de industria)** | Caption + nav inferior de la app + iconos, todo apilado — el margen inferior MÁS GRANDE de los tres formatos de video |
+| Lados | ~65-85px c/lado | ~6-8% | Margen de gestos |
+| **Safe zone** | centrado | **x: ~6-14% a 86-94% / y: ~14% a 63-73% (teórico)** | **Decisión de Johnny (29-oct-2026): el motor NO usa este 35-40%.** Adoptarlo íntegro deja la pieza usando menos de la mitad de la pantalla (~45%), con aspecto vacío — contrario a la intención de diseño de ocupar todo el lienzo. Se fija un tope de **25% inferior** (bottom del motor = 0.75, no 0.65), calibrado contra la medición real de Johnny en TikTok (peor caso ~27%). Si el margen real de Reels termina siendo mayor a 25% en la práctica, se acepta la posibilidad de que el caption/nav de Reels se superponga al texto en el peor caso — riesgo asumido consciente, no un descuido de medición. |
+
+### YouTube Shorts — video 9:16 (1080×1920)
+
+| Zona | Ubicación | % del lienzo | Qué la ocupa |
+|---|---|---|---|
+| Top | 180-380px | ~9-20% superior | Barra de título, nombre de canal (variable, hay A/B testing de layout) |
+| Right rail | ~120-160px | ~11-15% del ancho derecho | Like, dislike, comentar, compartir, suscribirse |
+| Bottom | 380-480px inferior | ~20-25% inferior | Nombre de canal, título del short, botón de suscripción, música |
+| Left | 60px | ~5-6% | Margen mínimo |
+| **Safe zone** | centrado, leve sesgo a la izquierda | **x: ~5-15% a 90-95% / y: ~9-20% a 75-80%** | El margen superior más grande de los tres — hay más variabilidad reportada acá que en TikTok/Reels |
+
+### Instagram Feed / Carrusel — imagen estática 4:5 (1080×1350)
+
+A diferencia del video, en el feed normal la barra de acciones (like/comentar/compartir/guardar) y el @usuario quedan FUERA del lienzo (arriba/abajo del post, no superpuestos) — en el momento en que alguien ve el carrusel en su feed, prácticamente el 100% de la imagen es segura.
+
+El riesgo real está en el **grid de perfil**: Instagram está migrando el grid de 1:1 a 4:5 (rollout gradual, no universal a oct-2026). Una cuenta que todavía ve grid 1:1 recorta el 4:5 a 1080×1080 centrado, perdiendo ~270px combinados arriba+abajo (~20% del alto, repartido en ambos extremos).
+
+| | Especificación |
+|---|---|
+| Safe zone en feed (scroll normal) | ~100% del lienzo |
+| Safe zone pensando en grid legacy | Mantener título/logo/cara dentro del cuadro central 1080×1080 (el 80% vertical central del lienzo 4:5) |
+
+### Pinterest — Pin de imagen, 2:3 (1000×1500)
+
+**Pinterest ya NO tiene formato carrusel en 2026** (deprecó los Idea Pins) — esta tabla aplica a Pin de imagen única, que es el único formato de imagen vigente. Ver SKILL.md para el flujo de publicación (2 pines por pieza).
+
+| Zona | Píxeles (sobre 1000×1500) | % del lienzo | Qué la ocupa |
+|---|---|---|---|
+| Top | 270px | 18% superior | Overlay de guardar, menú "···" |
+| Left | 65px | 6.5% izquierda | Margen general |
+| Right | 195px | 19.5% derecha | Botón de guardar/compartir |
+| Bottom (standard) | 790px | **52.7% inferior** | Nombre de cuenta/board + título del Pin — reserva casi la mitad inferior del lienzo |
+| **Safe zone (standard)** | x: 65-805, y: 270-710 | **~74% ancho × ~29% alto, top-weighted** | El título va en el **tercio superior-centro**, NO centrado verticalmente como en video vertical — es la geometría más distinta de las cinco |
+
+### Resumen operativo
+
+No existe una safe zone universal entre plataformas — pero Johnny decidió (29-oct-2026) que el motor **no** persigue el peor caso teórico de las tres a la vez, porque hacerlo (top 20% + bottom 35-40%) deja solo ~45% del lienzo utilizable y la pieza se ve vacía. En vez de eso, el motor usa un **tope fijo y deliberado de 25% inferior** (más 20% superior por el lado de Shorts), que cubre la medición real de Johnny en TikTok y deja ~55% de alto útil. Esto implica que, en el peor caso de Reels específicamente, el caption/nav pueda superponerse al texto — riesgo aceptado a cambio de que el contenido ocupe la pantalla como se pretende, no un valor sin revisar. Implementado en `production/scripts/assemble/layout_specs.py` (`SAFE_PRACTICAL = {"top": 0.20, "bottom": 0.75}`).
+
+---
+
 ## Regla de variedad (recordatorio, ya en SKILL.md)
 
 Con 6 layouts de cuerpo disponibles (marco grande, doble marco, full-bleed, ventana+texto, solo texto, texto+lateral), ninguno se repite más de 2 veces en la misma pieza. Las portadas y el lockup de cierre quedan fuera de la cuenta.
