@@ -51,14 +51,13 @@ SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write"]
 SCOPE = ",".join(SCOPES)
 
 AUTH_URL = "https://www.pinterest.com/oauth/"
-# NOTA (28-oct-2026): mientras la app este en Trial access, Pinterest EXIGE que las llamadas de
-# datos (crear pins, etc.) se hagan contra api-sandbox.pinterest.com, no api.pinterest.com -- error
-# real confirmado: {"code":29,"message":"Apps with Trial access may not create Pins in production
-# ... use API Sandbox instead."}. El endpoint de AUTORIZACION (arriba) no cambia, pero el de
-# INTERCAMBIO DE TOKEN si debe usar el dominio -sandbox para que el token resultante funcione
-# contra los endpoints de datos de sandbox. Cuando se apruebe Standard access, cambiar esto de
-# vuelta a "https://api.pinterest.com/v5/oauth/token" (quitar el "-sandbox").
-TOKEN_URL = "https://api-sandbox.pinterest.com/v5/oauth/token"
+# NOTA (29-oct-2026): Standard access aprobado para "fyr publisher" -- revertido de vuelta a
+# produccion (quitado el "-sandbox"). Mientras la app estuvo en Trial access, Pinterest exigia
+# que el intercambio de token se hiciera contra api-sandbox.pinterest.com (error real confirmado
+# el 28-oct: {"code":29,"message":"Apps with Trial access may not create Pins in production ...
+# use API Sandbox instead."}) para que el token resultante funcionara contra los endpoints de
+# datos de sandbox. Con Standard access ya no aplica esa restriccion.
+TOKEN_URL = "https://api.pinterest.com/v5/oauth/token"
 
 
 class _Handler(http.server.BaseHTTPRequestHandler):
