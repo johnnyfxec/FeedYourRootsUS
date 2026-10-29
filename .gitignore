@@ -13,6 +13,7 @@ _grid_*.png
 production/assets_local/
 production/output/
 production/pieces/*/_trabajo/
+production/mockups/
 pdfs_normalized/
 tts.log
 render.log
@@ -21,6 +22,9 @@ render.log
 # clientes leen de variables de entorno -- viven SOLO en un .env fuera del repo en Termux,
 # nunca aqui. Esta regla es un cinturon de seguridad extra (defense in depth): si alguna
 # vez por error se crea un .env dentro del repo, esto evita que git lo suba.
+#
+# El schema de NOMBRES de variables (nunca valores) vive en memoria de proyecto
+# (credenciales-apis.md, 29-oct-2026) -- no se vuelve a crear un .env.example en el
+# repo, por eso ya no hay excepcion aqui.
 .env
 .env.*
-!.env.example
