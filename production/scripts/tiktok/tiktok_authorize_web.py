@@ -8,12 +8,20 @@ developers.tiktok.com (login-kit-web, 28-oct-2026, no asumida de memoria):
   "http://localhost:<puerto>" como si aceptan Google (clients "Desktop app") y Pinterest
   (URI fijo registrado, pero localhost es valido para ellos). Por eso este script NO levanta
   un servidor HTTP local para recibir el code automaticamente -- en vez de eso, el redirect_uri
-  real es una pagina estatica publicada en el propio sitio de FYR (GitHub Pages):
+  real es la RAIZ del sitio publico de FYR (GitHub Pages):
 
-      https://feedyourroots.us/tiktok-callback.html
+      https://feedyourroots.us
 
-  Esa pagina (repo: /tiktok-callback.html) muestra el "code" en pantalla tras la autorizacion
-  para que Johnny lo copie y lo pegue aqui cuando el script se lo pida.
+  IMPORTANTE (confirmado empiricamente 29-oct-2026, no documentado por TikTok): registrar un
+  Redirect URI con una ruta/archivo propio (se probo "https://feedyourroots.us/tiktok-callback.html")
+  da error "Invalid Redirect Uri" AL GUARDAR en developers.tiktok.com, aunque esa URL responda
+  HTTP 200 normal y cumpla todas las reglas documentadas (HTTPS absoluto, sin query, sin
+  fragmento, <512 caracteres). Solo la raiz exacta del dominio se deja guardar. Por eso el
+  callback vive directamente en index.html: un bloque de script al inicio del <body> detecta
+  "?code=..." en la URL y muestra una pantalla de "copia este codigo" en vez de la landing
+  normal -- si no hay "code" en la URL, el bloque no hace nada y la pagina se ve igual que
+  siempre para cualquier visitante. Ver el comentario en index.html junto a
+  "tiktok-oauth-overlay" para el detalle completo.
 
   Uso:
       python3 tiktok_authorize_web.py
@@ -56,7 +64,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-REDIRECT_URI = "https://feedyourroots.us/tiktok-callback.html"
+REDIRECT_URI = "https://feedyourroots.us"
 
 # Scopes para fyr-publisher: user.info.basic (incluido en Login Kit, minimo exigido como
 # dependencia) + video.publish (Direct Post -- publicacion directa sin pasar por borrador,
@@ -110,8 +118,8 @@ def main():
     print(f"ABRE ESTA URL EN TU NAVEGADOR:\n\n{url}\n")
     print("Inicia sesion con la cuenta de TikTok de Feed Your Roots (en Sandbox: debe estar")
     print("agregada como 'Target user' en developers.tiktok.com > Sandbox > Target users).")
-    print(f"Tras autorizar, TikTok te redirige a {REDIRECT_URI}")
-    print("Esa pagina te muestra el codigo -- cópialo y pégalo aquí.\n")
+    print(f"Tras autorizar, TikTok te redirige a {REDIRECT_URI}/?code=...")
+    print("La propia landing de FYR detecta el codigo y te lo muestra -- cópialo y pégalo aquí.\n")
 
     code = input("Pega aqui el 'code' que te mostró la pagina: ").strip()
     if not code:

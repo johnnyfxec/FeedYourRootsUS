@@ -392,6 +392,53 @@
 </head>
 <body>
 
+<!-- ════════════ TikTok OAuth callback overlay ════════════
+     TikTok rechaza registrar un Redirect URI con una ruta/archivo propio (confirmado
+     empiricamente 29-oct-2026: /tiktok-callback.html da "Invalid Redirect Uri" al guardar,
+     mientras que la raiz del dominio si se guarda sin error) -- asi que el Redirect URI
+     registrado en developers.tiktok.com es la raiz (https://feedyourroots.us), y este bloque
+     intercepta el ?code=... que TikTok agrega a esa misma URL tras la autorizacion, mostrando
+     una pantalla minima para copiar el codigo en vez de la landing normal. Si no hay "code"
+     en la URL (todo visitante normal), este bloque no hace nada y la pagina se ve igual que
+     siempre. -->
+<div id="tiktok-oauth-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:#F5ECD7; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="background:#fff; border-radius:12px; padding:32px; max-width:520px; width:100%; box-shadow:0 4px 24px rgba(0,0,0,0.15);">
+    <div id="tiktok-oauth-content"></div>
+  </div>
+</div>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get("code");
+  var error = params.get("error");
+  if (!code && !error) return; // visitante normal -- no tocar nada
+
+  document.documentElement.style.overflow = "hidden";
+  var overlay = document.getElementById("tiktok-oauth-overlay");
+  var content = document.getElementById("tiktok-oauth-content");
+  overlay.style.display = "flex";
+
+  if (code) {
+    content.innerHTML =
+      '<h1 style="font-size:1.25rem;margin:0 0 12px;color:#1a1a1a;">Autorizado ✅</h1>' +
+      '<p style="color:#333;">Copia este código y pégalo en la terminal donde está esperando el script:</p>' +
+      '<div id="tiktokCodeBox" style="background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:16px;font-family:ui-monospace,\'SF Mono\',Menlo,Consolas,monospace;font-size:0.85rem;word-break:break-all;margin:16px 0;user-select:all;">' + code + '</div>' +
+      '<button id="tiktokCopyBtn" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:0.95rem;cursor:pointer;">Copiar código</button>' +
+      '<p style="color:#555;font-size:0.9rem;margin-top:16px;">Este código expira en pocos minutos y es de un solo uso — pégalo en la terminal cuanto antes.</p>';
+    document.getElementById("tiktokCopyBtn").addEventListener("click", function () {
+      navigator.clipboard.writeText(code).then(function () {
+        document.getElementById("tiktokCopyBtn").textContent = "¡Copiado!";
+      });
+    });
+  } else {
+    content.innerHTML =
+      '<h1 style="font-size:1.25rem;margin:0 0 12px;color:#c0392b;">Error de autorización</h1>' +
+      '<p style="color:#333;"><strong>' + error + '</strong></p>' +
+      '<p style="color:#555;font-size:0.9rem;margin-top:16px;">Vuelve a la terminal e intenta de nuevo.</p>';
+  }
+})();
+</script>
+
 <!-- ════════════ NAV ════════════ -->
 <nav id="site-nav">
   <a href="#hero" class="nav-brand">
