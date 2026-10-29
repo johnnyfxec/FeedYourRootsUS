@@ -9,6 +9,56 @@ Formato: `AAAA-MM-DD — documento(s) — qué cambió y por qué`
 
 ---
 
+## 2026-10-29 — Instagram/Facebook en vivo (primer carrusel real publicado), privacy.html corregido antes de review, y credenciales movidas a memoria
+
+**Instagram/Facebook: primer publish real end-to-end.** `meta_publish_carousel.py` (nuevo) implementa el flujo completo de carrusel del Graph API: N contenedores hijo (`is_carousel_item`) → 1 contenedor padre (`media_type: CAROUSEL`) → poll de `status_code=FINISHED` → `media_publish`. Dos iteraciones con nombres de variable inventados (`META_IG_ACCESS_TOKEN`/`META_USER_ACCESS_TOKEN`, ninguno existe en el `.env` real) antes de aterrizar en el schema correcto (`META_SYSTEM_USER_TOKEN` + `META_IG_BUSINESS_ID`), confirmado contra el `.env` real compartido por Johnny. Publicado con éxito un carrusel real de 5 slides de PZA_10.4 (`media_id: 17996701389021317`). Airtable actualizado (`Estado IG = Publicado`, `Post ID IG`, `Fecha de Publicación`).
+
+**Corrección de causa raíz, no solo del script:** el error de fondo no era un token expirado (los tokens de Meta/Instagram de este proyecto son System User tokens de larga duración, a diferencia de Pinterest/TikTok) sino un App ID obsoleto de una app ya borrada por Meta, heredado de un resumen de sesión anterior sin verificar contra el `.env` real. Se fija como regla permanente: nunca tratar un token de Meta como si pudiera estar vencido.
+
+**`.env.example` eliminado del repo.** Había quedado desincronizado repetidamente (App ID viejo, nombres de variable inventados, TikTok ausente) porque un archivo de plantilla en el repo no se actualiza solo. El schema canónico de nombres de credenciales (nunca valores) para Meta/TikTok/Pinterest/Google/Airtable ahora vive únicamente en memoria de proyecto, que se carga automáticamente cada sesión sin depender de que alguien recuerde leer un archivo.
+
+**`privacy.html` corregido antes de una posible revisión de TikTok/Pinterest.** Un research de IA compartido por Johnny advertía que los rechazos de App Review suelen venir de políticas de privacidad que no describen el uso real de la API solicitado. Auditoría confirmó que la política vigente solo mencionaba Hotmart — sin ninguna referencia a las integraciones de Instagram/Facebook/TikTok/Pinterest/YouTube ya en producción. Se agregó la Sección 6 "Social Media Platform Integrations" (declara que las cuentas son propias de FYR, qué APIs/scopes usa cada integración, y que ninguna lee datos de terceros) en `build/src/privacy.html`, se renumeraron las secciones siguientes, y se regeneró `privacy.html` vía `build/build.py` (confirmado que `about.html`/`terms.html`/`refunds.html` no sufrieron drift). Tema de analíticas/retargeting (cookies, heatmaps, tiempo en página) que motivó la revisión quedó deliberadamente diferido a una conversación exploratoria separada — no se mezcla con este fix urgente.
+
+## 2026-10-28/29 — TikTok: integración completa, publish real en sandbox y video demo para App Review
+
+**Callback OAuth sin servidor local.** TikTok exige `redirect_uri` HTTPS absoluto (no acepta `localhost` como Google/Pinterest) y además rechaza cualquier URI con ruta propia — solo la raíz exacta del dominio se deja registrar (confirmado empíricamente tras probar `tiktok-callback.html` y ser rechazado). Solución final: `index.html` detecta `?code=...`/`?error=...` en la query string al cargar y muestra el código para copiar a mano; no se mantiene una página de callback dedicada.
+
+**`tiktok_publish_video.py` — Content Posting API, flujo FILE_UPLOAD.** Se eligió `FILE_UPLOAD` sobre `pull_by_url` porque este último exige que el video esté servido desde un dominio propio verificado (a diferencia de Meta/Pinterest, para quienes basta una URL pública) — evita publicar cada video en GitHub Pages antes de subirlo a TikTok. `PUBLISH_COMPLETE` confirmado en sandbox sobre la cuenta `feedyourroots_us`. Sin fragmentación todavía (solo archivos ≤64MB de un chunk; las piezas actuales rondan 20-30MB, no es un problema hoy pero hay que agregarla antes de piezas más largas).
+
+**Video demo para App Review.** Pipeline de TTS ad-hoc (mismo patrón que el de Pinterest): 5 segmentos de narración mapeados a las ventanas reales de una grabación silenciosa de 106.1s (auth, copiar código, pegar token, correr publisher, verificación visual en el perfil). Solicitud de App Review enviada.
+
+## 2026-10-28 — Avatares circle-safe para redes sociales (entregados por Claude Design, integrados y subidos a Drive)
+
+**Problema real:** el logo-frasco existente tiene un margen mínimo de solo 2.9% del lienzo (diseñado para favicon/app icon con recorte cuadrado) — al recortarse en círculo, como hacen automáticamente Instagram/Pinterest/YouTube/TikTok, el jarro se sale del borde arriba y abajo (confirmado visualmente con una previsualización de máscara circular).
+
+**Solución:** dos variantes nuevas entregadas por Claude Design (`avatar-symbol` y `avatar-lockup-vertical`, 4 colores cada una) con margen interno real (15.2% y 19.7%), confirmadas visualmente dentro del círculo en los 4 lados. Renombradas a la convención real del repo (`slug-color_aspecto_versión`, no el orden que traía el zip). Se agregó además una variante con fondo blanco sólido específica para Instagram (IG rellena el fondo transparente con un color no deseado al usarla como foto de perfil).
+
+**Subida a Drive vía GitHub Actions.** Workflow ad-hoc que reusa `drive_client.py` y los secrets ya configurados — evita pasar el contenido binario de los PNG/SVG por el contexto del modelo. Troubleshooting real de permisos: el primer intento falló con 404 sobre la carpeta `C14_Brand_Mark` tras renovar el refresh token; se agregó modo diagnóstico (metadata + búsqueda por nombre, luego búsqueda `allDrives`) hasta confirmar que la cuenta OAuth sí tenía visibilidad de la carpeta.
+
+## 2026-10-28 — Pinterest: integración completa, publish real en Sandbox y video demo para solicitar Standard access
+
+**Dos correcciones empíricas de la API, no documentadas de antemano:**
+- Crear un pin vía `POST /v5/pins` devolvía error de permisos insuficientes con solo `boards:read`+`pins:write` — hace falta agregar también `boards:write` y `pins:read`.
+- Con la app todavía en Trial access, la API rechaza crear pines en producción ("Apps with Trial access may not create Pins in production... use API Sandbox instead"). El endpoint de autorización no cambia, pero el intercambio de `code` por token debe hacerse contra `api-sandbox.pinterest.com`, no `api.pinterest.com`, para que el token resultante funcione contra los endpoints de sandbox. Pendiente revertir a producción cuando se apruebe Standard access.
+
+**Video demo para solicitar Standard access.** Mismo patrón de TTS ad-hoc reusado después para TikTok: narración en inglés (7 segmentos) sobre un screen recording silencioso real de Johnny, compositado con ffmpeg fuera de GitHub Actions (no requiere credenciales de Google).
+
+## 2026-10-28 — YouTube: resolución de OAuth tras varios intentos fallidos
+
+Troubleshooting real documentado en 4 commits (`72d0e79`, `0dd2789`, `c0e532e`, `481d22e`) sobre el flujo de autorización de YouTube/Google Drive hasta llegar a un refresh token funcional — mismo patrón de verificación empírica contra la API real que luego se repitió con Pinterest (Sandbox) y Meta (System User token) en vez de confiar en documentación o en supuestos heredados de sesiones anteriores.
+
+## 2026-10-27/28 — Reglas de Fase D: cierres/CTA graduados por fase, valor real por slide, gate de presupuesto de texto, y 2 autocorrecciones sobre Bundle Relacionado
+
+**Banco de cierres/CTA graduado por fase (`fd8cb98`).** Johnny identificó que toda pieza terminaba con el mismo patrón de venta dura (nombrar el bundle + "link in bio") sin importar si la persona siquiera sabía que tenía el problema (F1) o ya estaba lista para comprar (F3/F4). Se agrega un banco de cierres por fase (venta/engagement/loop) y cambia el default de F1/F2 a algo menos agresivo.
+
+**Gate de "valor real por slide" (`85a5c60`).** Auditoría de PZA_11.2 confirmó el patrón que Johnny venía señalando: piezas de 5-6 slides donde solo el hook y el cierre tienen peso real, y el cuerpo es agitación repetida sin enseñar nada — 0 de 3 slides de cuerpo eran "valor real", los 3 eran agitación pura. Nueva regla: cada slide de cuerpo debe aportar valor real, no solo repetir el dolor.
+
+**Gate obligatorio de presupuesto de texto por layout (`574a485`).** La regla de valor real empuja a escribir más texto por slide para explicar el mecanismo (no solo el síntoma) — eso solo es seguro si el layout asignado tiene espacio real. Nuevo gate bloqueante en el Paso 3 de `fyr-content`: antes de cerrar el brief, cada slide con texto se verifica contra `FYR_Layout_Specs_v1.md` (Full-bleed = 0 texto siempre; Marco grande/Doble marco = una línea corta; Ventana+texto/Texto+lateral = espacio real dedicado; Solo texto = sin límite). Evita descubrir en el ensamblado que el texto no cabe.
+
+**Dos autocorrecciones sobre Bundle Relacionado (`4e83ff8`, `458ddfa`, `efbc4cf`).** Al verificar si `fase-d-planner` se había actualizado tras la migración Route B del 28-oct, se encontraron 3 referencias propias a campos de `Themes` que ya no existen con ese nombre (corregidas en `4e83ff8`). La misma verificación obligó a comparar contra el schema real de Airtable en vez de confiar en un resumen heredado de sesión anterior: ese resumen tenía un error que se había propagado a documentos editados ese mismo día — `Themes.Bundle Relacionado` sigue existiendo (Route B nunca lo tocó), pero `458ddfa` lo reinstauró por error como campo obligatorio al crear un tema, algo que Johnny ya había decidido que no debía ser (consenso previo que la corrección pasó por alto). `efbc4cf` lo corrige de vuelta a opcional/condicional: se llena solo si el Pilar tiene mapeo obvio a un bundle.
+
+**Ninguna skill de producción publica, ni auto ni manual (`8c99d18`).** Las skills de manufactura (`fyr-content`, `fyr-video-assembler`, `fase-d-planner`) describían pasos de publicación (Estado IG/FB/etc., Fecha de Publicación, Post ID) como parte de su propio flujo, cuando ninguna skill publica en redes sociales hoy — eso es dominio exclusivo de la futura `fyr-publisher`. Corregido en las 3 skills; datos de Airtable corregidos retroactivamente (PZA_2.1, PZA_4.2, PZA_10.4, PZA_11.2 estaban marcadas `Publicado` sin que nada se hubiera publicado realmente — vueltas a `Ensamblado`).
+
 ## 2026-10-27/28 — Rediseño de campos Themes/Content_Pieces (Route B) y auditoría completa repo vs Proyecto de claude.ai
 
 **Migración de campos (Route B):** 11 campos de ejecución de pieza migrados de `Themes` a `Content_Pieces` (Formato, Título Portada, Subtítulo, Prompt Imagen, CTA Sugerido, Fase Embudo, Fecha de Publicación, 5x Link Publicación [red]); campo `Themes.Estado` eliminado por completo — el link inverso `Themes.Content_Pieces` ya responde "¿este tema se produjo?" sin necesidad de un campo de estado separado, y permite además responder "qué tema + qué approach tuvo mejor performance" cruzando con `Content_Pieces.Performance`/`Hook Usado` sin ningún campo nuevo. 13 registros existentes migrados sin pérdida de datos. `fyr-content/SKILL.md`, `FYR_Rutas_De_Produccion.md` y `fyr-video-assembler/SKILL.md` actualizados para escribir en `Content_Pieces`, no en `Themes`.
