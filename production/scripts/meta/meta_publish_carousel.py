@@ -185,7 +185,21 @@ def main():
         sys.exit(f"media_publish no devolvio id: {json.dumps(publish_resp)[:400]}")
 
     print(f"\nPUBLICADO con exito. media_id: {media_id}")
-    print(f"Ver en: https://www.instagram.com/p/ (busca el post mas reciente de la cuenta)")
+
+    # ---------- Paso 4: resolver el permalink real ----------
+    # El shortcode real de un post de Instagram (ej. DfFafzPjm2-) NO se puede derivar del
+    # media_id numerico -- confirmado el 29-oct-2026 tras publicar PZA_10.4 (media_id
+    # 17996701389021317, permalink real /p/DfFafzPjm2-/, sin relacion visible entre ambos).
+    # Pedirselo a la API en vez de dejar que alguien lo busque a mano o lo adivine.
+    permalink_resp = _get(f"{GRAPH_BASE}/{media_id}", token, {"fields": "permalink"})
+    permalink = permalink_resp.get("permalink")
+    if permalink:
+        print(f"Ver en: {permalink}")
+    else:
+        print(
+            "No se pudo resolver el permalink automaticamente -- buscar el post mas "
+            "reciente de la cuenta a mano."
+        )
 
 
 if __name__ == "__main__":
