@@ -1,0 +1,44 @@
+{
+  "segments": [
+    {
+      "id": "seg1",
+      "label": "Paso 1 - correr el script de autorizacion",
+      "video_start": 4,
+      "video_end": 14,
+      "max_duration": 10,
+      "texto_narrado": "Let's *connect* TikTok. Our script builds the official *authorization URL*// with exactly the scopes our app needs."
+    },
+    {
+      "id": "seg2",
+      "label": "Paso 2 - abrir el link, iniciar sesion, copiar el codigo",
+      "video_start": 14,
+      "video_end": 25,
+      "max_duration": 11,
+      "texto_narrado": "The user opens that link,// signs in with their own TikTok account,// and *TikTok* itself shows the permissions being requested before anything is copied."
+    },
+    {
+      "id": "seg3",
+      "label": "Paso 3 - pegar el codigo, obtener access token",
+      "video_start": 25,
+      "video_end": 60,
+      "max_duration": 35,
+      "texto_narrado": "Once they allow access,// TikTok hands back a short-lived *authorization code*. We paste it into our script,// which exchanges it directly with TikTok's servers for an *access token* and a *refresh token*// -- no password ever touches our app, only these two scoped tokens."
+    },
+    {
+      "id": "seg4",
+      "label": "Paso 4 - cargar el token, correr el publicador",
+      "video_start": 60,
+      "video_end": 86,
+      "max_duration": 26,
+      "texto_narrado": "With that *access token* loaded,// we run our publishing script against the real *Content Posting API*: it checks the creator's posting settings,// uploads the video file directly,// and waits for *TikTok* to confirm the post is complete."
+    },
+    {
+      "id": "seg5",
+      "label": "Paso 5 - verificacion visual en el perfil de TikTok",
+      "video_start": 86,
+      "video_end": 106.1,
+      "max_duration": 20.1,
+      "texto_narrado": "And *there* it is: a real video,// published straight to the account's profile on *TikTok*// -- from authorization, to token, to a live *post*, entirely through our app."
+    }
+  ]
+}
