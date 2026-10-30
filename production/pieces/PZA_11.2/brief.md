@@ -2,6 +2,8 @@
 
 **Estado:** brief generado — Fase D piloto autónomo, Parada 1 (3 piezas). Pilar 11 virgen (nunca producido antes).
 
+**Corrección 30-oct-2026 (subtítulo de portada):** la portada (`marco_grande_portada`, carrusel 4:5) traía "Subtítulo: *The problem you can't always see.*" — pero `marco_grande_portada` **no acepta `texto_subtitulo`** (`compositors/tipo_a.py`, `CompositorError`: "solo portadas de video 9:16 llevan subtitulo"). El `config.json` ya estaba correcto (sin `texto_subtitulo`); se quita de la tabla de este brief para que no vuelva a copiarse a ningún otro lugar (Mesa de Producción incluida) como si fuera válido.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -22,7 +24,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Mi suelo tiene
 ## Slide por slide
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
-| 1 | `marco_grande_portada` | — | `STOCK-soil-compaction-test-press_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `5 SIGNS YOUR SOIL IS SICK` / Subtítulo: *The problem you can't always see.* | Abre loop: ¿qué está comprobando? |
+| 1 | `marco_grande_portada` | — | `STOCK-soil-compaction-test-press_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `5 SIGNS YOUR SOIL IS SICK` | Abre loop: ¿qué está comprobando? |
 | 2 | `ventana_texto` | 60 | `STOCK-soil-standing-water_4x5_v1.png` **[GENERAR EN GEMINI]** | `1. Water sits on top instead of soaking in.\nThat means the soil is compacted — no\nchannels left for air or water to move.` | Signo 1 + mecanismo (compactación) |
 | 3 | `texto_lateral` | 50 | `STOCK-soil-no-earthworms_9x16_v1.png` **[GENERAR EN GEMINI]** | `2. Dig a shovel's width —\nzero earthworms.\nNothing survives\nwithout air or space.` | Signo 2 + mecanismo (mismo origen: compactación, sin oxígeno/espacio poroso) |
 | 4 | `ventana_texto` | 60 | `STOCK-soil-white-crust_4x5_v1.png` **[GENERAR EN GEMINI]** | `3. A crust forms once the\nsurface dries out.\nSalt building up from\nshallow watering.` | Signo 3 + mecanismo (sal por riego superficial) |

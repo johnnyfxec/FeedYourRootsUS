@@ -4,6 +4,8 @@
 
 **Corrección 30-oct-2026 (gate de valor real, commit `85a5c60`; y corrección de criterio sobre el tamaño del carrusel, misma fecha):** la versión anterior tenía un punto de Agitación sin mecanismo propio ("Half of these I couldn't even name anymore.") y un slide de puro contraste que no explicaba qué resuelve el sistema ("Same seeds. One system."). El mecanismo real (confirmado contra `Seed Library — Feed Your Roots` en el Proyecto: "Harvest year — seed viability decreases over time"; "Germination test stored seeds — order more if rate is low") es que **una semilla sin fecha de cosecha pierde viabilidad con el tiempo, y sin esa fecha no hay forma de saber si sigue viva antes de plantarla** — eso es lo que realmente cuesta el desorden, más allá de "no reconocer el sobre". Comprimir ese mecanismo en la misma frase corta que ya ocupaba el S2 original sería el mismo error ya corregido en PZA_11.2 y PZA_8.6, así que la pieza pasa de 5 a 6 slides (dentro del rango de F2, 5-6) dándole al mecanismo su propio slide completo (nuevo S3). El slide de contraste (antes S3, ahora S4, "Same seeds. One system.") se mantiene sin cambios de texto, pero ahora funciona como bisagra visual después de que el mecanismo ya quedó explicado — no como el único argumento de valor de la pieza.
 
+**Corrección 30-oct-2026 (segunda, subtítulo de portada):** la portada (`marco_grande_portada`, carrusel 4:5) traía "Subtítulo: *Order changes everything.*" heredado de una versión anterior del brief — pero `marco_grande_portada` **no acepta `texto_subtitulo`** (`compositors/tipo_a.py`, `CompositorError`: "solo portadas de video 9:16 llevan subtitulo"). El `config.json` ya estaba correcto (sin `texto_subtitulo`); se quita de la tabla de este brief para que no vuelva a copiarse a ningún otro lugar (Mesa de Producción incluida) como si fuera válido.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -22,7 +24,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué sistema c
 ## Slide por slide
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
-| 1 | `marco_grande_portada` | — | `STOCK-seedbox-messy-shoebox_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `MY SEED BOX` / `WAS A DISASTER` / Subtítulo: *Order changes everything.* | Abre loop: ¿qué cambió? |
+| 1 | `marco_grande_portada` | — | `STOCK-seedbox-messy-shoebox_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `MY SEED BOX` / `WAS A DISASTER` | Abre loop: ¿qué cambió? |
 | 2 | `marco_grande` | 75 | `STOCK-seedbox-unlabeled-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Half of these I couldn't even name anymore.` | Agita: costo emocional del desorden (confusión, culpa) |
 | 3 | `texto_lateral` | 50 | `STOCK-seedbox-old-packet-closeup_9x16_v1.png` **[GENERAR EN GEMINI]** | `Seeds lose\nviability every\nyear unlabeled —\nyou plant dead\nseed and never\nknow why.` | Revela el mecanismo real: sin fecha, no sabes si la semilla sigue viva. **Slide nuevo, 30-oct-2026** — mecanismo movido aquí desde una frase que iba comprimida en S2. |
 | 4 | `doble_marco` | — | S4a `STOCK-seedbox-messy-shoebox_4x5_v1.png` (reuso S1) + S4b `STOCK-seedbox-organized-envelopes_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Same seeds. One system.` | Contraste directo (afinidad del hook 07); ahora es bisagra visual — el mecanismo ya quedó explicado en S3 |

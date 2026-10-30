@@ -4,6 +4,8 @@
 
 **Corrección 30-oct-2026 (revisión de no-compresión de PZA_6.5/PZA_10.4, tras cerrar PZA_1.2/3.1/8.6/11.2):** esta pieza ya pasaba el criterio real de acción (Morgan compararía precios), pero el texto de S4 nunca se verificó contra el ancho real del layout con `draw.textlength()` — la primera línea ("Three suppliers, three totally different prices for the same build.") medía 138% del ancho útil de `ventana_texto` (864px), un desborde físico que habría roto el render. Corregido abajo re-partiendo el mismo texto exacto en líneas más cortas — ningún contenido se quitó ni se resumió, solo se reacomodó el salto de línea.
 
+**Corrección 30-oct-2026 (segunda, subtítulo de portada):** la portada (`marco_grande_portada`, carrusel 4:5) traía "Subtítulo: *Because I didn't compare prices.*" heredado de una versión anterior del brief — pero `marco_grande_portada` **no acepta `texto_subtitulo`** (`compositors/tipo_a.py`, `CompositorError`: "solo portadas de video 9:16 llevan subtitulo"). El `config.json` ya estaba correcto (sin `texto_subtitulo`); se quita de la tabla de este brief.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -22,7 +24,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Cuánto se pud
 ## Slide por slide
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
-| 1 | `marco_grande_portada` | — | `STOCK-coop-overpriced-receipt_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `I OVERPAID FOR MY COOP` / Subtítulo: *Because I didn't compare prices.* | Abre loop: ¿qué hizo mal? |
+| 1 | `marco_grande_portada` | — | `STOCK-coop-overpriced-receipt_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `I OVERPAID FOR MY COOP` | Abre loop: ¿qué hizo mal? |
 | 2 | `marco_grande` | 75 | `STOCK-receipt-total-circled-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `The total didn't even look real the first time I read it.` | Agita: shock del precio real |
 | 3 | `doble_marco` | — | S3a `STOCK-coop-overpriced-receipt_4x5_v1.png` (reuso S1) + S3b `STOCK-coop-modest-sourcing-guide_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Same coop. Half the price, once I actually compared.` | Contraste directo (afinidad del hook 07) |
 | 4 | `ventana_texto` | 60 | `STOCK-sourcing-guide-three-prices-compared_4x5_v1.png` **[GENERAR EN GEMINI]** | `Three suppliers, three\ntotally different prices\nfor the same build.\nI'd only ever called\nthe first one.` | Revela el método. **Texto re-partido 30-oct-2026** — mismo contenido, corregido el salto de línea que desbordaba el ancho real (ver corrección arriba). |

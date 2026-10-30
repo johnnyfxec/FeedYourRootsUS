@@ -4,6 +4,8 @@
 
 **Corrección 30-oct-2026 (revisión de no-compresión de PZA_6.5/PZA_10.4, tras cerrar PZA_1.2/3.1/8.6/11.2):** esta pieza ya pasaba el criterio real de acción (Morgan replanificaría con su propia fecha de helada), pero su texto nunca se verificó contra el ancho real de los layouts con `draw.textlength()` — 4 de sus 6 slides (S2, S3, S5, S6) desbordaban entre 96% y 122% del ancho útil, un desborde físico que habría roto el render. Corregido abajo re-partiendo cada frase en 2 líneas más cortas — ningún contenido se quitó ni se resumió, solo se reacomodó el salto de línea (no es el error de compresión-de-contenido de las otras 4 piezas, es un error de ajuste de línea nunca verificado).
 
+**Corrección 30-oct-2026 (tercera, subtítulo de portada):** la portada (`marco_grande_portada`, carrusel 4:5) traía "Subtítulo: *Why your Florida neighbor's advice won't work.*" heredado de una versión anterior del brief — pero `marco_grande_portada` **no acepta `texto_subtitulo`** (`compositors/tipo_a.py`, `CompositorError`: "solo portadas de video 9:16 llevan subtitulo"). El `config.json` ya estaba correcto (sin `texto_subtitulo`); se quita de la tabla de este brief.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -22,7 +24,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué pasa real
 ## Slide por slide
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
-| 1 | `marco_grande_portada` | — | `STOCK-zone5-vs-zone9-split_4x5_v1.png` **[GENERAR EN GEMINI]** (prompt ya en la Malla 6.5) | Título: `ZONE 5` / `VS ZONE 9` / Subtítulo: *Why your Florida neighbor's advice won't work.* | Abre loop: ¿qué pasa si no distingo? |
+| 1 | `marco_grande_portada` | — | `STOCK-zone5-vs-zone9-split_4x5_v1.png` **[GENERAR EN GEMINI]** (prompt ya en la Malla 6.5) | Título: `ZONE 5` / `VS ZONE 9` | Abre loop: ¿qué pasa si no distingo? |
 | 2 | `marco_grande` | 75 | `STOCK-frost-killed-seedlings-calendar_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Plant on their calendar,\nand frost gets there first.` | Demostración 1: la consecuencia real |
 | 3 | `doble_marco` | — | S3a `STOCK-zone5-timing-thriving_4x5_v1.png` + S3b `STOCK-zone9-timing-thriving_4x5_v1.png` **[GENERAR EN GEMINI x2]** | pie: `Same plant. Different calendar.\nBoth thriving.` | Demostración 2: cada zona correcta funciona |
 | 4 | `ventana_texto` | 60 | `STOCK-frost-date-map-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | `Your frost date isn't a suggestion.\nIt's the only calendar that matters.` | Revela el criterio real |

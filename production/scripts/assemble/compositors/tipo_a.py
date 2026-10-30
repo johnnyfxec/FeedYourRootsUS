@@ -232,18 +232,32 @@ def _compose_marco_grande_portada(canvas, slide, aspecto, assets_dir):
     canvas.paste(scene_cropped, (paste_x, paste_y))
     canvas.alpha_composite(frame_resized, (round(frame_x), round(frame_y)))
 
-    # Bloque de texto: ancho fijo medido, anclado (no centrado) a un
-    # margen fijo debajo del borde inferior del marco -- fix del bug de
-    # centrado vertical (ver Arquitectura v1.1 Seccion 8).
+    # Bloque de texto: CORREGIDO 30-oct-2026 (bug real detectado via auditoria
+    # de la Mesa de Produccion -- Johnny señalo con captura que el titulo
+    # quedaba pegado al marco con todo el aire libre abajo, nada centrado).
+    # El docstring de esta funcion siempre dijo "se centra verticalmente
+    # entre el borde inferior del marco y el borde inferior del canvas",
+    # pero el codigo nunca lo hizo: usaba render_text_block_top (ancla
+    # arriba, sin centrar) con un margen fijo de 20px. render_text_block_top
+    # existe para evitar offset impredecible cuando se encadenan DOS bloques
+    # (titulo->subtitulo) -- pero marco_grande_portada nunca lleva subtitulo
+    # (CompositorError si se intenta, ver arriba), asi que esa razon no
+    # aplica aqui: no hay nada que encadenar despues del titulo. Se usa
+    # render_text_block (centrado por tinta real, igual que
+    # marco_grande_cuadrado) sobre la franja completa entre el marco y el
+    # borde del canvas, con el mismo colchon fijo de 24px arriba/abajo que
+    # usa marco_grande_cuadrado, para que el titulo nunca toque el marco ni
+    # quede pegado al borde inferior del lienzo sin importar cuantas lineas
+    # ocupe.
     frame_bottom = frame_y + frame_h_final
-    MARGEN_MARCO_TITULO = 20  # px -- punto de partida, ajustar tras revision visual
-    titulo_y = frame_bottom + MARGEN_MARCO_TITULO
-    espacio_disponible = canvas_h - titulo_y
+    PADDING_VERTICAL = 24  # px -- mismo colchon que marco_grande_cuadrado
+    caja_y = round(frame_bottom + PADDING_VERTICAL)
+    hueco_h = round(canvas_h - PADDING_VERTICAL - caja_y)
     texto_x = (canvas_w - texto_w_target) / 2
 
-    r = render_text_block_top(
+    r = render_text_block(
         canvas, titulo, "titulo",
-        round(texto_x), round(titulo_y), texto_w_target, round(espacio_disponible),
+        (round(texto_x), caja_y, texto_w_target, hueco_h),
     )
 
     warnings = []

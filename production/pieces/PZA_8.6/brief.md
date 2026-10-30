@@ -4,6 +4,8 @@
 
 **Corrección 30-oct-2026 (gate de valor real, commit `85a5c60`; y corrección de criterio sobre el tamaño del carrusel, misma fecha):** la versión anterior de este brief solo decía "planear cada cama en papel antes de salir" — un consejo genérico de jardinería que Morgan ya conoce, no un mecanismo propio del Half-Acre Blueprint. El mecanismo real (confirmado contra el Master Layout real en el Proyecto) tiene 3 puntos distintos, no uno: camas elevadas y cocina cerca de la casa (visita diaria, cosecha/riego); gallinero y compostera también cerca (visita diaria, huevos/mantenimiento); invernadero y árboles frutales a media distancia (visita menos frecuente). Son 3 puntos de valor reales — comprimirlos en una sola frase de `ventana_texto` sería el mismo error de recortar contenido real que ya se corrigió en PZA_11.2 (ver su brief), así que la pieza pasa de 5 a 6 slides (dentro del rango de F2) para darle al mecanismo su propio slide completo. El criterio real es **zonificar por cuántas veces al día/semana se visita cada cosa, no solo "dibujarlo antes de salir"**.
 
+**Corrección 30-oct-2026 (segunda, subtítulo de portada):** la portada (`marco_grande_portada`, carrusel 4:5) traía "Subtítulo: *The plan made it possible.*" heredado de una versión anterior del brief — pero `marco_grande_portada` **no acepta `texto_subtitulo`** (`compositors/tipo_a.py`, `CompositorError`: "solo portadas de video 9:16 llevan subtitulo"). El `config.json` ya estaba correcto (sin `texto_subtitulo`); se quita de la tabla de este brief para que no vuelva a copiarse a ningún otro lugar (Mesa de Producción incluida) como si fuera válido.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -22,7 +24,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué pasó ent
 ## Slide por slide
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
-| 1 | `marco_grande_portada` | — | `STOCK-blank-grid-sheet_4x5_v1.png` **[GENERAR EN GEMINI]** (prompt ANTES ya en la Malla 8.6) | Título: `FROM EMPTY YARD` / `TO FULL LAYOUT` / Subtítulo: *The plan made it possible.* | Abre loop: ¿qué cambió? |
+| 1 | `marco_grande_portada` | — | `STOCK-blank-grid-sheet_4x5_v1.png` **[GENERAR EN GEMINI]** (prompt ANTES ya en la Malla 8.6) | Título: `FROM EMPTY YARD` / `TO FULL LAYOUT` | Abre loop: ¿qué cambió? |
 | 2 | `marco_grande` | 75 | `STOCK-blank-grid-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `A blank grid is just... intimidating.` | Agita: la parálisis inicial |
 | 3 | `doble_marco` | — | S3a `STOCK-blank-grid-sheet_4x5_v1.png` (reuso S1) + S3b `STOCK-plano-ideal-homestead_4x5_v1.png` **(banco — ya en `Assets`)** | pie: `Same yard. One afternoon. One plan.` | Contraste directo (afinidad del hook 07) |
 | 4 | `ventana_texto` | 60 | `STOCK-colored-pencils-grid-marking_4x5_v1.png` **[GENERAR EN GEMINI]** | `Every bed on paper first.\nNo guessing once you're outside.` | Revela que se planea, abre la pregunta de "¿con qué criterio?" |
