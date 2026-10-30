@@ -2,6 +2,8 @@
 
 **Estado:** brief generado — Fase D piloto autónomo, Parada 1 (3 piezas). Pilar 10 virgen (nunca producido antes).
 
+**Corrección 30-oct-2026 (revisión de no-compresión de PZA_6.5/PZA_10.4, tras cerrar PZA_1.2/3.1/8.6/11.2):** esta pieza ya pasaba el criterio real de acción (Morgan compararía precios), pero el texto de S4 nunca se verificó contra el ancho real del layout con `draw.textlength()` — la primera línea ("Three suppliers, three totally different prices for the same build.") medía 138% del ancho útil de `ventana_texto` (864px), un desborde físico que habría roto el render. Corregido abajo re-partiendo el mismo texto exacto en líneas más cortas — ningún contenido se quitó ni se resumió, solo se reacomodó el salto de línea.
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -23,10 +25,10 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Cuánto se pud
 | 1 | `marco_grande_portada` | — | `STOCK-coop-overpriced-receipt_4x5_v1.png` **[GENERAR EN GEMINI]** | Título: `I OVERPAID FOR MY COOP` / Subtítulo: *Because I didn't compare prices.* | Abre loop: ¿qué hizo mal? |
 | 2 | `marco_grande` | 75 | `STOCK-receipt-total-circled-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `The total didn't even look real the first time I read it.` | Agita: shock del precio real |
 | 3 | `doble_marco` | — | S3a `STOCK-coop-overpriced-receipt_4x5_v1.png` (reuso S1) + S3b `STOCK-coop-modest-sourcing-guide_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Same coop. Half the price, once I actually compared.` | Contraste directo (afinidad del hook 07) |
-| 4 | `ventana_texto` | 60 | `STOCK-sourcing-guide-three-prices-compared_4x5_v1.png` **[GENERAR EN GEMINI]** | `Three suppliers, three totally different prices for the same build.\nI'd only ever called the first one.` | Revela el método |
+| 4 | `ventana_texto` | 60 | `STOCK-sourcing-guide-three-prices-compared_4x5_v1.png` **[GENERAR EN GEMINI]** | `Three suppliers, three\ntotally different prices\nfor the same build.\nI'd only ever called\nthe first one.` | Revela el método. **Texto re-partido 30-oct-2026** — mismo contenido, corregido el salto de línea que desbordaba el ancho real (ver corrección arriba). |
 | 5 | `marco_grande` | 80 | `STOCK-coop-finished-modest-hens_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Same coop, same hens — just not the overpriced version.` | Cierre + CTA |
 
-Variedad: `marco_grande` 2 veces (S2, S5), dentro del límite. Sin lockup (va como última slide separada por `assemble.py`, no contada aquí).
+Variedad: `marco_grande` 2 veces (S2, S5), dentro del límite. Sin lockup (va como última slide separada por `assemble.py`, no contada aquí). Texto de S4 verificado 30-oct-2026 contra el ancho real de `ventana_texto` (864px, Lora 40px) con `draw.textlength()` — ninguna línea excede el 90% (máx. 48%).
 
 ## Prompts nuevos a generar (4 imágenes — S3a reusa S1)
 *(Prefacio fijo omitido aquí — ver `FYR_Asset_Governance_Policy.md` §4. Cada entrada = línea de output + bloque de composición + específico, aplicando la Regla de narrativa visual de Governance Policy §4.)*

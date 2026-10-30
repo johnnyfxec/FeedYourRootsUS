@@ -2,6 +2,8 @@
 
 **Estado:** brief generado en lote — Fase D, Parada 1 (primer lote real, 7 piezas). **Corrección 18-oct-2026:** los prompts de abajo llevaban la frase obsoleta "watercolor and ink illustration... vintage nature-journal style" en vez del bloque de estilo real — corregido. Todo prompt de este brief usa el **bloque de estilo base** de `FYR_Asset_Governance_Policy.md` §4 (Beatrix Potter + Oatly, ver texto exacto ahí) como prefacio fijo, que no se repite abajo — cada prompt lista solo el bloque de composición (ratio/fondo) + lo específico de esa escena.
 
+**Corrección 30-oct-2026 (revisión de no-compresión de PZA_6.5/PZA_10.4, tras cerrar PZA_1.2/3.1/8.6/11.2):** esta pieza ya pasaba el criterio real de acción (Morgan replanificaría con su propia fecha de helada), pero su texto nunca se verificó contra el ancho real de los layouts con `draw.textlength()` — 4 de sus 6 slides (S2, S3, S5, S6) desbordaban entre 96% y 122% del ancho útil, un desborde físico que habría roto el render. Corregido abajo re-partiendo cada frase en 2 líneas más cortas — ningún contenido se quitó ni se resumió, solo se reacomodó el salto de línea (no es el error de compresión-de-contenido de las otras 4 piezas, es un error de ajuste de línea nunca verificado).
+
 ## Ficha
 | Campo | Valor |
 |---|---|
@@ -21,13 +23,13 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Qué pasa real
 | # | Layout | % img | Imagen | Texto exacto | Intención |
 |---|---|---|---|---|---|
 | 1 | `marco_grande_portada` | — | `STOCK-zone5-vs-zone9-split_4x5_v1.png` **[GENERAR EN GEMINI]** (prompt ya en la Malla 6.5) | Título: `ZONE 5` / `VS ZONE 9` / Subtítulo: *Why your Florida neighbor's advice won't work.* | Abre loop: ¿qué pasa si no distingo? |
-| 2 | `marco_grande` | 75 | `STOCK-frost-killed-seedlings-calendar_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Plant on their calendar, and frost gets there first.` | Demostración 1: la consecuencia real |
-| 3 | `doble_marco` | — | S3a `STOCK-zone5-timing-thriving_4x5_v1.png` + S3b `STOCK-zone9-timing-thriving_4x5_v1.png` **[GENERAR EN GEMINI x2]** | pie: `Same plant. Different calendar. Both thriving.` | Demostración 2: cada zona correcta funciona |
+| 2 | `marco_grande` | 75 | `STOCK-frost-killed-seedlings-calendar_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Plant on their calendar,\nand frost gets there first.` | Demostración 1: la consecuencia real |
+| 3 | `doble_marco` | — | S3a `STOCK-zone5-timing-thriving_4x5_v1.png` + S3b `STOCK-zone9-timing-thriving_4x5_v1.png` **[GENERAR EN GEMINI x2]** | pie: `Same plant. Different calendar.\nBoth thriving.` | Demostración 2: cada zona correcta funciona |
 | 4 | `ventana_texto` | 60 | `STOCK-frost-date-map-closeup_4x5_v1.png` **[GENERAR EN GEMINI]** | `Your frost date isn't a suggestion.\nIt's the only calendar that matters.` | Revela el criterio real |
-| 5 | `solo_texto` | — | — | `The zone number is just shorthand for your frost dates.` | Reframe de autoridad (F4) |
-| 6 | `marco_grande` | 80 | `STOCK-zone-correct-garden-thriving_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Know your zone. Grow on its calendar.` | Cierre + CTA |
+| 5 | `solo_texto` | — | — | `The zone number is just\nshorthand for your frost dates.` | Reframe de autoridad (F4) |
+| 6 | `marco_grande` | 80 | `STOCK-zone-correct-garden-thriving_4x5_v1.png` **[GENERAR EN GEMINI]** | pie: `Know your zone.\nGrow on its calendar.` | Cierre + CTA |
 
-Variedad: `marco_grande` 2 veces (S2, S6, dentro del límite), `doble_marco` 1 vez, `ventana_texto` 1 vez, `solo_texto` 1 vez. Sin lockup.
+Variedad: `marco_grande` 2 veces (S2, S6, dentro del límite), `doble_marco` 1 vez, `ventana_texto` 1 vez, `solo_texto` 1 vez. Sin lockup. Texto re-partido 30-oct-2026 en S2, S3, S5, S6 — verificado contra el ancho real de cada layout (`marco_grande` texto_pie 866px Lora negrita cursiva 47px; `ventana_texto`/`solo_texto` 864px Lora 40px) con `draw.textlength()`; ninguna línea excede el 90% (máx. 78%). S4 ya estaba dentro del budget (máx. 74%), sin cambios.
 
 ## Prompts nuevos a generar (6 imágenes)
 *(Prefacio fijo omitido aquí — ver nota de arriba. Cada entrada = bloque de composición + específico, para pegar después del prefacio. Reescritos 18-oct-2026 aplicando la Regla de narrativa visual de Governance Policy §4 — ángulo con presencia implícita, contexto de uso real, variación de desgaste, detalle conectado a la intención del slide — mismo tratamiento aplicado en PZA_3.1. S1 es composición dividida por diseño del hook 19; cada mitad igual lleva su propio contexto de uso, no solo clima.)*
