@@ -6,7 +6,7 @@
     {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-blank-grid-closeup_4x5_v1.jpg", "texto_pie": "A blank grid is just... intimidating.", "ancla_recorte": "center"},
     {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-blank-grid-sheet_4x5_v1.jpg", "imagen_escena_2": "STOCK-plano-ideal-homestead_4x5_v1.png", "texto_pie": "Same yard. One afternoon. One plan."},
     {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-colored-pencils-grid-marking_4x5_v1.jpg", "texto_overlay": "Every bed on paper first.\nNo guessing once you're outside."},
-    {"numero": 5, "layout": "texto_lateral", "imagen_escena": "STOCK-homestead-zones-daily-visit_9x16_v1.jpg", "lado_imagen": "izquierda", "texto_overlay": "Beds and kitchen\nclose to the house,\nvisited daily.\nCoop and compost\nclose too — same\ndaily habit.\nGreenhouse and\ntrees farther out,\nvisited less often."},
+    {"numero": 5, "layout": "texto_lateral", "imagen_escena": "STOCK-homestead-zones-daily-visit_9x16_v1.jpg", "lado_imagen": "izquierda", "texto_cuerpo": "Beds and kitchen\nclose to the house,\nvisited daily.\nCoop and compost\nclose too — same\ndaily habit.\nGreenhouse and\ntrees farther out,\nvisited less often."},
     {"numero": 6, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-plano-ideal-homestead_4x5_v1.png", "texto_pie": "The Half-Acre Blueprint template, ready when you are.", "ancla_recorte": "center"}
   ]
 }
