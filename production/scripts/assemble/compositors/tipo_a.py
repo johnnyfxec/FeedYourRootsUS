@@ -8,6 +8,7 @@ from PIL import Image
 
 from layout_specs import (
     CANVAS, ASSETS, WINDOWS, ROTATED_WINDOWS, BBOX, PORTADA_WIDTHS, TYPOGRAPHY, usable_zone,
+    usable_zone_x,
 )
 from text_renderer import crop_to_fill, render_text_block, render_text_block_top
 
@@ -267,9 +268,15 @@ def _compose_marco_grande_cuadrado(canvas, slide, aspecto, assets_dir):
         raise CompositorError("marco_grande_cuadrado requiere 'imagen_escena'")
 
     titulo = slide.get("texto_titulo")
-    subtitulo = slide.get("texto_subtitulo")
-    if not titulo and not subtitulo:
-        raise CompositorError("marco_grande_cuadrado requiere texto_titulo o texto_subtitulo")
+    if not titulo:
+        raise CompositorError("marco_grande_cuadrado requiere texto_titulo")
+    if slide.get("texto_subtitulo"):
+        raise CompositorError(
+            "marco_grande_cuadrado ya NO admite texto_subtitulo (corregido 29-oct-2026: "
+            "se elimino para liberar alto y evitar que el titulo quedara tapado por el "
+            "right rail de iconos durante reproduccion -- ver Layout Specs Seccion 15). "
+            "Si el brief trae subtitulo para esta pieza, quitarlo del config."
+        )
 
     win = WINDOWS["marco_grande_cuadrado"][aspecto]
     canvas_w = CANVAS[aspecto]["w"]
@@ -286,54 +293,49 @@ def _compose_marco_grande_cuadrado(canvas, slide, aspecto, assets_dir):
     frame_asset = _load_asset("marco_grande_cuadrado", aspecto, assets_dir)
     canvas.alpha_composite(frame_asset, (0, 0))
 
-    # Texto debajo de la ventana, en el espacio libre hasta el margen
-    # practico inferior del canvas (este SI usa SAFE_PRACTICAL/usable_zone,
-    # es 9:16 real con proteccion de UI de reel).
-    _, margen_bottom, _ = usable_zone(aspecto)
-    # Y de inicio del titulo medida directamente sobre el asset real (no
-    # derivada de la ventana) -- linea superior del titulo en el mockup,
-    # medida con medidor_esquinas.html: y=1389.2 sobre canvas 1080x1920.
-    # La caja se extiende hasta el borde REAL del canvas (no hasta
-    # margen_bottom de zona segura) para que el tamano de fuente ya
-    # calibrado (93px) nunca se reduzca por falta de espacio -- la Y de
-    # inicio medida ya considera zona segura, no hay que restringir de nuevo.
-    TITULO_Y_MEDIDO = 1234.0  # Y superior real, medido con editor_posicion_texto.html sobre mockup real
-    TITULO_ANCHO = 898  # ancho medido, mismo valor absoluto que en portada 4:5
-    SUBTITULO_ANCHO = round(TITULO_ANCHO * 0.65)  # 65% del ancho del titulo
+    # Texto debajo de la ventana, en el espacio libre hasta el borde del
+    # canvas. CORREGIDO 29-oct-2026 (bug real, no el de SAFE_PRACTICAL
+    # vertical que se corrigio antes): el ancho de 898px invadia el right
+    # rail de iconos (like/comentar/guardar/perfil) durante reproduccion en
+    # Instagram/TikTok/Shorts -- confirmado con captura real de un video
+    # publicado. El subtitulo se elimino (ver arriba) para que el titulo
+    # tenga todo el alto libre y pueda crecer a mas lineas sin reducirse
+    # tanto al angostarse. Ancho ahora viene de usable_zone_x() (13%
+    # simetrico cada lado, calibrado contra medicion real de Johnny:
+    # boton de 8mm sobre 68.5mm de pantalla = 11.68%, redondeado con
+    # colchon) -- ver layout_specs.py.
+    # CORREGIDO 29-oct-2026 (segunda pasada, tras revision visual de Johnny):
+    # el Y fijo de 1234px quedo de cuando el layout SI tenia subtitulo (medido
+    # con editor_posicion_texto.html sobre ese mockup viejo) -- al quitar el
+    # subtitulo el hueco disponible cambio pero el titulo se seguia anclando
+    # al mismo Y de siempre, quedando pegado al vine grande y lejos del vine
+    # chico de abajo (descentrado). El hueco real para texto esta entre los
+    # dos vines decorativos que trae fijos el PNG del marco (medido con
+    # pixeles reales, no estimado): vine grande termina en y=1209, vine chico
+    # empieza en y=1599 -> hueco de 390px. Centrar el bloque ahi con
+    # render_text_block (centrado automatico), no con render_text_block_top
+    # (que ancla arriba sin centrar).
+    # CORREGIDO 29-oct-2026 (tercera pasada, Johnny midio con precision de
+    # pixel que un titulo de 4 lineas quedaba tocando AMBOS vines -- 0px de
+    # margen arriba, 1px abajo -- aun centrado matematicamente, porque el
+    # bloque de texto llenaba el hueco completo de 390px. Centrado correcto
+    # no es suficiente si no queda aire: se reserva un colchon fijo de 24px
+    # arriba y 24px abajo (48px total) para que el titulo NUNCA toque los
+    # vines sin importar si son 2, 3 o 4 lineas balanceadas.
+    VINE_GRANDE_FIN = 1209
+    VINE_CHICO_INICIO = 1599
+    PADDING_VERTICAL = 24
+    _, _, TITULO_ANCHO = usable_zone_x(aspecto)
+    TITULO_ANCHO = round(TITULO_ANCHO)
 
     titulo_x = round((canvas_w - TITULO_ANCHO) / 2)
-    subtitulo_x = round((canvas_w - SUBTITULO_ANCHO) / 2)
-    SUBTITULO_Y_MEDIDO_REF = 1454.0
-    # El titulo NUNCA debe crecer hacia el subtitulo -- su max_h real es
-    # el espacio hasta donde arranca el subtitulo (si existe), no todo el
-    # canvas restante. Con este limite real, fit_text reduce el tamano
-    # automaticamente para textos largos (dentro del minimo de 70%, que
-    # SI alcanza para 2 lineas en este espacio) -- nunca trunca un titulo,
-    # que quedaria sin sentido semantico.
-    max_h_disponible = (SUBTITULO_Y_MEDIDO_REF - TITULO_Y_MEDIDO) if subtitulo else (canvas_h - TITULO_Y_MEDIDO)
+    caja_y = VINE_GRANDE_FIN + PADDING_VERTICAL
+    hueco_h = (VINE_CHICO_INICIO - VINE_GRANDE_FIN) - (2 * PADDING_VERTICAL)
 
-    # Espacio fijo entre titulo y subtitulo, medido con medidor_esquinas.html
-    # sobre el mockup real (78.3px entre la ultima linea del titulo y la
-    # primera del subtitulo) -- no se calcula como fraccion del espacio
-    # total disponible, que dio resultados erraticos con textos de largo
-    # variable.
-    SUBTITULO_Y_MEDIDO = 1454.0  # Y superior real del subtitulo, medido directamente con editor_posicion_texto.html -- reemplaza el calculo encadenado (titulo + line_h + espacio) que causaba errores acumulados.
-
-    # Ambas posiciones Y son ABSOLUTAS, medidas directamente con
-    # editor_posicion_texto.html sobre el mockup real -- no se calculan
-    # de forma encadenada (titulo -> espacio -> subtitulo), que fue la
-    # fuente de varios bugs de acumulacion de error. Cada bloque de texto
-    # se posiciona independiente, en su Y ya confirmada.
     warnings = []
-    if titulo:
-        r = render_text_block_top(canvas, titulo, "titulo", titulo_x, round(TITULO_Y_MEDIDO), TITULO_ANCHO, max_h_disponible)
-        if r["truncated"]:
-            warnings.append("texto_titulo truncado (Tipo A, marco_grande_cuadrado)")
-    if subtitulo:
-        sub_max_h = canvas_h - SUBTITULO_Y_MEDIDO
-        r = render_text_block_top(canvas, subtitulo, "subtitulo", subtitulo_x, round(SUBTITULO_Y_MEDIDO), SUBTITULO_ANCHO, sub_max_h)
-        if r["truncated"]:
-            warnings.append("texto_subtitulo truncado (Tipo A, marco_grande_cuadrado)")
+    r = render_text_block(canvas, titulo, "titulo_cuadrado", (titulo_x, caja_y, TITULO_ANCHO, hueco_h))
+    if r["truncated"]:
+        warnings.append("texto_titulo truncado (Tipo A, marco_grande_cuadrado)")
 
     return {"warnings": warnings}
 

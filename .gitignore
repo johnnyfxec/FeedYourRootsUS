@@ -13,6 +13,8 @@ _grid_*.png
 production/assets_local/
 production/output/
 production/pieces/*/_trabajo/
+production/pieces/*/work/
+production/pieces/*/stock/
 production/mockups/
 pdfs_normalized/
 tts.log

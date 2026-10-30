@@ -120,12 +120,30 @@ El asset es un LIENZO COMPLETO (1080x1920, no solo el marco recortado) con la vi
 | | Valor medido (9:16) |
 |---|---|
 | Ventana interior (para la imagen de escena) | x=179.4, y=320.3, ancho=722.0, alto=727.8 -- casi cuadrada, angulo de rotacion practicamente 0 (confirmado sin rotacion real). **Imagen a pedir en Gemini: 1:1** (11-oct-2026) |
-| Y superior del titulo | 1234.0 (medido con editor_posicion_texto.html) |
-| Ancho del bloque de titulo | 898px, sin subtitulo en este layout aplica el mismo ancho a la portada 4:5 (marco_grande_portada) |
-| Y superior del subtitulo | 1454.0 |
-| Ancho del bloque de subtitulo | 584px (65% del ancho del titulo) |
 
-Ambas posiciones Y son ABSOLUTAS, medidas independientemente -- no se calculan de forma encadenada (titulo + espacio -> subtitulo), ver Seccion 8 de FYR_Motor_Ensamblado_Arquitectura_v1.md para el porque.
+**CORREGIDO 29/30-oct-2026 (reemplaza por completo la version anterior de esta tabla, que tenia Y superior del titulo = 1234.0, un valor stale medido cuando este layout todavia llevaba subtitulo debajo del titulo).**
+
+El subtitulo se elimino de este layout: `marco_grande_cuadrado` (portada 9:16) es **titulo solo**, centrado entre las dos vides decorativas que ya vienen pintadas en el asset del marco. El titulo YA NO se ancla a un Y fijo -- se centra dinamicamente en el hueco real entre vides:
+
+| | Valor medido (9:16) |
+|---|---|
+| Fin de la vid grande (borde inferior) | y = 1209 px |
+| Inicio de la vid chica (borde superior) | y = 1599 px |
+| Hueco disponible para el titulo | 390 px (1209 a 1599) |
+| Colchon vertical reservado (arriba y abajo) | 24 px cada lado (48 px total) -- para que el titulo NUNCA toque las vides sin importar si son 2, 3 o 4 lineas |
+| Margen horizontal (zona segura, ver Seccion 15) | **13% de cada lado** del canvas (1080px) -- NO 11%, ver nota abajo |
+| Ancho util del bloque de titulo (9:16) | **799 px** (1080 - 2×140.4, redondeado) -- DISTINTO del ancho de la portada 4:5 (898px, `marco_grande_portada`, mas ancho porque ese layout no tiene la restriccion de safe-zone de video) |
+| Tamano de fuente del titulo (9:16) | **85px** (rol de tipografia `titulo_cuadrado` en `layout_specs.py`, separado del rol `titulo` de 93px que usa la portada 4:5) |
+
+**Por que 13% y no 11% (29-oct-2026):** el margen horizontal se midio directo del telefono real de Johnny (iPhone, UI de TikTok/Reels superpuesta) y el rail derecho de controles mide ~11.68% del ancho en el peor caso. 13% deja colchon sobre esa medicion real; 11% la pisa y vuelve a tapar el titulo. No reducir por debajo de 13% aunque parezca que "sobra espacio" en la vista de edicion -- el espacio que importa es el que queda libre en el telefono real, no en el canvas limpio.
+
+**Por que 85px y no 93 ni 75px (30-oct-2026):** se probaron los tres. A 93px (tamano original, heredado de la portada 4:5) frases de 3+ palabras no entran en una linea sin cortes torpes. A 75px el ancho ya no es problema, pero en la grilla real del feed (miniatura pequena) el texto se ve chico y el hueco entre vides se ve vacio -- confirmado visualmente por Johnny en captura de perfil real. 85px es el balance: mas grande y legible en grilla, pero ya no le entra a la mayoria de fragmentos de 3+ palabras sin pensar el corte a mano (ver regla de fragmentacion abajo).
+
+**Regla de fragmentacion del titulo (obligatoria, reemplaza cualquier wrap automatico como fuente de verdad semantica):** a 85px y 799px de ancho, una linea cabe con holgura hasta ~2-3 palabras cortas o ~12-14 caracteres; frases mas largas casi siempre exceden. El motor de ensamblado SI balancea automaticamente el ancho de las lineas dentro de cada segmento separado por `\n` (evita que quede una palabra huerfana sola), pero **no tiene ninguna nocion semantica** -- no sabe que "THAT ACTUALLY" es una unidad que no debe partirse, ni que "5-YEAR-OLD CAN" va junto. Por eso **quien redacta `texto_titulo` (el Paso 2/3 de este skill, abajo) debe declarar los `\n` el mismo, pensando linea por linea contra el ancho de 799px**, NO dejarselo al balanceador automatico ni escribir la frase corrida de un tiron. Reglas practicas:
+- Nunca separar un modificador de su sustantivo, un pronombre de su verbo, un verbo compuesto (ej. "SHOULD HAVE", "ORDERED IN") o un parentesis de lo que califica.
+- Para un titulo de 4+ palabras que no entra en 2 lineas, usar 3-4 lineas cortas en vez de forzar menos lineas mas largas -- mejor "WHAT I SHOULD / HAVE ORDERED / IN JANUARY" (3 lineas limpias) que "WHAT I SHOULD HAVE / ORDERED IN JANUARY" (2 lineas, la primera excede el ancho y el balanceador automatico la vuelve a partir en un punto sin sentido).
+- Verificar contra el ancho real antes de dar el titulo por bueno: una linea de ~85px cabe en 799px hasta aprox 13-14 caracteres incluyendo espacios; por encima de eso, dividir.
+- Esta regla aplica SOLO a la portada 9:16 (`marco_grande_cuadrado`, rol `titulo_cuadrado`, 799px). La portada 4:5 (`marco_grande_portada`, rol `titulo`, 93px, 898px de ancho) tiene mas margen y tolera frases un poco mas largas por linea -- no aplicar el mismo limite de caracteres ahi sin volver a medir.
 
 ---
 

@@ -6,7 +6,7 @@
 import os
 from PIL import Image, ImageDraw
 
-from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone
+from layout_specs import CANVAS, PARCHMENT, OVERLAY_ALPHA, usable_zone, usable_zone_x
 from text_renderer import render_text_block, crop_to_fill
 
 
@@ -223,7 +223,18 @@ def _compose_ventana_texto(canvas, slide, aspecto, assets_dir):
 
     if franja_h < 100:
         warnings.append(f"franja de texto muy baja ({franja_h}px) (BASE, ventana_texto)")
-    r = render_text_block(canvas, texto, "cuerpo", (round(canvas_w * 0.10), franja_top, round(canvas_w * 0.80), max(franja_h, 1)))
+    # CORREGIDO 29-oct-2026: en 9:16 (video) el ancho de texto usa
+    # usable_zone_x (13% simetrico c/lado) en vez del 0.10/0.80 fijo
+    # anterior -- ese ancho invadia el right rail de iconos durante
+    # reproduccion (bug real encontrado en un video publicado, ver
+    # Layout Specs Seccion 15). El 4:5 (carrusel, sin reproductor de
+    # video superponiendo controles) mantiene el margen original.
+    if aspecto == "9:16":
+        texto_x0, _, texto_w = usable_zone_x(aspecto)
+        texto_x0, texto_w = round(texto_x0), round(texto_w)
+    else:
+        texto_x0, texto_w = round(canvas_w * 0.10), round(canvas_w * 0.80)
+    r = render_text_block(canvas, texto, "cuerpo", (texto_x0, franja_top, texto_w, max(franja_h, 1)))
     if r["truncated"]:
         warnings.append("texto_overlay truncado (BASE, ventana_texto)")
     return {"warnings": warnings}
@@ -253,7 +264,16 @@ def _compose_solo_texto(canvas, slide, aspecto, assets_dir):
         half = min(cy - zona_top, zona_bottom - cy)
         box_y, box_h = cy - half, 2 * half
 
-    r = render_text_block(canvas, texto, "cuerpo", (round(canvas_w * 0.12), round(box_y), round(canvas_w * 0.76), round(box_h)))
+    # CORREGIDO 29-oct-2026: mismo criterio que ventana_texto -- en 9:16
+    # (video) el ancho usa usable_zone_x (13% simetrico) para no invadir
+    # el right rail de iconos durante reproduccion. 4:5 (carrusel)
+    # mantiene el margen original 0.12/0.76.
+    if aspecto == "9:16":
+        texto_x0, _, texto_w = usable_zone_x(aspecto)
+        texto_x0, texto_w = round(texto_x0), round(texto_w)
+    else:
+        texto_x0, texto_w = round(canvas_w * 0.12), round(canvas_w * 0.76)
+    r = render_text_block(canvas, texto, "cuerpo", (texto_x0, round(box_y), texto_w, round(box_h)))
 
     warnings = []
     if r["truncated"]:

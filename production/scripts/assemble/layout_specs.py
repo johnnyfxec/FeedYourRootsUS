@@ -59,6 +59,35 @@ def usable_zone(aspecto):
     bottom = h * margins["bottom"]
     return top, bottom, bottom - top
 
+
+# NUEVO 29-oct-2026: zona segura HORIZONTAL para texto en video 9:16 --
+# bug real encontrado (no el que se corrigio arriba en SAFE_PRACTICAL, que
+# es vertical): el right rail de iconos (like/comentar/guardar/perfil) de
+# Instagram/TikTok/Shorts tapaba el titulo de portada de un video publicado
+# -- el ancho de texto nunca tuvo proteccion horizontal, solo vertical.
+# Margen calibrado contra medicion REAL de Johnny (8mm de boton sobre 68.5mm
+# de ancho fisico de pantalla = 11.68%), redondeado a 13% con colchon.
+# SIMETRICO a proposito (13% ambos lados, no solo el derecho que tiene el
+# rail): un margen asimetrico deja el bloque de texto visiblemente
+# descentrado, que se ve como error de composicion aunque sea "mas
+# eficiente" en espacio -- centrado y mas angosto se ve mejor que ajustado
+# al limite y chueco. Aplica SOLO a video 9:16, SOLO a slides de cuerpo
+# (base.py) y a la portada marco_grande_cuadrado (tipo_a.py) una vez que
+# deja de llevar subtitulo (ver Seccion 15 del Layout Specs). NO aplica al
+# 4:5 de carrusel -- el carrusel no tiene reproductor de video superponiendo
+# controles, ya cubierto por SAFE_MINIMAL_4X5/LATERAL_PORTADA_4X5.
+SAFE_PRACTICAL_X = {"left": 0.13, "right": 0.87}
+
+
+def usable_zone_x(aspecto):
+    """Devuelve (margen_izq_px, margen_der_px, ancho_util_px) para texto en
+    video 9:16. Solo tiene sentido para aspecto == '9:16' -- no se llama
+    para 4:5 (carrusel), que no tiene proteccion horizontal."""
+    w = CANVAS[aspecto]["w"]
+    left = w * SAFE_PRACTICAL_X["left"]
+    right = w * SAFE_PRACTICAL_X["right"]
+    return left, right, right - left
+
 # Assets fijos: nombre de archivo por layout y aspecto
 ASSETS = {
     "marco_grande": {
@@ -141,6 +170,22 @@ REPO_ROOT = os.path.abspath(os.path.join(_THIS_DIR, "..", "..", ".."))
 FONTS_DIR = os.path.join(REPO_ROOT, "production", "fonts")
 TYPOGRAPHY = {
     "titulo":    {"font": "SourceSerifPro-Regular.ttf", "size": 93, "color": "#E8B84B", "stroke": "#5C3A1E", "stroke_w": 5, "line_spacing": 0.743},
+    # Portada 9:16 (marco_grande_cuadrado) tiene menos ancho util (799px a 13%
+    # de margen c/lado) que la portada 4:5 (898px, rol "titulo" arriba).
+    # CORREGIDO 30-oct-2026: se probo 75px (resuelve el ancho pero en la
+    # grilla real del feed el texto se ve chico y el hueco entre vines queda
+    # vacio -- confirmado por Johnny en captura real de perfil). 85px es el
+    # tamano medido que balancea legibilidad en grilla vs. ancho disponible:
+    # la mayoria de fragmentos de titulo ya divididos a mano en el config
+    # siguen entrando a este tamano (ver medicion real por frase, sesion
+    # 30-oct-2026). A este tamano NO se confia en _wrap_balanced para
+    # fragmentos largos (3+ palabras / ~17+ caracteres): cada texto_titulo
+    # debe traer sus \n ya puestos a mano, pensando que linea entra en 799px,
+    # cortando siempre en el limite semantico natural de la idea (nunca
+    # separar un modificador de su sustantivo, un pronombre de su verbo, etc).
+    # Rol separado a proposito -- NO renombrar "titulo" globalmente, afectaria
+    # al 4:5 que no necesita este ajuste (tiene mas ancho, 898px).
+    "titulo_cuadrado": {"font": "SourceSerifPro-Regular.ttf", "size": 85, "color": "#E8B84B", "stroke": "#5C3A1E", "stroke_w": 5, "line_spacing": 0.743},
     "subtitulo": {"font": "Lora-BoldItalic.ttf", "size": 47, "color": "#1A1A1A", "stroke": None, "stroke_w": 0, "line_spacing": 0.777},
     "cuerpo":    {"font": "Lora.ttf", "size": 40, "color": "#5C3A1E", "stroke": None, "stroke_w": 0},
     "cta":       {"font": "DMSans.ttf", "size": 32, "color": "#5C3A1E", "stroke": None, "stroke_w": 0},
