@@ -10,6 +10,7 @@ import textToSpeech from '@google-cloud/text-to-speech';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { tokenize, toSSML, wavInfo } from './lib.mjs';
+import { withRetry } from '../_ci/retry.mjs';
 
 const client = new textToSpeech.v1beta1.TextToSpeechClient();
 const args = process.argv.slice(2);
@@ -17,12 +18,12 @@ const flag = (n) => args.includes(n);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 
 async function synth({ ssml, text, name, languageCode = name.split('-').slice(0, 2).join('-'), speakingRate = 1.0, pitch = 0 }) {
-  const [res] = await client.synthesizeSpeech({
+  const [res] = await withRetry(() => client.synthesizeSpeech({
     input: ssml ? { ssml } : { text },
     voice: { languageCode, name },
     audioConfig: { audioEncoding: 'LINEAR16', sampleRateHertz: 24000, speakingRate, ...(pitch ? { pitch } : {}) },
     ...(ssml ? { enableTimePointing: ['SSML_MARK'] } : {}),
-  });
+  }), { label: `TTS ${name}` });
   return { audio: Buffer.from(res.audioContent), timepoints: res.timepoints || [] };
 }
 
@@ -92,11 +93,11 @@ async function deep() {
     try {
       const audioConfig = { audioEncoding: 'LINEAR16', sampleRateHertz: 24000, speakingRate: 0.95 };
       if (j.pitch) audioConfig.pitch = j.pitch;
-      const [res] = await client.synthesizeSpeech({
+      const [res] = await withRetry(() => client.synthesizeSpeech({
         input: { text },
         voice: { languageCode: j.name.split('-').slice(0, 2).join('-'), name: j.name },
         audioConfig,
-      });
+      }), { label: `TTS ${j.name}` });
       await writeFile('build/probe-deep/' + j.file + '.wav', Buffer.from(res.audioContent));
       console.log('  OK    ' + j.file);
     } catch (e) {

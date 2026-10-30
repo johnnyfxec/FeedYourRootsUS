@@ -10,6 +10,7 @@
 import { GoogleAuth } from 'google-auth-library';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import { withRetry } from './retry.mjs';
 
 const piezaPath = process.argv[2];
 if (!piezaPath) { console.error('Uso: node fetch_assets.mjs <pieza.json>'); process.exit(2); }
@@ -21,12 +22,15 @@ const API = 'https://www.googleapis.com/drive/v3/files';
 async function findByName(name) {
   const q = `name = '${name.replace(/'/g, "\\'")}' and trashed = false`;
   const url = `${API}?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime,size,md5Checksum)&orderBy=modifiedTime desc&supportsAllDrives=true&includeItemsFromAllDrives=true&pageSize=10`;
-  const res = await client.request({ url });
+  const res = await withRetry(() => client.request({ url }), { label: `buscar "${name}" en Drive` });
   return res.data.files || [];
 }
 
 async function download(id) {
-  const res = await client.request({ url: `${API}/${id}?alt=media&supportsAllDrives=true`, responseType: 'arraybuffer' });
+  const res = await withRetry(
+    () => client.request({ url: `${API}/${id}?alt=media&supportsAllDrives=true`, responseType: 'arraybuffer' }),
+    { label: `descargar ${id} de Drive` },
+  );
   return Buffer.from(res.data);
 }
 
