@@ -23,7 +23,22 @@ permissions:
   contents: write
 
 concurrency:
-  group: render-video
+  # Grupo por corrida, nunca global (29-oct-2026): con un group fijo compartido entre
+  # piezas, al disparar varias juntas GitHub mantiene como maximo 1 corriendo + 1 en
+  # cola por grupo y CANCELA automaticamente las demas que esperan en cola
+  # (cancel-in-progress:false solo protege al run que ya esta corriendo, no a los que
+  # esperan en cola). Con 7 piezas disparadas juntas contra el mismo group,
+  # sobrevivieron solo 2 de 7 -- las otras 5 se cancelaron entre si en la cola.
+  #
+  # El disparo real de Code es por push de production/queue/<pieza>.env (no por
+  # workflow_dispatch), asi que inputs.pieza llega vacio en ese camino -- el nombre
+  # de pieza real solo se conoce DESPUES, dentro del job, al parsear el .env que
+  # cambio. Por eso el group no puede basarse en inputs.pieza para el camino de cola:
+  # se usa github.sha, que es unico por cada push/commit individual (cada .env se
+  # pushea en su propio commit), logrando el mismo efecto de "una cola propia por
+  # pieza" sin necesitar conocer el nombre de la pieza en este punto. Para
+  # workflow_dispatch si se conoce pieza+variante de entrada, asi que se usa eso.
+  group: render-video-${{ github.event_name == 'workflow_dispatch' && format('{0}-{1}', inputs.pieza, inputs.variante) || github.sha }}
   cancel-in-progress: false
 
 jobs:
