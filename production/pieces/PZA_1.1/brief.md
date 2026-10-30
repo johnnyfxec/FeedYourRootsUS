@@ -21,7 +21,7 @@ Cuando Morgan vea los primeros 3 segundos, la pregunta será: *"¿Cómo se empie
 ## Slide por slide (todos `full_bleed`, texto lo ponen los subtítulos)
 | # | Imagen | Narración (`texto_narrado`) |
 |---|---|---|
-| 1 | Portada compuesta: `marco_grande_cuadrado` con `STOCK-lapiz-plano-huerto_1x1_v1.png` **[GENERAR]** | `*Half an acre* and a pencil. That's all I started with.` |
+| 1 | Portada compuesta: `marco_grande_cuadrado` con `STOCK-lapiz-plano-huerto_1x1_v1.jpg` **[GENERAR]** | `*Half an acre* and a pencil. That's all I started with.` |
 | 2 | `STOCK-patio-abandonado-notas_9x16_v1.png` | `No farm. No five acres. Just a tired, patchy backyard and a *plan* on paper.` |
 | 3 | `STOCK-open-hand-single-seed_9x16_v1.png` | `One season. One seed at a time. The pencil made it *small* enough to start.` |
 | 4 | `STOCK-bare-feet-soil_9x16_v1.png` | `Standing in my own soil changed what I thought was *possible*.` |
@@ -40,7 +40,7 @@ Hand-drawn storybook illustration in the tradition of Beatrix Potter, modernized
 Aspect ratio: exactly 1:1. Edge-to-edge composition: the artwork fills the whole canvas to every edge — no drawn frame, border, vignette, margins or visible paper edge. Keep the key subjects at least 5% of the width away from the left and right edges.
 Fully painted scene filling the whole canvas, no unpainted parchment margins.
 ```
-Archivo: `STOCK-lapiz-plano-huerto_1x1_v1.png`, a `06_Narrative_Stock/` (es insumo, no va a Content_Pieces).
+Archivo: `STOCK-lapiz-plano-huerto_1x1_v1.jpg`, a `06_Narrative_Stock/` (es insumo, no va a Content_Pieces).
 
 ## Producción (todo en Actions, sin PC)
 Cola `production/queue/pza-1.1.env` → el workflow baja las imágenes, compone la portada, genera la voz y renderiza. Variante de subtítulo B-e14, `TAIL_LAST=0.35` (cierre B).
