@@ -1,8 +1,0 @@
-{
-  "name": "tiktok-demo-tts",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "@google-cloud/text-to-speech": "^7.1.1"
-  }
-}
