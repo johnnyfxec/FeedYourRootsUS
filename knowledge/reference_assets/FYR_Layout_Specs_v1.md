@@ -197,7 +197,7 @@ El motor rellena siempre el espacio de la imagen. Gemini no entrega el ratio exa
 
 ### Bloque de composición para prompts de Gemini (obligatorio en todo prompt)
 
-Se añade al bloque de estilo base (`FYR_Asset_Governance_Policy.md` §4), **después** de la línea de output obligatoria (`Output <ancho>x<alto>px, {RATIO}, PNG format.` — ver Governance Policy §4, "Línea de output obligatoria"; el formato PNG y el {RATIO} correcto por layout se declaran ahí, no aquí). Este bloque de composición se rellena según el layout y la marca `fondo` del slide en el brief:
+Se añade al bloque de estilo base (`FYR_Asset_Governance_Policy.md` §4), **después** de la línea de output obligatoria (`Output <ancho>x<alto>px, {RATIO}, JPG format, maximum quality.` — ver Governance Policy §4, "Línea de output obligatoria"; el formato JPG (corrección 30-oct-2026, solo imágenes de escena nuevas, nunca assets de marca) y el {RATIO} correcto por layout se declaran ahí, no aquí). Este bloque de composición se rellena según el layout y la marca `fondo` del slide en el brief:
 
 ```
 Aspect ratio: exactly {RATIO}. Edge-to-edge composition: the artwork fills the whole canvas to every edge — no drawn frame, border, vignette, margins or visible paper edge. Keep the key subjects at least 5% of the width away from the left and right edges.

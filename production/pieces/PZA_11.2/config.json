@@ -1,10 +1,13 @@
 {
-  "pieza_id": "PZA_11.2", "aspecto": "4:5",
+  "pieza_id": "PZA_11.2",
+  "aspecto": "4:5",
   "slides": [
     {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-soil-compaction-test-press_4x5_v1.jpg", "texto_titulo": "5 SIGNS YOUR\nSOIL IS SICK"},
-    {"numero": 2, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-standing-water-dry-crust_4x5_v1.jpg", "texto_overlay": "1. Water just sits on top instead of soaking in.\n2. You dig a shovel's width and find zero earthworms."},
-    {"numero": 3, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-wilted-plant-afternoon_4x5_v1.jpg", "texto_overlay": "3. A white crust forms on the surface after it dries.\n4. Plants wilt by afternoon even on days you watered."},
-    {"numero": 4, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-soil-turned-closeup-smell_4x5_v1.jpg", "texto_pie": "5. It smells like rotten eggs when you turn it over — that's the real tell.", "ancla_recorte": "center"},
-    {"numero": 5, "layout": "solo_texto", "texto_cuerpo": "Your soil's been trying to tell you. Soil health troubleshooting guide, link in bio.", "posicion_texto": "centro"}
+    {"numero": 2, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-standing-water_4x5_v1.png", "texto_overlay": "1. Water sits on top instead of soaking in.\nThat means the soil is compacted — no\nchannels left for air or water to move."},
+    {"numero": 3, "layout": "texto_lateral", "imagen_escena": "STOCK-soil-no-earthworms_9x16_v1.png", "lado_imagen": "izquierda", "texto_overlay": "2. Dig a shovel's width —\nzero earthworms.\nNothing survives\nwithout air or space."},
+    {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-soil-white-crust_4x5_v1.png", "texto_overlay": "3. A crust forms once the\nsurface dries out.\nSalt building up from\nshallow watering."},
+    {"numero": 5, "layout": "texto_lateral", "imagen_escena": "STOCK-soil-wilted-plant-afternoon_9x16_v1.png", "lado_imagen": "derecha", "texto_overlay": "4. It wilts by\nafternoon anyway.\nThe water never\nreached the roots."},
+    {"numero": 6, "layout": "solo_texto", "texto_cuerpo": "5. It smells like rotten eggs when you turn it over — that's the real tell.\nThat smell means the soil ran out of oxygen.", "posicion_texto": "centro"},
+    {"numero": 7, "layout": "solo_texto", "texto_cuerpo": "Your soil's been trying to tell you. Soil health troubleshooting guide, link in bio.", "posicion_texto": "centro"}
   ]
 }

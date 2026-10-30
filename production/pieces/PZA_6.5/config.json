@@ -3,10 +3,10 @@
   "aspecto": "4:5",
   "slides": [
     {"numero": 1, "layout": "marco_grande_portada", "imagen_escena": "STOCK-zone5-vs-zone9-split_4x5_v1.jpg", "texto_titulo": "ZONE 5\nVS ZONE 9"},
-    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-frost-killed-seedlings-calendar_4x5_v1.jpg", "texto_pie": "Plant on their calendar, and frost gets there first.", "ancla_recorte": "center"},
-    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-zone5-timing-thriving_4x5_v1.jpg", "imagen_escena_2": "STOCK-zone9-timing-thriving_4x5_v1.jpg", "texto_pie": "Same plant. Different calendar. Both thriving."},
+    {"numero": 2, "layout": "marco_grande", "porcentaje_imagen": 75, "imagen_escena": "STOCK-frost-killed-seedlings-calendar_4x5_v1.jpg", "texto_pie": "Plant on their calendar,\nand frost gets there first.", "ancla_recorte": "center"},
+    {"numero": 3, "layout": "doble_marco", "imagen_escena_1": "STOCK-zone5-timing-thriving_4x5_v1.jpg", "imagen_escena_2": "STOCK-zone9-timing-thriving_4x5_v1.jpg", "texto_pie": "Same plant. Different calendar.\nBoth thriving."},
     {"numero": 4, "layout": "ventana_texto", "imagen_escena": "STOCK-frost-date-map-closeup_4x5_v1.jpg", "texto_overlay": "Your frost date isn't a suggestion.\nIt's the only calendar that matters."},
-    {"numero": 5, "layout": "solo_texto", "texto_cuerpo": "The zone number is just shorthand for your frost dates.", "posicion_texto": "centro"},
-    {"numero": 6, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-zone-correct-garden-thriving_4x5_v1.jpg", "texto_pie": "Know your zone. Grow on its calendar.", "ancla_recorte": "center"}
+    {"numero": 5, "layout": "solo_texto", "texto_cuerpo": "The zone number is just\nshorthand for your frost dates.", "posicion_texto": "centro"},
+    {"numero": 6, "layout": "marco_grande", "porcentaje_imagen": 80, "imagen_escena": "STOCK-zone-correct-garden-thriving_4x5_v1.jpg", "texto_pie": "Know your zone.\nGrow on its calendar.", "ancla_recorte": "center"}
   ]
 }
