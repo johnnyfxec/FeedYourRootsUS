@@ -196,13 +196,12 @@ Esto todavía no está construido — el workflow de Actions para publicación n
 | Instagram | Dentro, programado |
 | Facebook | Dentro, programado |
 | Pinterest | Dentro, programado |
-| YouTube | Construido y verificado, pero **se queda en `private`** hasta confirmar verificación de cuenta/proyecto (ver abajo) — no se promete `public` en el cronograma todavía |
+| YouTube | **Bloqueado a `private` por Google, confirmado — no es decisión nuestra.** Construido y verificado, pero no se promete `public` en el cronograma todavía (ver abajo) |
 | TikTok | **Fuera del cronograma por completo, sin fecha.** Mientras la app no esté auditada, cualquier post real exige alternar la cuenta entre privada/pública a diario (`unaudited_client_can_only_post_to_private_accounts`) — eso rompe el punto mismo de automatizar sin supervisión. Se reincorpora cuando llegue la aprobación de App Review, no antes. |
 
-**YouTube — por qué se queda en privado:** no es un tema de "probar public vs. unlisted", es confirmar si la cuenta/proyecto necesita pasar por una verificación de Google antes de distribuir contenido público — mismo tipo de paso que ya se resolvió con el App Review de TikTok y el Standard access de Pinterest, no es algo que un script pueda rodear. Dos verificaciones distintas a confirmar en `studio.youtube.com` (canal `UC5ntyoURYmn-qyPfOVkMe2w`) antes de prometer `public`:
-1. Verificación de teléfono/identidad de la cuenta (Configuración → Canal → Elegibilidad de funciones) — la documentación pública no muestra que esto bloquee un video corto (<15min) en público, pero no confirma el estado real de esta cuenta específica.
-2. Cualquier aviso de restricción de subida/alcance nuevo-proyecto-OAuth en la pantalla de inicio de Studio o en el video mismo tras subirlo.
-Hasta que Johnny confirme ambos puntos, `youtube_publish_video.py` se sigue invocando con `--privacy private` en el cronograma real.
+**YouTube — por qué se queda en privado (confirmado contra documentación oficial de Google, 31-oct-2026, no es incertidumbre):** desde el 28-julio-2020, **todo video subido vía la YouTube Data API desde un proyecto de API no auditado queda forzado a `private`, sin importar el `privacyStatus` que se mande en la petición.** No es la verificación de teléfono del canal (eso es otra cosa, y no bloquea videos cortos en público) ni la pantalla de consentimiento OAuth ("Google no ha verificado esta app", ya resuelta poniendo el proyecto en Production) — es un trámite tercero y separado: el **"YouTube API Services Compliance Audit"**, exactamente la misma categoría que el App Review de TikTok y el Standard access de Pinterest — aprobación externa de Google, no algo que un script pueda rodear.
+
+**Acción pendiente (Johnny):** enviar el **"YouTube API Services Audit and Quota Extension Form"** desde `console.cloud.google.com`, proyecto de la cuenta dedicada (canal `UC5ntyoURYmn-qyPfOVkMe2w`). Hasta que se apruebe, `youtube_publish_video.py` se sigue invocando con `--privacy private` en el cronograma real — un video ya bloqueado en `private` por este motivo **tampoco se puede pasar a público a mano después** en YouTube Studio, hay que esperar la aprobación y volver a subirlo.
 
 ### 9.3 Pendientes técnicos restantes
 
