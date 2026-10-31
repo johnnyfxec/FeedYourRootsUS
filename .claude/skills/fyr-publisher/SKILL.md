@@ -144,7 +144,9 @@ Mismo `link` en ambos — mientras no exista blog/journal, usar `landing_default
 
 **Pinterest — Video:** necesita `cover_image_url` obligatorio (omitirlo da un 401 engañoso, no un 400 descriptivo). Usar siempre `Video_Production/PZA_X/FYR_PZA_X_PORTADA_9x16_v1.png` (ver excepción de la Sección 1 sobre hacerla pública). Ventana de poll real: el procesamiento puede tardar varios minutos, no asumir timeout corto como fallo.
 
-**TikTok — Video:** `FILE_UPLOAD` o URL de Drive en streaming (el script ya soporta ambos) — nunca requiere dominio verificado. `TIKTOK_ACCESS_TOKEN` expira en 24h; si falla con `access_token_invalid`, renovar via `TIKTOK_REFRESH_TOKEN` (refresh automático no implementado en el script todavía — ver Sección 9).
+**TikTok — fuera del cronograma automático por ahora (ver Sección 9.2).** Lo que sigue documenta el flujo técnico, ya probado, para cuando se reincorpore tras la aprobación de App Review — no correr en el cronograma automático mientras tanto.
+
+**TikTok — Video:** `FILE_UPLOAD` o URL de Drive en streaming (el script ya soporta ambos) — nunca requiere dominio verificado. `TIKTOK_ACCESS_TOKEN` expira en 24h; si falla con `access_token_invalid`, renovar via `TIKTOK_REFRESH_TOKEN` (refresh automático no implementado en el script todavía — ver Sección 9.1).
 
 **TikTok — Carrusel de fotos:** el endpoint de fotos SOLO acepta `PULL_FROM_URL` (no existe `FILE_UPLOAD` para fotos) — exige que la URL esté en un dominio **ya verificado** en developers.tiktok.com. Drive no sirve. Flujo obligatorio en 2 pasos:
 1. `publish_images_to_pages.py <urls...>` — convierte a JPEG (TikTok rechaza PNG, confirmado por `file_format_check_failed` real), comitea a `tiktok.pages_mirror_dir` del config (**nunca una carpeta que empiece con `_`** — Jekyll la ignora sin avisar si no hay `.nojekyll`), pushea, espera a que Pages lo sirva, devuelve URLs reales en `tiktok.pages_base_url`.
@@ -169,13 +171,43 @@ Este paso de mirror-a-Pages corre donde corre el resto del orquestador (Code ví
 
 ---
 
-## 9. Pendientes conocidos, no asumir que están resueltos
+## 9. Ejecución, cronograma y pendientes conocidos
 
-- [ ] Refresh automático de `TIKTOK_ACCESS_TOKEN` (hoy es manual, vía `tiktok_authorize_web.py`).
-- [ ] Scope de YouTube ampliado para poder borrar vía API.
+### 9.1 Modelo de ejecución real: Code dirige, Actions ejecuta
+
+No es "Code O Actions" — es Code decidiendo y Actions corriendo, mismo patrón exacto que ya funciona en `render-video.yml` (Code empuja `production/queue/<pieza>.env` o dispara `workflow_dispatch`; el job de Actions, con los secrets ahí, hace el trabajo real). Para `fyr-publisher`:
+
+1. **Code** (vía un trigger programado, no bajo demanda cada vez) lee `Content_Pieces`, aplica la ventana de cautela (Sección 3), decide qué pieza+plataforma le toca publicar hoy.
+2. **Code** dispara un workflow de Actions por cada publicación que le toca (mismo mecanismo de cola que ya usa el render de video), pasándole la pieza, la plataforma y lo ya resuelto (URLs, copy real, board).
+3. **Actions**, con los secrets de la plataforma correspondiente ya registrados ahí, corre el script de despacho (Sección 5) y devuelve el resultado.
+4. **Code** recibe el resultado y escribe de vuelta en Airtable (Sección 6, paso e/f).
+
+Esto todavía no está construido — el workflow de Actions para publicación no existe (a diferencia de `render-video.yml`, que sí). Mientras no exista, el flujo real es Code completo de punta a punta (como se probó toda esta sesión, desde Termux) — funciona igual, solo que sin la capa de Actions todavía.
+
+**Bloqueantes confirmados para dar el salto a Actions real:**
+- [ ] Confirmar que los secrets de las 5 plataformas estén replicados en GitHub Actions (hoy solo confirmados en el `.env` de Termux — no se pudo verificar desde una sesión en la nube, el proxy bloquea leer Secrets).
+- [ ] Refresh automático de `TIKTOK_ACCESS_TOKEN` (hoy es manual, vía `tiktok_authorize_web.py`) — sin esto, cualquier corrida de TikTok sin supervisión falla pasadas las 24h. Punto discutible: con TikTok fuera del cronograma (ver 9.2), este bloqueante deja de ser urgente para el resto de plataformas.
+- [ ] Construir el workflow de Actions en sí (no existe todavía).
+
+### 9.2 Cronograma automático real — qué entra hoy y qué no (decisión 31-oct-2026)
+
+| Plataforma | Estado en el cronograma |
+|---|---|
+| Instagram | Dentro, programado |
+| Facebook | Dentro, programado |
+| Pinterest | Dentro, programado |
+| YouTube | Construido y verificado, pero **se queda en `private`** hasta confirmar verificación de cuenta/proyecto (ver abajo) — no se promete `public` en el cronograma todavía |
+| TikTok | **Fuera del cronograma por completo, sin fecha.** Mientras la app no esté auditada, cualquier post real exige alternar la cuenta entre privada/pública a diario (`unaudited_client_can_only_post_to_private_accounts`) — eso rompe el punto mismo de automatizar sin supervisión. Se reincorpora cuando llegue la aprobación de App Review, no antes. |
+
+**YouTube — por qué se queda en privado:** no es un tema de "probar public vs. unlisted", es confirmar si la cuenta/proyecto necesita pasar por una verificación de Google antes de distribuir contenido público — mismo tipo de paso que ya se resolvió con el App Review de TikTok y el Standard access de Pinterest, no es algo que un script pueda rodear. Dos verificaciones distintas a confirmar en `studio.youtube.com` (canal `UC5ntyoURYmn-qyPfOVkMe2w`) antes de prometer `public`:
+1. Verificación de teléfono/identidad de la cuenta (Configuración → Canal → Elegibilidad de funciones) — la documentación pública no muestra que esto bloquee un video corto (<15min) en público, pero no confirma el estado real de esta cuenta específica.
+2. Cualquier aviso de restricción de subida/alcance nuevo-proyecto-OAuth en la pantalla de inicio de Studio o en el video mismo tras subirlo.
+Hasta que Johnny confirme ambos puntos, `youtube_publish_video.py` se sigue invocando con `--privacy private` en el cronograma real.
+
+### 9.3 Pendientes técnicos restantes
+
+- [ ] Scope de YouTube ampliado (`youtube`/`youtube.force-ssl`) para poder borrar vía API — hoy solo autorizado con `youtube.upload`.
 - [ ] Campo `Board Pinterest` en `Content_Pieces` — todavía no existe. Hasta que exista, esta skill **siempre pregunta**, nunca asume un board.
-- [ ] Decisión de ejecución: ¿bajo demanda (Code vía Termux) o cron en GitHub Actions? Recomendación ya argumentada en `knowledge/FYR_Traspaso_fyr_publisher_31oct2026.md` §5 (a favor de Actions, mismo patrón que `render-video.yml`) — requiere antes (a) los secrets de las 5 plataformas replicados en GitHub Actions (hoy solo viven en el `.env` de Termux, nunca confirmado que existan también en Actions), y (b) el refresh automático de TikTok del punto anterior. Hasta que ambos estén listos, correr bajo demanda.
-- [ ] TikTok sigue en revisión de App Review — mientras no se apruebe, todo publica forzado a `SELF_ONLY`/privado y máx. 5 usuarios/24h.
 - [ ] Facebook vía Buffer vs. API directa — ya resuelto a favor de API directa (Sección 7), este punto queda cerrado, se deja aquí solo como registro.
 
 ---
