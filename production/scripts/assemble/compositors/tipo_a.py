@@ -8,7 +8,7 @@ from PIL import Image
 
 from layout_specs import (
     CANVAS, ASSETS, WINDOWS, ROTATED_WINDOWS, BBOX, PORTADA_WIDTHS, TYPOGRAPHY, usable_zone,
-    usable_zone_x,
+    usable_zone_x, DOBLE_MARCO_SHRINK,
 )
 from text_renderer import crop_to_fill, render_text_block, render_text_block_top
 
@@ -130,7 +130,36 @@ def _compose_doble_marco(canvas, slide, aspecto, assets_dir):
     if "doble_marco" not in ROTATED_WINDOWS or aspecto not in ROTATED_WINDOWS["doble_marco"]:
         raise CompositorError(f"ventanas rotadas no medidas para doble_marco en aspecto {aspecto}")
 
-    windows = ROTATED_WINDOWS["doble_marco"][aspecto]
+    if aspecto not in DOBLE_MARCO_SHRINK:
+        raise CompositorError(f"DOBLE_MARCO_SHRINK no definido para aspecto {aspecto}")
+
+    canvas_w = CANVAS[aspecto]["w"]
+    canvas_h = CANVAS[aspecto]["h"]
+
+    # CORREGIDO 30-oct-2026 (ver comentario completo junto a DOBLE_MARCO_SHRINK
+    # en layout_specs.py): el conjunto frame+ventanas se reescala y se
+    # desplaza hacia abajo para regalarle a texto_pie (rol "veredicto") el
+    # espacio real que necesita a tamano completo, siempre -- antes la
+    # franja de texto_pie era un residuo fijo (62px en 4:5) nunca
+    # dimensionado para 2 lineas. En 9:16 ademas se corrigio el criterio
+    # del `top`: ya no usa SAFE_PRACTICAL/usable_zone (esa proteccion es
+    # para portadas, que compiten con la UI de descubrimiento del feed --
+    # doble_marco es un layout de cuerpo, solo se ve una vez abierto el
+    # video). Factor de escala y desplazamiento medidos y verificados con
+    # mockup real (compositor + asset real), no aproximados.
+    shrink = DOBLE_MARCO_SHRINK[aspecto]
+    scale = shrink["scale"]
+    shrink_px = shrink["shrink_px"]
+
+    windows_orig = ROTATED_WINDOWS["doble_marco"][aspecto]
+    windows = {}
+    for key, w in windows_orig.items():
+        windows[key] = dict(w)
+        windows[key]["w"] = w["w"] * scale
+        windows[key]["h"] = w["h"] * scale
+        windows[key]["cx"] = w["cx"] * scale + (canvas_w * (1 - scale)) / 2
+        windows[key]["cy"] = w["cy"] * scale + shrink_px
+
     ancla = slide.get("ancla_recorte", "center")
 
     scene1 = _load_scene(img1, assets_dir)
@@ -147,23 +176,28 @@ def _compose_doble_marco(canvas, slide, aspecto, assets_dir):
     _paste_rotated_scene(canvas, scene1, windows["trasero"], ancla)
 
     frame_asset = _load_asset("doble_marco", aspecto, assets_dir)
-    canvas.alpha_composite(frame_asset, (0, 0))
+    fw, fh = frame_asset.size
+    frame_resized = frame_asset.resize((round(fw * scale), round(fh * scale)), Image.LANCZOS)
+    frame_x = round((canvas_w - frame_resized.width) / 2)
+    frame_y = shrink_px
+    canvas.alpha_composite(frame_resized, (frame_x, frame_y))
 
     _paste_rotated_scene(canvas, scene2, windows["frontal"], ancla)
 
-    # Pie opcional (`texto_pie`, rol subtitulo) en la franja libre sobre los
-    # marcos: desde el margen superior hasta el borde de contenido del asset
-    # (BBOX), con 10 px de aire. Antes la caja se calculaba con la zona
-    # segura de 9:16 y en 4:5 medía 10 px de alto (el titulo siempre salia
-    # truncado).
+    # Pie opcional (`texto_pie`, rol veredicto -- NUEVO 30-oct-2026, ver
+    # layout_specs.TYPOGRAPHY) en la franja libre sobre los marcos, ahora
+    # dimensionada para 2 lineas a tamano completo (contrato de lineas
+    # fijo de este rol). bbox_y0_efectivo = donde empieza el contenido
+    # opaco del marco YA reescalado (BBOX.y0 original * scale + shrink_px),
+    # no el BBOX.y0 nativo del asset sin escalar.
     warnings = []
     pie = slide.get("texto_pie")
     if pie:
-        canvas_w = CANVAS[aspecto]["w"]
-        top = 14 if aspecto == "4:5" else usable_zone(aspecto)[0]
-        bottom = BBOX["doble_marco"][aspecto]["y0"] - 10
+        bbox_y0_efectivo = BBOX["doble_marco"][aspecto]["y0"] * scale + shrink_px
+        top = 5
+        bottom = bbox_y0_efectivo - 10
         box = (round(canvas_w * 0.08), round(top), round(canvas_w * 0.84), round(bottom - top))
-        r = render_text_block(canvas, pie, "subtitulo", box)
+        r = render_text_block(canvas, pie, "veredicto", box)
         if r["truncated"]:
             warnings.append("texto_pie truncado (Tipo A, doble_marco)")
 

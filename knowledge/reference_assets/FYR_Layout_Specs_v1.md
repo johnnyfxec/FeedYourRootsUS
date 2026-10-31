@@ -20,7 +20,7 @@ Medidas reales extraídas de los assets aprobados (no teóricas). Cualquier imag
 | Imagen de fondo a pedir en Gemini | Exactamente 963×1232px | Exactamente 938×1788px |
 | Padding entre madera y escena | 0px — la escena toca la madera directamente, sin aire | 0px |
 
-**Texto bajo el marco (11-oct-2026):** va en `texto_pie`, con el rol subtítulo (Lora negrita cursiva, 47 px, negro), centrado en el espacio que deja el marco. El estilo de título dorado con borde queda reservado a las portadas para no restarle peso.
+**Texto bajo el marco (11-oct-2026; tamaño corregido 30-oct-2026):** va en `texto_pie`, con el rol `subtitulo` (Lora-BoldItalic, **42px** — bajado de 47px, ver Sección 16 "Contrato tipográfico" para la jerarquía completa y por qué), centrado en el espacio que deja el marco. El estilo de título dorado con borde queda reservado a las portadas para no restarle peso. Nota: `doble_marco` ya NO comparte este rol — tiene su propio rol `veredicto` (56px), ver Sección 7.
 
 **Nota de estilo:** la imagen de fondo puede o no incluir su propia vid decorativa integrada — ambas variantes son válidas (ver Sección 6, Regla de variedad). No usar el marco de ReportLab (assemble.py) ENCIMA de una imagen que ya trae su propio marco pintado — es doble-marco, error confirmado en iteración previa.
 
@@ -94,15 +94,31 @@ Activador: 07 Contraste/Versus (uso primario, alternativa a Marco grande x2).
 
 ACTUALIZADO 30-ago-2026: pendiente resuelto -- ambas ventanas medidas por separado con medidor_esquinas.html (4 esquinas reales de cada una).
 
+Medidas nativas (sin reescalar), para referencia de como se midio el asset original:
+
 | | 4:5 -- trasero | 4:5 -- frontal | 9:16 -- trasero | 9:16 -- frontal |
 |---|---|---|---|---|
 | Ancho x Alto | 434.8 x 584.4 | 448.0 x 588.0 | 439.9 x 598.1 | 451.8 x 589.3 |
 | Angulo | -8.47 grados | 10.89 grados | -8.70 grados | 10.93 grados |
 | Centro (cx, cy) | 349.1, 441.8 | 702.6, 907.6 | 347.7, 721.3 | 704.0, 1193.1 |
 
-**Texto (11-oct-2026):** pie opcional en `texto_pie`, rol subtítulo (Lora negrita cursiva, 47 px), en la franja libre sobre los marcos: en 4:5 entre y=14 y el borde de contenido del asset (86 px) menos 10 px; en 9:16 entre el margen superior usable (292 px) y 368 px menos 10 px. El título dorado con borde queda reservado a las portadas.
+**CORREGIDO 30-oct-2026 (bug real de truncamiento, PZA_6.5 S3 -- "Same plant. Different calendar. / Both thriving." se cortaba a 1 linea en el render real):** el `texto_pie` de este layout dejo de usar el rol `subtitulo` y ahora usa el rol propio **`veredicto`** (ver Seccion 16 "Contrato tipografico" mas abajo para la justificacion de jerarquia completa). La franja de texto sobre los marcos era un residuo fijo nunca dimensionado para 2 lineas -- en vez de parcharla de nuevo, se reescalo y desplazo TODO el conjunto (frame + ambas ventanas) para regalarle al texto el espacio real que `veredicto` (56px, 2 lineas fijas) necesita SIEMPRE a tamano completo:
 
-Cada imagen de escena se recorta (crop-to-fill, con 2% de overscan para evitar bordes blancos en las esquinas) al tamano de su ventana SIN rotar, luego se rota al angulo real, y se pega centrada en (cx, cy). El marco de madera (con alpha real) va encima, tapando cualquier sobrante.
+| | 4:5 | 9:16 |
+|---|---|---|
+| `shrink_px` (desplazamiento hacia abajo) | 73 px | 161 px |
+| `scale` (factor de reduccion) | 0.94593 | 0.91615 |
+| Caja de `texto_pie` resultante | ~130px (top=5, bottom=BBOX.y0\*scale+shrink_px-10) | ~165px |
+
+Las dimensiones nativas de la tabla de arriba se multiplican por `scale`, y `cx`/`cy` de cada ventana se recalculan: `cx' = cx*scale + canvas_w*(1-scale)/2`, `cy' = cy*scale + shrink_px`. El frame_asset completo se reescala por el mismo `scale` y se pega en `(x centrado, y=shrink_px)` en vez de `(0,0)`. Ver `layout_specs.DOBLE_MARCO_SHRINK` y `compositors/tipo_a.py::_compose_doble_marco` para la implementacion exacta -- verificado con render real del compositor (no wireframe aproximado) comparado visualmente con Johnny antes de implementar.
+
+Nota de criterio (correccion de un error real durante el diagnostico, 30-oct-2026 -- version anterior de esta nota mezclaba dos protecciones distintas, corregido por Johnny): el `top` de la caja de texto NO usa `usable_zone`/`SAFE_PRACTICAL` (vertical) en 9:16. `SAFE_PRACTICAL` (vertical, boton de suscripcion / caption de Reels) aplica a portadas sin excepcion -- es lo que compite con esa UI de descubrimiento antes de que alguien abra el video/pieza. `doble_marco` es un layout de cuerpo -- el contenido individual solo se ve una vez abierta la pieza.
+
+Verificacion importante (30-oct-2026): el criterio de "es cuerpo, no portada" por si solo NO basta para descartar SAFE_PRACTICAL -- lo que importa es un hecho fisico (si el elemento cae o no dentro de la zona que la UI real tapa), no la categoria del layout. Se calculo que esta caja (top=5px a ~488px = 0.3%-25.4% del canvas) invade teoricamente la franja de riesgo de SAFE_PRACTICAL (0-20%/384px). Pero Johnny publico la pieza real como Reel y como TikTok (capturas verificadas, 30-oct-2026) y el texto se ve completo, sin que ningun elemento real de UI (rail de iconos, perfil, barra de estadisticas) lo tape -- el riesgo teorico no se materializo en ninguna de las dos plataformas con este contenido. Se mantiene top=5px sin SAFE_PRACTICAL en doble_marco 9:16 por evidencia real de plataforma, no solo por el argumento de categoria. Si una pieza futura con texto_pie mas largo (3+ lineas, por ejemplo) empuja la caja mas arriba del 20%, reverificar visualmente en plataforma real antes de asumir que sigue estando bien.
+
+(Nota aparte, no aplicada a este layout: `SAFE_PRACTICAL_X`, horizontal, protege contra el rail de iconos lateral -- esa SI se usa en algunos layouts de cuerpo en 9:16, como ventana_texto/solo_texto en base.py, porque el rail lateral esta presente en toda reproduccion, no solo en portada. Son dos protecciones independientes -- no confundirlas de nuevo.)
+
+Cada imagen de escena se recorta (crop-to-fill, con 2% de overscan para evitar bordes blancos en las esquinas) al tamano de su ventana YA reescalada (ver arriba) SIN rotar, luego se rota al angulo real, y se pega centrada en (cx', cy'). El marco de madera reescalado (con alpha real) va encima, tapando cualquier sobrante.
 
 Nota de historial: la primera generacion 9:16 de este layout salio con el interior de ambos marcos en negro solido en vez de transparente -- corregido en v2 (el archivo referenciado arriba). Verificar siempre alpha real antes de dar por buena una entrega.
 
@@ -284,3 +300,41 @@ Con 6 layouts de cuerpo disponibles (marco grande, doble marco, full-bleed, vent
 ## Proporción imagen/texto por función del slide (recordatorio, ya en SKILL.md)
 
 Apertura de loop = 85-90% imagen / 10-15% texto. Desarrollo/agitación = 60-75% / 25-40%. Giro/revelación = 50-65% / 35-50%. Cierre/CTA = 70-85% / 15-30%.
+
+---
+
+## 16. Contrato tipográfico — jerarquía, roles y líneas garantizadas — NUEVO 30-oct-2026
+
+Rediseño completo del sistema de roles tipográficos, motivado por un bug real de truncamiento (PZA_6.5 S3, `doble_marco`: "Same plant. Different calendar. / Both thriving." se cortaba a 1 línea en el render real). El diagnóstico mostró que el problema no era el texto — era que ningún layout tenía documentado **cuántas líneas garantiza su caja**, así que cada caja se calculaba como "lo que sobra", no desde la función retórica del rol que iba a vivir ahí. Esta sección es la regla permanente para que eso no se repita: antes de escribir un `texto_pie`/`texto_titulo`/`texto_cuerpo` más largo de lo habitual en un brief, o antes de agregar un layout nuevo, consultar esta tabla.
+
+### Principio rector
+
+El tamaño de un rol tipográfico debe reflejar **cuánto peso retórico tiene esa frase**, no cuánto espacio sobraba en su layout. Y cada caja de texto debe dimensionarse desde el **contrato de líneas** de su rol — cuántas líneas se espera que tenga, medidas con la altura de tinta real (`text_renderer._altura_tinta_real`, no la aproximación tipográfica) — nunca a ojo ni como residuo geométrico.
+
+### Escalera de jerarquía (de mayor a menor peso)
+
+| Orden | Rol | Tamaño | Fuente | Función retórica | Dónde vive | Líneas garantizadas |
+|---|---|---|---|---|---|---|
+| 1 | `titulo` / `titulo_cuadrado` | 93px / 85px | SourceSerifPro, dorado con borde | El gancho — para el scroll, se lee en 1 segundo | Portadas (`marco_grande_portada`, `marco_grande_cuadrado`) | 1-3 |
+| 2 | **`veredicto`** (nuevo) | 56px | Lora-BoldItalic | Nombra la tensión entre DOS escenas — la línea que se screenshotea | `doble_marco` (`texto_pie`) | **2 fijas** |
+| 3 | `subtitulo` | 42px (bajado de 47px) | Lora-BoldItalic | Ancla UNA escena ya mostrada — refuerzo, no revelación | `marco_grande` (`texto_pie`); subtítulo de `marco_grande_cuadrado` | 1-2 |
+| 4 | `cuerpo` | 40px | Lora regular | Argumenta, agita, revela — carga la idea completa | `ventana_texto`, `solo_texto`, `texto_lateral` | 2-4 |
+| 5 | `cta` | 32px | DMSans | Cierre de marca, el más discreto | `lockup_cierre` | 1 |
+
+**Por qué `veredicto` es más grande que `subtitulo`, invirtiendo el orden anterior:** antes `subtitulo` (47px) pesaba más que `cuerpo` (40px) sin ninguna razón retórica — era simplemente el tamaño que calzaba bien en `marco_grande`, heredado por analogía superficial a `doble_marco` ("ambos tienen marco, ambos tienen texto"). Pero la función no es la misma: `subtitulo` **ancla** (refuerza una imagen que el ojo ya interpretó), mientras que el texto de `doble_marco` **nombra una comparación** — es casi un titular, no un pie de foto. Por eso mereció rol propio (`veredicto`), con más peso que `subtitulo`, ocupando el peldaño inmediatamente debajo del título.
+
+### Por qué cada caja mide lo que mide (contrato verificado, no estimado)
+
+Todas las alturas de caja de esta tabla fueron verificadas renderizando con `text_renderer.py` real (PIL, `draw.textbbox`, auto-shrink hasta 70% del tamaño base incluido) — no son estimaciones a ojo.
+
+| Layout | Rol | Caja (4:5) | Caja (9:16) | Nota |
+|---|---|---|---|---|
+| `marco_grande_portada` | `titulo` | ~252px (frame_bottom a canvas_h, padding 24px c/lado, centrado por tinta real) | — (usa `marco_grande_cuadrado`) | Corregido 30-oct-2026 — bug real de centrado, ver Sección 1 |
+| `marco_grande_cuadrado` | `titulo_cuadrado` | — | Entre vines, centrado por tinta real | Sin cambios en esta ronda |
+| `doble_marco` | `veredicto` | ~130px (antes 62px fijo — insuficiente incluso al mínimo de auto-shrink) | ~165px (antes la fórmula daba una caja NEGATIVA, nunca se disparó en producción porque ninguna pieza publicada usa `doble_marco` en 9:16) | Ver Sección 7 para el detalle completo del fix (`DOBLE_MARCO_SHRINK`) |
+| `marco_grande` | `subtitulo` | Proporcional a `porcentaje_imagen` del slide — mínimo real documentado 107px (caso más apretado, 90% imagen) | Igual, proporcional | Ya era correcto, solo cambia el tamaño de fuente (47→42px) |
+| `ventana_texto` / `solo_texto` / `texto_lateral` | `cuerpo` | Franjas grandes, calculadas por `zona_contenido` o espacio sobrante de imagen | Igual | Sin problema detectado — ya diseñado con margen generoso |
+
+### Regla para briefs futuros
+
+Al escribir `texto_pie` en `doble_marco`, el contrato es **2 líneas, siempre caben a tamaño completo** — no hay que acortar el texto por miedo a que trunque (ese era precisamente el bug que esto corrige). Si una frase futura necesitara 3 líneas en ese layout, eso ya rompe el contrato de diseño del rol `veredicto` y hay que traerlo a revisión antes de generar el brief, no descubrirlo en el render final.

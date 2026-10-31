@@ -162,6 +162,57 @@ BBOX = {
     },
 }
 
+# CORREGIDO 30-oct-2026 (bug real detectado via PZA_6.5 S3 -- el texto_pie
+# "Same plant. Different calendar. / Both thriving." se truncaba a 1 linea
+# en el render real, no solo en el wireframe de la Mesa). Diagnostico con
+# numeros medidos (text_renderer.py + PIL, no estimado a ojo): el rol
+# subtitulo (ahora 42px, antes 47px) necesita ~88px de tinta real para 2
+# lineas; la caja de texto_pie en doble_marco 4:5 media solo 62px fijos
+# (top=14, bottom=BBOX.y0-10=76) -- insuficiente incluso al minimo de
+# auto-shrink (70%). Raiz: el asset de doble_marco esta disenado para
+# llenar casi todo el canvas (BBOX.y0=86 de 1350px en 4:5), dejando una
+# franja residual sobre los marcos nunca dimensionada para contener 2
+# lineas de texto por diseno -- fue un parche anterior (10px -> 62px,
+# ver comentario historico en _compose_doble_marco) que nunca llego al
+# piso real necesario.
+#
+# Ademas se encontro un segundo problema, independiente, en 9:16: el
+# codigo viejo calculaba el `top` de texto_pie con usable_zone(aspecto)[0]
+# (SAFE_PRACTICAL, top=20%=384px) para 9:16, lo que daba una caja
+# NEGATIVA (top=384 > bottom=358, con BBOX.y0=368). CORRECCION DE
+# CRITERIO (Johnny, 30-oct-2026): SAFE_PRACTICAL protege contra la UI de
+# DESCUBRIMIENTO en el feed/reel (boton de suscripcion, rail de iconos,
+# caption) -- aplica a PORTADAS, que es lo que se ve antes de abrir el
+# video, compitiendo con esa UI. doble_marco es un layout de CUERPO
+# (slide 2+): el contenido individual de un video solo se ve una vez que
+# la persona ya lo abrio, momento en que esa UI de descubrimiento ya no
+# aplica de la misma forma. SAFE_PRACTICAL (vertical) NO le corresponde a
+# texto_pie en doble_marco -- por eso el fix usa el mismo criterio
+# estetico minimo en los dos aspectos (top fijo, sin depender de
+# usable_zone), igual que 4:5 ya hacia con SAFE_MINIMAL_4X5. Nunca se
+# disparo en produccion porque ninguna pieza publicada usa doble_marco en
+# 9:16 (las 5 existentes son todas 4:5), pero estaba ahi, latente, para
+# el primer video futuro.
+#
+# Solucion elegida (ver mockup real comparado con Johnny, 30-oct-2026):
+# "tamano ideal siempre" sobre "peor caso aceptable con auto-shrink" --
+# se reescala y desplaza TODO el conjunto doble_marco (frame_asset +
+# ROTATED_WINDOWS) hacia abajo/mas chico, para regalarle a texto_pie el
+# espacio real que el rol veredicto (56px, 2 lineas, ~135px con colchon
+# visual) necesita SIEMPRE a tamano completo, sin depender del
+# auto-shrink. Costo verificado con mockup real (compositor + asset real,
+# no aproximado): el marco se ve apenas mas chico/corrido hacia abajo,
+# cambio casi imperceptible a simple vista.
+DOBLE_MARCO_SHRINK = {
+    # shrink_px: cuanto se corre hacia abajo el conjunto completo (frame +
+    # ambas ventanas rotadas), medido para dejar ~135px de caja de texto
+    # con colchon visual arriba del marco. scale: factor de reduccion
+    # aplicado al frame_asset y a w/h/cx/cy de cada ventana rotada
+    # (scale = (canvas_h - shrink_px) / canvas_h).
+    "4:5":  {"shrink_px": 73, "scale": (1350 - 73) / 1350},
+    "9:16": {"shrink_px": 161, "scale": (1920 - 161) / 1920},
+}
+
 # Tipografia — roles (Seccion 3 de la arquitectura). Tamanos identicos en ambos aspectos.
 import os
 
@@ -186,7 +237,31 @@ TYPOGRAPHY = {
     # Rol separado a proposito -- NO renombrar "titulo" globalmente, afectaria
     # al 4:5 que no necesita este ajuste (tiene mas ancho, 898px).
     "titulo_cuadrado": {"font": "SourceSerifPro-Regular.ttf", "size": 85, "color": "#E8B84B", "stroke": "#5C3A1E", "stroke_w": 5, "line_spacing": 0.743},
-    "subtitulo": {"font": "Lora-BoldItalic.ttf", "size": 47, "color": "#1A1A1A", "stroke": None, "stroke_w": 0, "line_spacing": 0.777},
+    # NUEVO 30-oct-2026 (rediseno de jerarquia tipografica completo, ver
+    # DOBLE_MARCO_SHRINK arriba para el bug que lo origino). Rol propio para
+    # doble_marco -- antes heredaba el rol "subtitulo" de marco_grande por
+    # analogia superficial ("ambos tienen marco, ambos tienen texto"), pero
+    # la funcion retorica es distinta: subtitulo ANCLA una escena ya
+    # mostrada (refuerzo), veredicto NOMBRA la tension entre DOS escenas
+    # (la linea que alguien screenshotea). Decidido con Johnny como la
+    # segunda frase de mayor peso de la pieza, despues del titulo -- de ahi
+    # que sea MAS grande que subtitulo (56 vs 42), invirtiendo la jerarquia
+    # accidental anterior donde subtitulo (47px) pesaba mas que cuerpo
+    # (40px) sin ninguna razon retorica. Contrato de lineas: 2 fijas
+    # (casi siempre "A. Pero B." o su variante), caja dimensionada para
+    # que SIEMPRE rinda a tamano completo (ver DOBLE_MARCO_SHRINK), nunca
+    # dependiendo del auto-shrink de fit_text.
+    "veredicto": {"font": "Lora-BoldItalic.ttf", "size": 56, "color": "#1A1A1A", "stroke": None, "stroke_w": 0, "line_spacing": 0.777},
+    # CORREGIDO 30-oct-2026 (bajado de 47px a 42px, rediseno de jerarquia
+    # completo): con "veredicto" (56px) ocupando el peldano de mayor peso
+    # despues del titulo, subtitulo debia bajar para no competir con el --
+    # sigue siendo mas grande que cuerpo (40px) para mantener su funcion de
+    # "frase de refuerzo" por sobre "parrafo argumental", pero ya no pesa
+    # mas de lo que su funcion (anclar UNA escena, no revelar nada nuevo)
+    # amerita. Escalera final: titulo > veredicto(56) > subtitulo(42) >
+    # cuerpo(40) > cta(32) -- cada tamano refleja cuanto peso retorico
+    # tiene esa frase, no cuanto espacio sobraba en su layout.
+    "subtitulo": {"font": "Lora-BoldItalic.ttf", "size": 42, "color": "#1A1A1A", "stroke": None, "stroke_w": 0, "line_spacing": 0.777},
     "cuerpo":    {"font": "Lora.ttf", "size": 40, "color": "#5C3A1E", "stroke": None, "stroke_w": 0},
     "cta":       {"font": "DMSans.ttf", "size": 32, "color": "#5C3A1E", "stroke": None, "stroke_w": 0},
 }
