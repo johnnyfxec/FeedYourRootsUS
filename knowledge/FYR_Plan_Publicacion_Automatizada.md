@@ -176,10 +176,24 @@ Por qué funciona en Pinterest específicamente (y no en IG): Pinterest es un mo
 
 **Lección aprendida: `image_url` necesita un archivo verdaderamente público.** Un primer intento con un archivo de `Assets` (banco, prefijo `STOCK-`) falló con `{"code":235,"message":"Sorry, this image is broken."}` — sin permiso público, a diferencia de `Content_Pieces`. Ver regla crítica completa en Sección 0.
 
+### 7.1 Pin de video — ✅ PRODUCCIÓN (31-oct-2026)
+
+**Flujo real, distinto y más largo que el Pin de imagen.** Pinterest NO acepta una URL de video directa en `/v5/pins` (a diferencia de `image_url` para imágenes) — hay que registrar la subida, subir el binario a un bucket S3 de Pinterest (multipart/form-data, campos de `upload_parameters` tal cual + `file` al final), esperar a que procese, y recién ahí crear el Pin. Script: `production/scripts/pinterest/pinterest_publish_video_pin.py`. Primer Pin de video real: `PZA_9.3`, board "Seed to Pantry Homesteading System".
+
+**`cover_image_url` es obligatorio, aunque la doc "how-to" de Pinterest no lo marque claro.** Omitirlo da un `401 Unauthorized` engañoso (debería ser un `400` descriptivo) — confirmado contra reportes reales de la comunidad de desarrolladores de Pinterest, no asumido. El script lo exige siempre como argumento, nunca opcional.
+
+**De dónde sale la portada — regla fija, no inventar una nueva cada vez:** la imagen de portada ya existe para TODA pieza de video, compuesta durante el ensamblado (ver `FYR_Protocolo_Edicion_Video.md`) y guardada en Drive como `Video_Production/PZA_X/FYR_PZA_X_PORTADA_9x16_v1.png` — **nunca extraer un frame del MP4 con ffmpeg ni generar una portada nueva**, la correcta ya está ahí. Decisión explícita de Johnny (31-oct-2026): no cambiar el pipeline para que esa portada se copie también a `Content_Pieces/` — se mantiene en `Video_Production/` como siempre.
+
+**Excepción real a la regla crítica de la Sección 0:** `Video_Production/` normalmente NO es público — pero el archivo `PORTADA` específico de cada pieza debe compartirse manualmente como "cualquiera con el enlace" (Johnny, desde Drive) antes de poder usarlo como `cover_image_url` de un Pin de video. Esto se va a repetir en cada pieza de video que se publique en Pinterest — no es un paso único. Verificar con el mismo `curl` de la Sección 0 antes de asumir que ya es pública.
+
+**Ventana de poll real medida, no estimada:** el procesamiento del video en Pinterest tardó más de 60s en la prueba real (`PZA_9.3`, archivo de ~25MB, seguía en `status=processing` tras 15 intentos x 4s) — el script quedó ajustado a 40 intentos x 6s (4 min). No tratar un timeout corto como señal de error, es que la ventana original estaba mal calibrada contra el tiempo real de Pinterest.
+
 **Pendiente inmediato:**
 - [ ] Borrar el pin de prueba de Sandbox (`1151725304742853168`).
+- [ ] Borrar el Pin de video de prueba de `PZA_9.3`.
 - [ ] Probar la regla de 2 Pines en 2-3 piezas más antes de formalizarla en `fyr-publisher`.
 - [ ] Decidir si el Pin de "dolor" debe apuntar a blog/journal una vez que exista.
+- [ ] Decidir si `fyr-publisher` debe recordarle a Johnny compartir la `PORTADA` públicamente antes de intentar un Pin de video (o si el orquestador lo verifica solo con el `curl` de la Sección 0 y se detiene con un mensaje claro si no lo está).
 
 ---
 
