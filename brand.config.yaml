@@ -26,3 +26,74 @@ banned_words: true
 
 # Skill productora a la que esta skill deja señales listas (solo informativo, no invoca nada)
 skill_productora: fyr-content
+
+# ============================================================
+# fyr-publisher — configuración de publicación
+# Única sección que cambia al migrar el orquestador a otra marca. La LÓGICA de
+# fyr-publisher (elegibilidad por Tipo de Pieza, ventana de cautela, despacho por
+# plataforma, escritura de vuelta a Airtable) nunca lee estos valores hardcodeados —
+# siempre los lee de aquí.
+# ============================================================
+publicacion:
+  content_pieces_table: tblevmNSbGTzdjuDF  # usa el mismo airtable_base de arriba
+
+  fields:
+    id_pieza: fld1g5OjdT2BlFdmr
+    tipo_pieza: fld7zgQouWTYgQdJ3
+    estado_produccion: fldqEyriByKYZ0t3n
+    copy_completo: fldYXJcdumHdu9du6
+    carpeta_drive: fldpu7xim0PtA1tJS
+    fecha_publicacion_programada: fldrMl8gQKUBa7j1T
+    fecha_publicacion: fldzLDKI8biRw0uHZ
+    board_pinterest: null  # campo todavia no existe en Airtable -- ver Seccion 7 del SKILL.md
+    estado:
+      instagram: flddWeWxcaWk0t3x2
+      facebook: fldS2HHRyr6UpdzSr
+      pinterest: fldzqxnaZ6DrurRHh
+      youtube: fldgZJ6eZ05oxPe7H
+      tiktok: fldOM7Y83b4QAWTS7
+    post_id:
+      instagram: fld9MaAJxssTiUT7p
+      facebook: fldA6Naoeg9je6uZb
+      pinterest: fldMCih6SCcaadTKU
+      youtube: fld0pgXfKXLhiUdj8
+      tiktok: fldublvHckaVEsYNs
+    link_publicacion:
+      instagram: fldu6AfhLCgiP7fJS
+      facebook: fldwjD1AKiJYW9mM0
+      pinterest: fldbRm70Tldl2uUDq
+      youtube: fldTGJPY0YBEGrE9U
+      tiktok: fldsTZkJA9jW8mb8W
+
+  handles:
+    instagram: feedyourroots_us
+    facebook: FeedYourRoots.US
+    pinterest: FeedYourRoots_US
+    tiktok: FeedYourRoots_US
+    youtube: FeedYourRoots_US
+
+  landing_default: https://feedyourroots.us  # destino de los links mientras no exista blog/journal
+
+  # 1 publicacion/dia por plataforma durante las primeras 1-2 semanas de CADA cuenta --
+  # cada una cuenta su propio reloj desde que arranco, no comparten ventana.
+  ventana_cautela:
+    instagram: {inicio: "2026-10-26", dias: 7}
+    facebook: {inicio: null, dias: 7}   # se llena el dia del primer post real
+    pinterest: {inicio: "2026-10-29", dias: 7}
+    tiktok: {inicio: null, dias: 7}     # se llena cuando se apruebe la app y arranque produccion
+    youtube: {inicio: null, dias: 7}
+
+  pinterest:
+    boards_disponibles:
+      backyard_chickens_bees: "1151725373397379027"
+      food_preservation: "1151725373397379028"
+      half_acre_layouts: "1151725373397379022"
+      seed_to_pantry: "1151725373397379025"
+      suburban_garden_ideas: "1151725373397379024"
+      products: "1151725373397378983"
+    # Sin politica fija board<->pieza todavia (decision pendiente, ver SKILL.md Seccion 7) --
+    # fyr-publisher NUNCA elige un board por su cuenta, siempre lee board_pinterest o pregunta.
+
+  tiktok:
+    pages_mirror_dir: production/scripts/tiktok/tmp-photos  # SIN "_" -- Jekyll lo ignora si empieza con guion bajo
+    pages_base_url: https://feedyourroots.us
