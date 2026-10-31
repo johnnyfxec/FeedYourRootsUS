@@ -22,7 +22,10 @@ developers.pinterest.com, 28-oct-2026, no asumidas de memoria:
      El de intercambio de token es https://api.pinterest.com/v5/oauth/token.
   4. Scopes probados para fyr-publisher: boards:read (leer boards, necesario para resolver
      board_id al crear un pin) + pins:write (crear pines de imagen Y video pins -- no existe
-     un scope separado para video, confirmado contra developers.pinterest.com/docs/content/update/).
+     un scope separado para video, confirmado contra developers.pinterest.com/docs/content/update/)
+     + user_accounts:read (unico scope que habilita los endpoints de analiticas -- GET
+     /user_account/analytics/top_pins y similares -- sin el, dan "code":3, missing scope,
+     aunque la cuenta sea Business y el resto de las llamadas funcionen bien).
 
 Variables de entorno requeridas (de la app ya creada en developers.pinterest.com):
   PINTEREST_CLIENT_ID / PINTEREST_CLIENT_SECRET
@@ -43,12 +46,15 @@ import urllib.request
 PUERTO_FIJO = 8787  # DEBE coincidir exacto con el Redirect URI registrado en developers.pinterest.com
 REDIRECT_URI = f"http://localhost:{PUERTO_FIJO}/"
 
-SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write"]
+SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write", "user_accounts:read"]
 # boards:write y pins:read se agregaron el 28-oct-2026 -- confirmado por error real de la API
 # ("code":3, Missing: ['boards:write','pins:read']) al intentar crear un pin con solo
 # boards:read+pins:write. La doc de Pinterest no deja claro de antemano que crear un pin
 # requiera tambien leer pines y escribir en el board -- quedo confirmado empiricamente.
-SCOPE = ",".join(SCOPES)
+# user_accounts:read se agrego el 31-oct-2026 -- confirmado por error real al llamar
+# GET /user_account/analytics/top_pins con el token viejo ("code":3, Missing:
+# ['user_accounts:read']). Necesario para cualquier endpoint de analiticas (metricas de
+# Pines/cuenta), no solo para leer datos basicos de la cuenta como sugiere el nombre.
 
 AUTH_URL = "https://www.pinterest.com/oauth/"
 # NOTA (29-oct-2026): Standard access aprobado para "fyr publisher" -- revertido de vuelta a
