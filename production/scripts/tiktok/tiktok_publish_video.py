@@ -16,7 +16,12 @@ POR QUE FILE_UPLOAD Y NO PULL_FROM_URL (decision deliberada, no un rodeo tempora
   la verificacion de dominio ya esta hecha -- no hay que rehacer ese paso.
 
 Uso:
-    python3 tiktok_publish_video.py <ruta_al_mp4> "<titulo/caption>" [--publico]
+    python3 tiktok_publish_video.py <ruta_al_mp4_o_URL_publica_de_Drive> "<titulo/caption>" [--publico]
+
+    La fuente acepta tanto una ruta local como una URL publica de Drive (link de "ver" o
+    de descarga directa, cualquiera de los dos) -- en ese caso se transmite en streaming
+    directo hacia TikTok, sin escribir el binario completo a disco en ningun punto
+    intermedio (mismo patron que ya usa youtube_publish_video.py).
 
     Sin --publico: publica como SELF_ONLY (privado) -- requerido mientras la app no este
     auditada (ver "unaudited_client_can_only_post_to_private_accounts" mas abajo) Y mientras
@@ -48,11 +53,14 @@ Limites de archivo confirmados (doc oficial, media-transfer-guide):
   FYR (9:16, ~30-40s) rondan 20-30MB, asi que no es un problema actual, pero hay que agregar
   fragmentacion antes de usar esto con piezas mas largas.
 """
+import http.client
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 INIT_URL = "https://open.tiktokapis.com/v2/post/publish/video/init/"
@@ -60,6 +68,81 @@ STATUS_URL = "https://open.tiktokapis.com/v2/post/publish/status/fetch/"
 CREATOR_INFO_URL = "https://open.tiktokapis.com/v2/post/publish/creator_info/query/"
 
 MAX_SINGLE_CHUNK_BYTES = 64 * 1024 * 1024  # 64MB -- ver aviso de fragmentacion en el docstring
+STREAM_BLOCK_BYTES = 1024 * 1024  # 1MB -- mismo bloque que youtube_publish_video.py
+
+_DRIVE_FILE_PATH_RE = re.compile(r"drive\.google\.com/file/d/([^/?]+)")
+_DRIVE_ID_PARAM_RE = re.compile(r"[?&]id=([^&]+)")
+
+
+def _normalize_drive_url(url):
+    """Mismo helper que youtube_publish_video.py -- acepta el link de 'ver' de Drive o
+    el de descarga directa, siempre devuelve la forma de descarga directa."""
+    m = _DRIVE_FILE_PATH_RE.search(url)
+    if m:
+        return f"https://drive.google.com/uc?export=download&id={m.group(1)}"
+    if "drive.google.com" in url and "export=download" not in url:
+        m = _DRIVE_ID_PARAM_RE.search(url)
+        if m:
+            return f"https://drive.google.com/uc?export=download&id={m.group(1)}"
+    return url
+
+
+def _is_url(s):
+    return s.startswith("http://") or s.startswith("https://")
+
+
+def _open_source(source):
+    """Devuelve (stream_legible, tamano_en_bytes). Si 'source' es una URL, abre un GET
+    en streaming contra Drive (sin descargar a disco); si es una ruta local, abre el
+    archivo. En ambos casos el llamador es responsable de cerrar el stream devuelto."""
+    if _is_url(source):
+        url = _normalize_drive_url(source)
+        print(f"Abriendo stream desde Drive: {url}")
+        resp = urllib.request.urlopen(url, timeout=60)
+        size = resp.getheader("Content-Length")
+        content_type = resp.getheader("Content-Type", "")
+        if content_type.startswith("text/html"):
+            resp.close()
+            sys.exit(
+                "La URL devolvio text/html en vez del binario -- casi siempre significa "
+                "que el archivo de Drive NO es publico (regla critica Seccion 0: solo "
+                "Content_Pieces/ es publico, Assets/ no)."
+            )
+        if not size:
+            resp.close()
+            sys.exit("La respuesta de Drive no trajo Content-Length -- no se puede continuar.")
+        return resp, int(size)
+    if not os.path.isfile(source):
+        sys.exit(f"No existe el archivo: {source}")
+    return open(source, "rb"), os.path.getsize(source)
+
+
+def _put_stream(upload_url, source_stream, video_size):
+    """PUT de bajo nivel (http.client) -- transmite el body bloque a bloque (1MB) en vez
+    de juntar todo el binario en memoria antes de mandarlo, igual que
+    youtube_publish_video.py::_put_stream(). Content-Range identico al que ya usaba la
+    version anterior (bytes 0-N-1/N), TikTok lo exige aunque sea un solo chunk."""
+    parsed = urllib.parse.urlsplit(upload_url)
+    conn_cls = http.client.HTTPSConnection if parsed.scheme == "https" else http.client.HTTPConnection
+    conn = conn_cls(parsed.netloc, timeout=180)
+    path = parsed.path + (("?" + parsed.query) if parsed.query else "")
+    try:
+        conn.putrequest("PUT", path)
+        conn.putheader("Content-Type", "video/mp4")
+        conn.putheader("Content-Length", str(video_size))
+        conn.putheader("Content-Range", f"bytes 0-{video_size - 1}/{video_size}")
+        conn.endheaders()
+        while True:
+            bloque = source_stream.read(STREAM_BLOCK_BYTES)
+            if not bloque:
+                break
+            conn.send(bloque)
+        resp = conn.getresponse()
+        body = resp.read()
+        status = resp.status
+    finally:
+        conn.close()
+    return status, body
 
 
 def _post_json(url, token, payload):
@@ -81,9 +164,9 @@ def _post_json(url, token, payload):
 
 def main():
     if len(sys.argv) < 3:
-        sys.exit("Uso: tiktok_publish_video.py <ruta_al_mp4> \"<titulo>\" [--publico]")
+        sys.exit("Uso: tiktok_publish_video.py <ruta_al_mp4_o_URL_de_Drive> \"<titulo>\" [--publico]")
 
-    video_path = sys.argv[1]
+    source = sys.argv[1]
     title = sys.argv[2]
     publico = "--publico" in sys.argv[3:]
 
@@ -91,10 +174,9 @@ def main():
     if not token:
         sys.exit("Falta TIKTOK_ACCESS_TOKEN en el entorno.")
 
-    if not os.path.isfile(video_path):
-        sys.exit(f"No existe el archivo: {video_path}")
-    video_size = os.path.getsize(video_path)
+    stream, video_size = _open_source(source)
     if video_size > MAX_SINGLE_CHUNK_BYTES:
+        stream.close()
         sys.exit(
             f"Archivo de {video_size} bytes supera el limite de chunk unico "
             f"({MAX_SINGLE_CHUNK_BYTES} bytes) -- este script no implementa fragmentacion "
@@ -141,26 +223,13 @@ def main():
     publish_id = init["data"]["publish_id"]
     print("publish_id:", publish_id)
 
-    print("Subiendo el binario (PUT) ...")
-    with open(video_path, "rb") as f:
-        data = f.read()
-    req = urllib.request.Request(
-        upload_url,
-        data=data,
-        headers={
-            "Content-Type": "video/mp4",
-            "Content-Length": str(video_size),
-            "Content-Range": f"bytes 0-{video_size - 1}/{video_size}",
-        },
-        method="PUT",
-    )
+    print(f"Subiendo el binario en streaming (bloques de 1MB, {video_size} bytes) ...")
     try:
-        with urllib.request.urlopen(req, timeout=180) as r:
-            code = r.status
-    except urllib.error.HTTPError as e:
-        sys.exit(f"Subida fallo con HTTP {e.code}: {e.read().decode()[:400]}")
+        code, body = _put_stream(upload_url, stream, video_size)
+    finally:
+        stream.close()
     if code != 201:
-        sys.exit(f"Subida devolvio HTTP {code} (se esperaba 201).")
+        sys.exit(f"Subida devolvio HTTP {code} (se esperaba 201): {body.decode(errors='replace')[:400]}")
     print("Subida completa (HTTP 201).")
 
     print("Consultando estado de publicacion ...")
