@@ -43,8 +43,13 @@ import uuid
 
 API_BASE = "https://api.pinterest.com/v5"
 STREAM_BLOCK_BYTES = 1024 * 1024  # 1MB
-MAX_POLL_ATTEMPTS = 15
-POLL_SLEEP_SECONDS = 4
+# 40 intentos x 6s = 4 minutos. Confirmado empiricamente (31-oct-2026, PZA_9.3) que el
+# procesamiento de un video de ~25MB tarda MAS de 60s (15x4s, la ventana original de este
+# script) -- en esa prueba seguia en status=processing tras el minuto completo y solo se
+# resolvio consultando manualmente despues. No es un error transitorio a reintentar con
+# backoff corto, es que la ventana estaba mal calibrada contra el tiempo real de Pinterest.
+MAX_POLL_ATTEMPTS = 40
+POLL_SLEEP_SECONDS = 6
 
 _DRIVE_UC_RE = re.compile(r"^https://drive\.google\.com/uc\?export=download&id=([^&]+)$")
 _DRIVE_FILE_PATH_RE = re.compile(r"drive\.google\.com/file/d/([^/?]+)")
