@@ -304,4 +304,4 @@ Detectado texto tapado por la interfaz de TikTok en un video ya publicado (handl
 - [ ] ¿Alt text se genera junto con el brief (en `fyr-content`) o se calcula aparte en `fyr-publisher`?
 - [ ] ¿Qué stack de analytics/retargeting usar (GA4, Plausible, Meta Pixel, etc.)?
 - [ ] ¿El Pin de "dolor" en Pinterest debe apuntar a blog/journal en vez de a la landing general, una vez que exista contenido ahí?
-- [ ] **El orquestador (`fyr-publisher` SKILL.md) mismo, todavía no escrito** — ver Sección 4, es el trabajo pendiente central.
+- [x] **El orquestador (`fyr-publisher` SKILL.md)** — escrito y pusheado 31-oct-2026 (`.claude/skills/fyr-publisher/SKILL.md`). Los 7 scripts de publicación (Sección 3 de este documento) están construidos y verificados con publicaciones reales en las 5 plataformas; pendientes reales que quedan: campo `Board Pinterest` en Airtable (Sección 4.1 de `fyr-publisher/SKILL.md`), refresh automático de TikTok, scope ampliado de YouTube para borrado, y la decisión de ejecución bajo demanda vs. cron en Actions (ver `fyr-publisher/SKILL.md` Sección 9).
