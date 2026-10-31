@@ -55,6 +55,7 @@ SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write", "user_accoun
 # GET /user_account/analytics/top_pins con el token viejo ("code":3, Missing:
 # ['user_accounts:read']). Necesario para cualquier endpoint de analiticas (metricas de
 # Pines/cuenta), no solo para leer datos basicos de la cuenta como sugiere el nombre.
+SCOPE = ",".join(SCOPES)
 
 AUTH_URL = "https://www.pinterest.com/oauth/"
 # NOTA (29-oct-2026): Standard access aprobado para "fyr publisher" -- revertido de vuelta a
